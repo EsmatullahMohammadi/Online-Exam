@@ -22,7 +22,7 @@ function AddTest() {
       examDuration: Yup.number().required("Exam Duration is required").positive().integer(),
       numberOfQuestions: Yup.number().required("Number of Questions is required").positive().integer(),
       totalMarks: Yup.number().required("Total Marks is required").positive(),
-      startDate: Yup.date().required("Start Date is required"),
+      startDate: Yup.date().required("Start Date is required").min(new Date().toLocaleDateString(), "Start Date cannot be in the past"),
       endDate: Yup.date()
       .required("End Date is required.")
       .min(Yup.ref("startDate"), "End Date cannot be before Start Date."),
