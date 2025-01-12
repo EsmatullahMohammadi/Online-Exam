@@ -2,7 +2,9 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
+import { SUPER_DOMAIN } from '../constant';
 
 function AddTest() {
   const formik = useFormik({
@@ -21,12 +23,23 @@ function AddTest() {
       numberOfQuestions: Yup.number().required("Number of Questions is required").positive().integer(),
       totalMarks: Yup.number().required("Total Marks is required").positive(),
       startDate: Yup.date().required("Start Date is required"),
-      endDate: Yup.date().required("End Date is required"),
+      endDate: Yup.date()
+      .required("End Date is required.")
+      .min(Yup.ref("startDate"), "End Date cannot be before Start Date."),
       description: Yup.string().required("Description is required"),
     }),
-    onSubmit: (values) => {
-      console.log("Form Data Submitted", values);
-      alert("Test/Exam added successfully!");
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const response = await axios.post(`${SUPER_DOMAIN}/add-test`, values);
+
+        // Assuming backend sends a success message in `response.data.message`
+        alert(response.data.message || "Test/Exam added successfully!");
+        resetForm(); // Reset form on successful submission
+      } catch (error) {
+        // Handle error (e.g., network issues, validation errors)
+        console.error("Error adding test:", error.response?.data || error.message);
+        alert(error.response?.data?.error || "Failed to add test. Please try again.");
+      }
     },
   });
 
@@ -137,7 +150,7 @@ function AddTest() {
                 formik.touched.startDate && formik.errors.startDate
                   ? "border-red-500"
                   : "border-stroke"
-              } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+              } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:cursor-pointer`}
             />
             {formik.touched.startDate && formik.errors.startDate ? (
               <span className="text-red-500 text-sm">{formik.errors.startDate}</span>
@@ -157,7 +170,7 @@ function AddTest() {
                 formik.touched.endDate && formik.errors.endDate
                   ? "border-red-500"
                   : "border-stroke"
-              } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+              } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:cursor-pointer`}
             />
             {formik.touched.endDate && formik.errors.endDate ? (
               <span className="text-red-500 text-sm">{formik.errors.endDate}</span>

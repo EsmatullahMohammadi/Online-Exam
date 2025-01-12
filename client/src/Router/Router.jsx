@@ -15,6 +15,7 @@ import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
 import LDefaultLayout from '../pages/lecturer/layout/LDefaultLayout';
 import SDefaultLayout from '../pages/student/layout/SDefaultLayout';
+import EditTest from '../pages/admin/Test/EditTest';
 
 
 const router = createBrowserRouter([
@@ -45,7 +46,7 @@ const router = createBrowserRouter([
         )
       },
       {
-        path:'test',
+        path:'tests',
         element:(
           <>
             <PageTitle title="Test | Admine - KPU Online Exam" />
@@ -59,6 +60,15 @@ const router = createBrowserRouter([
           <>
             <PageTitle title="Add Test | Admine - KPU Online Exam" />
             <AddTest />
+          </>         
+        )
+      },
+      {
+        path:'editTest/:id',
+        element:(
+          <>
+            <PageTitle title="Edit Test | Admine - KPU Online Exam" />
+            <EditTest />
           </>         
         )
       },
