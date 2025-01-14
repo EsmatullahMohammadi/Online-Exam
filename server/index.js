@@ -32,8 +32,11 @@ app.put('/tests/:id', testController.updateTest);
 app.delete("/tests/:id", testController.deleteTest);
 
 // Add a lecturar
-app.post('/add-test', lecturarController.addLecturar);
-
+app.post('/add-lecturar', lecturarController.addLecturar);
+// All lecturar
+app.get('/all-lecturars', lecturarController.getLecturar);
+// delete one lecturer
+app.delete("/lecturars/:id", lecturarController.deleteLecturer);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -7,6 +7,9 @@ const LecturerSchema = new mongoose.Schema({
   lastName: { type: String, required: true},
   email: { type: String, required: true, unique: true},
   password: { type: String, required: true},
+  category: { type: String, required: true,
+    enum: ['Reading', 'Writing', 'Speaking', 'Listening'], // Allowed categories
+  }
 },{timestamps: true});
 // Create Lecturer model
 const Lecturer = mongoose.model('Lecturer', LecturerSchema);
