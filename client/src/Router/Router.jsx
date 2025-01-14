@@ -16,6 +16,7 @@ import SignUp from '../pages/Authentication/SignUp';
 import LDefaultLayout from '../pages/lecturer/layout/LDefaultLayout';
 import SDefaultLayout from '../pages/student/layout/SDefaultLayout';
 import EditTest from '../pages/admin/Test/EditTest';
+import Dashbord from '../pages/admin/dashbord/Dashbord';
 
 
 const router = createBrowserRouter([
@@ -27,6 +28,15 @@ const router = createBrowserRouter([
     path: '/dashbord' ,
     element: <DefaultLayout />,
     children: [
+      {
+        index: true, 
+        element:(
+          <>
+            <PageTitle title="Dashbord | Admine - KPU Online Exam" />
+            <Dashbord />
+          </>         
+        )
+      },
       {
         path:'profile',
         element:(
