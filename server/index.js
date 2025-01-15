@@ -5,7 +5,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 require('dotenv').config();
 const testController= require("./controllers/testController")
-const lecturarController= require("./controllers/lecturarController")
+const lecturarController= require("./controllers/lecturarController");
+const candidateController= require("./controllers/candidateController")
 
 // Middleware
 app.use(express.json());
@@ -37,6 +38,11 @@ app.post('/add-lecturar', lecturarController.addLecturar);
 app.get('/all-lecturars', lecturarController.getLecturar);
 // delete one lecturer
 app.delete("/lecturars/:id", lecturarController.deleteLecturer);
+
+// Add a candidates
+app.post('/add-candidates', candidateController.addCandidate);
+// All candidates
+app.get('/all-candidates', candidateController.getCandidates);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

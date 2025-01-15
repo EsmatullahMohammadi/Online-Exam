@@ -134,13 +134,13 @@ function Test() {
                           setIsOpenModel(!isOpenModel)
                           setTestID(test._id)
                         }}>
-                          <MdVisibility className='text-2xl' />
+                          <MdVisibility className='text-2xl text-blue-500 hover:text-blue-600' />
                         </button>
                         <button className="hover:text-primary" onClick={() => deleteTest(test._id)}>
-                          <MdDelete className='text-2xl text-red-400 hover:text-red-500'/>
+                          <MdDelete className='text-2xl text-red-500 hover:text-red-600'/>
                         </button>
                         <Link to={`/dashbord/editTest/${test._id}`} className="hover:text-primary" >
-                          <MdEdit className='text-2xl'/>
+                          <MdEdit className='text-2xl text-indigo-500 hover:text-indigo-600'/>
                         </Link>
                       </div>
                     </td>
