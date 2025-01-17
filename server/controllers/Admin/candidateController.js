@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-const Candidate = require('../models/candidate'); // Adjust the path based on your folder structure
+const Candidate = require('../../models/candidate'); // Adjust the path based on your folder structure
 
 // Add a candidate
 const addCandidate = async (req, res) => {

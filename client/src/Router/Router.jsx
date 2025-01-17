@@ -124,7 +124,15 @@ const router = createBrowserRouter([
     path: '/lecturer',
     element: <LDefaultLayout />,
     children: [
-      {}
+      {
+        index: true, 
+        element:(
+          <>
+            <PageTitle title="Dashbord | Admine - KPU Online Exam" />
+            <Dashbord />
+          </>         
+        )
+      },
     ]
   },
   {

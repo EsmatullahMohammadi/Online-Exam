@@ -1,4 +1,4 @@
-const Test = require('../models/test');
+const Test = require('../../models/test');
 
 // creating tests
 const addTests= async (req,res)=>{

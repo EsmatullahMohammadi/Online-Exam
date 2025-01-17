@@ -1,4 +1,4 @@
-const Lecturer = require('../models/lecturar');
+const Lecturer = require('../../models/lecturer');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 

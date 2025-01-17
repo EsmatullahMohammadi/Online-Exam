@@ -38,7 +38,7 @@ const Settings = () => {
         const response = await axios.put(`${SUPER_DOMAIN}/settings`, values);
         if (response.status === 200) {
           alert(response.data.message || 'Your Profile Successfully!');
-          resetForm();
+          resetForm()
         } else {
           alert(response.data.message || 'Error updating setting');
         }
