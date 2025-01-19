@@ -100,9 +100,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Dashboard --> */}
               <li>
                 <NavLink
-                  to="/dashbord"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('dashbord1') &&
+                  to="/admin"
+                  end
+                  className={({ isActive }) =>
+                    `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    isActive &&
                     'bg-graydark dark:bg-meta-4'
                   }`}
                 >
@@ -115,7 +117,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Test --> */}
               <li>
                 <NavLink
-                  to="/dashbord/tests"
+                  to="/admin/tests"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('tests') &&
                     'bg-graydark dark:bg-meta-4'
@@ -129,9 +131,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Lecturare --> */}
               <li>
                 <NavLink
-                  to="/dashbord/lecturer"
+                  to="/admin/lecturer"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('lecturare') &&
+                    pathname.includes('lecturer') &&
                     'bg-graydark dark:bg-meta-4'
                   }`}
                 >
@@ -143,7 +145,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Student --> */}
               <li>
                 <NavLink
-                  to="/dashbord/condidate"
+                  to="/admin/condidate"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('condidate') &&
                     'bg-graydark dark:bg-meta-4'
@@ -171,7 +173,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Profile --> */}
               <li>
                 <NavLink
-                  to="/dashbord/profile"
+                  to="/admin/profile"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
                   }`}
@@ -184,7 +186,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Settings --> */}
               <li>
                 <NavLink
-                  to="/dashbord/settings"
+                  to="/admin/settings"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('settings') &&
                     'bg-graydark dark:bg-meta-4'

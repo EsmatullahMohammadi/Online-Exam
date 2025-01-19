@@ -44,7 +44,7 @@ const Condidate = () => {
       <Breadcrumb pageName="Candidate" />
       <div>
         <Link
-          to="/dashbord/addCondidate"
+          to="/admin/addCondidate"
           className="inline-flex items-center justify-center gap-2.5 rounded-sm bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 mb-3"
         >
           <span>

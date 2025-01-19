@@ -21,9 +21,8 @@ const DropdownUser = () => {
         </span>
 
         <span className=" flex justify-center ">
-          <img src={UserOne} alt="User" className='h-12 w-12 rounded-full'/>
+          <img src={UserOne} alt="User" className='h-12 w-12 rounded-full object-cover'/>
         </span>
-
         <svg
           className="hidden fill-current sm:block"
           width="12"

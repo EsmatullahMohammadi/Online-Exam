@@ -17,6 +17,8 @@ import LDefaultLayout from '../pages/lecturer/layout/LDefaultLayout';
 import SDefaultLayout from '../pages/student/layout/SDefaultLayout';
 import EditTest from '../pages/admin/Test/EditTest';
 import Dashbord from '../pages/admin/dashbord/Dashbord';
+import Questions from '../pages/lecturer/Questions/Questions';
+import AddQuestion from '../pages/lecturer/Questions/AddQuestion';
 
 
 const router = createBrowserRouter([
@@ -25,7 +27,7 @@ const router = createBrowserRouter([
     element: <App />, // This is the layout component
   },
   { 
-    path: '/dashbord' ,
+    path: '/admin' ,
     element: <DefaultLayout />,
     children: [
       {
@@ -128,8 +130,26 @@ const router = createBrowserRouter([
         index: true, 
         element:(
           <>
-            <PageTitle title="Dashbord | Admine - KPU Online Exam" />
+            <PageTitle title="Dashbord | Lecturer - KPU Online Exam" />
             <Dashbord />
+          </>         
+        )
+      },
+      {
+        path: "questions", 
+        element:(
+          <>
+          <PageTitle title="Questions | Lecturer - KPU Online Exam" />
+            <Questions />
+          </>         
+        )
+      },
+      {
+        path: "add-questions", 
+        element:(
+          <>
+          <PageTitle title="Add Questions | Lecturer - KPU Online Exam" />
+            <AddQuestion />
           </>         
         )
       },

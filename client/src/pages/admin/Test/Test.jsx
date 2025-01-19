@@ -62,7 +62,7 @@ function Test() {
       <Breadcrumb pageName="Tests" />
       <div>
         <Link
-          to="/dashbord/addTest"
+          to="/admin/addTest"
           className="inline-flex items-center justify-center gap-2.5 rounded-sm bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 mb-3"
               >
           <span>
@@ -139,7 +139,7 @@ function Test() {
                         <button className="hover:text-primary" onClick={() => deleteTest(test._id)}>
                           <MdDelete className='text-2xl text-red-500 hover:text-red-600'/>
                         </button>
-                        <Link to={`/dashbord/editTest/${test._id}`} className="hover:text-primary" >
+                        <Link to={`/admin/editTest/${test._id}`} className="hover:text-primary" >
                           <MdEdit className='text-2xl text-indigo-500 hover:text-indigo-600'/>
                         </Link>
                       </div>
