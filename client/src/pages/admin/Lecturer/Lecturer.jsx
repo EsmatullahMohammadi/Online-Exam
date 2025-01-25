@@ -11,15 +11,19 @@ import { SUPER_DOMAIN } from '../constant';
 const Lecturer = () => {
   const [lecturers, setLecturers] = useState([]); // State to store lecturers
   const [error, setError] = useState(''); // State to store any errors
+  const [loading, setLoading] = useState(true);
 
   // Fetch data from the backend using Axios
   useEffect(() => {
     const fetchLecturers = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(`${SUPER_DOMAIN}/all-lecturars`); // Update this with your backend endpoint
         setLecturers(response.data.lecturar); // Set the retrieved data to state
       } catch (err) {
-        setError('Failed to fetch lecturers. Please try again.');
+        setError(err.response?.data?.message || err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -54,13 +58,6 @@ const Lecturer = () => {
         </Link>
       </div>
 
-      {/* Display error if any */}
-      {error && (
-        <div className="mb-4 text-red-500 text-center">
-          {error}
-        </div>
-      )}
-
       <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         <div className="max-w-full overflow-x-auto">
           <table className="w-full table-auto">
@@ -84,7 +81,20 @@ const Lecturer = () => {
               </tr>
             </thead>
             <tbody>
-              {lecturers.length > 0 ? (
+            {loading ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-3">
+                    Loading...
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-3 text-red-500">
+                    {error}
+                  </td>
+                </tr>
+              ) :
+              lecturers.length > 0 ? (
                 lecturers.map((lecturer, key) => (
                   <tr key={key}>
                     <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">

@@ -69,7 +69,7 @@ const EditTest = () => {
         },
       });
       alert("Test updated successfully!");
-      navigate("/dashbord/tests");
+      navigate("/admin/tests");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update test.");
     } finally {

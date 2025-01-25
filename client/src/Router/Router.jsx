@@ -12,14 +12,16 @@ import Settings from '../pages/admin/Settings';
 import AddTest from '../pages/admin/Test/AddTest';
 import Test from '../pages/admin/Test/Test';
 import SignIn from '../pages/Authentication/SignIn';
-import SignUp from '../pages/Authentication/SignUp';
 import LDefaultLayout from '../pages/lecturer/layout/LDefaultLayout';
 import SDefaultLayout from '../pages/student/layout/SDefaultLayout';
 import EditTest from '../pages/admin/Test/EditTest';
 import Dashbord from '../pages/admin/dashbord/Dashbord';
 import Questions from '../pages/lecturer/Questions/Questions';
 import AddQuestion from '../pages/lecturer/Questions/AddQuestion';
+import ForgotPassword from '../pages/Authentication/ForgotPassword';
+import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
 
+const role = localStorage.getItem('role');
 
 const router = createBrowserRouter([
   {
@@ -28,7 +30,11 @@ const router = createBrowserRouter([
   },
   { 
     path: '/admin' ,
-    element: <DefaultLayout />,
+    element:(
+      <ProtectedRoute role={role} requiredRole="Admin">
+        <DefaultLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true, 
@@ -163,7 +169,7 @@ const router = createBrowserRouter([
     ]
   },
   { path: '/auth/signin', element: <SignIn /> },
-  { path: '/auth/signup', element: <SignUp /> },
+  { path: '/auth/forgot-password', element: <ForgotPassword /> },
 ]);
 
 export default router;

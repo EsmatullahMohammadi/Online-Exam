@@ -9,14 +9,14 @@ const getLecturer = async (req, res) => {
     // Fetch the lecturer by email
     const lecturer = await Lecturer.findOne({ email });
     if (!lecturer) {
-      return res.status(404).json({ message: 'Lecturer not found' });
+      return res.status(404).json({ message: 'Invalid email or password' });
     }
 
     // If a password is provided, validate it
     if (password) {
       const isPasswordValid = await bcrypt.compare(password, lecturer.password);
       if (!isPasswordValid) {
-        return res.status(400).json({ message: 'Password is incorrect' });
+        return res.status(400).json({ message: 'Invalid email or password' });
       }
     }
 

@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
-import { SUPER_DOMAIN } from '../constant';
+import { SUPER_DOMAIN } from "../constant";
 
 function AddTest() {
+
+  // Formik for form handling
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -19,26 +21,42 @@ function AddTest() {
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
-      examDuration: Yup.number().required("Exam Duration is required").positive().integer(),
-      numberOfQuestions: Yup.number().required("Number of Questions is required").positive().integer(),
+      examDuration: Yup.number()
+        .required("Exam Duration is required")
+        .positive()
+        .integer(),
+      numberOfQuestions: Yup.number()
+        .required("Number of Questions is required")
+        .positive()
+        .integer(),
       totalMarks: Yup.number().required("Total Marks is required").positive(),
-      startDate: Yup.date().required("Start Date is required").min(new Date().toLocaleDateString(), "Start Date cannot be in the past"),
+      startDate: Yup.date()
+        .required("Start Date is required")
+        .min(
+          new Date().toLocaleDateString(),
+          "Start Date cannot be in the past"
+        ),
       endDate: Yup.date()
-      .required("End Date is required.")
-      .min(Yup.ref("startDate"), "End Date cannot be before Start Date."),
+        .required("End Date is required.")
+        .min(Yup.ref("startDate"), "End Date cannot be before Start Date."),
       description: Yup.string().required("Description is required"),
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
-        const response = await axios.post(`${SUPER_DOMAIN}/add-test`, values);
+        const response = await axios.post(`${SUPER_DOMAIN}/add-test`, values, {
+          withCredentials: true, // Ensure cookies are included for authentication
+        });
 
-        // Assuming backend sends a success message in `response.data.message`
         alert(response.data.message || "Test/Exam added successfully!");
-        resetForm(); // Reset form on successful submission
+        resetForm();
       } catch (error) {
-        // Handle error (e.g., network issues, validation errors)
-        console.error("Error adding test:", error.response?.data || error.message);
-        alert(error.response?.data?.error || "Failed to add test. Please try again.");
+        console.error(
+          "Error adding test:",
+          error.response?.data || error.message
+        );
+        alert(
+          error.response?.data.message || "Failed to add test. Please try again."
+        );
       }
     },
   });
@@ -52,7 +70,10 @@ function AddTest() {
             Please fill all text inputs correctly
           </h3>
         </div>
-        <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5"
+        >
           {/* Title/Name */}
           <div>
             <label className="mb-3 block text-black dark:text-white">Title/Name</label>
@@ -197,8 +218,6 @@ function AddTest() {
               <span className="text-red-500 text-sm">{formik.errors.description}</span>
             ) : null}
           </div>
-
-          {/* Submit Button */}
           <div className="flex flex-col h-full">
             <button
               type="submit"
@@ -214,3 +233,4 @@ function AddTest() {
 }
 
 export default AddTest;
+

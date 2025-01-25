@@ -17,13 +17,13 @@ const addLecturar = async (req, res) => {
     if (!validCategories.includes(category)) {
       return res
         .status(400)
-        .json({ msg: `Invalid category. Valid options are: ${validCategories.join(', ')}` });
+        .json({ message: `Invalid category. Valid options are: ${validCategories.join(', ')}` });
     }
 
-    // Check if lecturer already exists
+    // Check if lecturer already exists  
     let lecturer = await Lecturer.findOne({ email });
     if (lecturer) {
-      return res.status(400).json({ msg: 'Lecturer already exists' });
+      return res.status(400).json({ message: 'Lecturer already exists' });
     }
 
     // Hash the password
@@ -43,7 +43,7 @@ const addLecturar = async (req, res) => {
     await lecturer.save();
 
     // Send success message
-    res.status(201).json({ msg: 'Lecturer added successfully' });
+    res.status(201).json({ message: 'Lecturer added successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

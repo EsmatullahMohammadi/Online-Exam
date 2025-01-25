@@ -19,7 +19,7 @@ const addTests= async (req,res)=>{
         });
       } catch (error) {
         console.error("Error adding test:", error.message);
-        res.status(500).json({ error: "Failed to add test" });
+        res.status(500).json({ message: "Failed to add test" });
       }
 }
 // getting all test

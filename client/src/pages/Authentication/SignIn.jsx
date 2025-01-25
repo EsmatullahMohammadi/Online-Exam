@@ -12,6 +12,7 @@ const SignIn = () => {
   const [selectItem, setSelectItem] = useState("Admin");
   const [serverError, setServerError] = useState(""); // State to handle backend error messages
   const navigate = useNavigate();
+  axios.defaults.withCredentials= true;
 
   const formik = useFormik({
     initialValues: {
@@ -28,14 +29,28 @@ const SignIn = () => {
     }),
     onSubmit: async (values) => {
       setServerError(""); // Clear any existing server errors
-      if (selectItem === "Admin") {
         try {
-          const response = await axios.post(`${SUPER_DOMAIN}/get-admin`, {
+          const response = await axios.post(`${SUPER_DOMAIN}/login`, {
               emailAddress: values.emailAddress,
               password: values.password,
+              role: selectItem,
           });
           if (response.status === 200) {
-            navigate("/dashbord");
+            if(response.data.role==="Admin"){
+              localStorage.setItem("role", response.data.role);
+              navigate("/admin");
+            }
+            else if(response.data.role==="Lecturer"){
+              localStorage.setItem("role", response.data.role);
+              navigate("/lecturer")
+            }
+            else if(response.data.role === "Candidate"){
+              localStorage.setItem("role", response.data.role);
+              navigate("/condidate")
+            }
+            else{
+              return <div>the type user do not authenticated</div>
+            }
           }
         } catch (error) {
           if (error.response) {
@@ -45,26 +60,6 @@ const SignIn = () => {
             // Handle network or unexpected errors
             setServerError("An error occurred. Please try again.");
           }
-        }
-      }
-      if (selectItem === "Lecturer") {
-        try {
-          const response = await axios.post(`${SUPER_DOMAIN}/get-lecturer`, {
-              email: values.emailAddress,
-              password: values.password,
-          });
-          if (response.status === 200) {
-            navigate("/lecturer");
-          }
-        } catch (error) {
-          if (error.response) {
-            // Handle specific backend error messages
-            setServerError(error.response.data.message || "Login failed");
-          } else {
-            // Handle network or unexpected errors
-            setServerError("An error occurred. Please try again.");
-          }
-        }
       }
     },
   });
@@ -234,7 +229,7 @@ const SignIn = () => {
                           Admin
                         </option>
                         <option value="Lecturer">Lecturer</option>
-                        <option value="Condidate">Condidate</option>
+                        <option value="Condidate">Candidate</option>
                       </select>
                     </div>
                   </div>
@@ -303,11 +298,10 @@ const SignIn = () => {
                       className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                     />
                   </div>
-                  <div className="mt-6 text-center">
+                  <div className="mt-6 ">
                     <p>
-                      Don’t have any account?{" "}
-                      <Link to="/auth/signup" className="text-primary">
-                        Sign Up
+                      <Link to="/auth/forgot-password" className="text-primary">
+                        Forgot Your Password?
                       </Link>
                     </p>
                   </div>

@@ -38,10 +38,10 @@ const AddLecturer = () => {
       if (response.status === 201) {
         resetForm();
         alert("Lecturare Added successfully!");
-        navigate("/dashbord/lecturer");
+        navigate("/admin/lecturer");
       }
     } catch (err) {
-      setError(err.response?.data?.msg || 'An error occurred. Please try again.');
+      setError(err.response?.data?.message || 'An error occurred. Please try again.');
     } finally {
       setSubmitting(false); // Stop the Formik submitting state
     }
