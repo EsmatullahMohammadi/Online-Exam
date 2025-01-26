@@ -17,7 +17,7 @@ const ProtectedRoute = ({ role, requiredRole, children }) => {
             "Content-Type": "application/json",
           },
         });
-console.log(response.data)
+
         if (response.data.status) {
           setIsAuthenticated(true);
         } else {

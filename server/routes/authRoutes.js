@@ -16,6 +16,13 @@ router.get("/verify-token", verifyUser, (req, res) => {
     user: req.user, // Assuming `verifyUser` middleware attaches the user to `req`
   });
 });
+// logout functionality
+router.get("/logout", (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({
+    status: true,
+  });
+});
 
   
 

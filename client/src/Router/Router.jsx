@@ -130,7 +130,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/lecturer',
-    element: <LDefaultLayout />,
+    element:(
+      <ProtectedRoute role={role} requiredRole="Lecturer">
+        <LDefaultLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true, 
