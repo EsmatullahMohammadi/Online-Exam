@@ -25,7 +25,7 @@ const addCandidate = async (req, res) => {
     // Check if candidate already exists
     let candidate = await Candidate.findOne({ email });
     if (candidate) {
-      return res.status(400).json({ msg: 'Candidate already exists' });
+      return res.status(400).json({ message: 'Candidate already exists' });
     }
     // Hash the password
     const salt = await bcrypt.genSalt(10);
@@ -48,7 +48,7 @@ const addCandidate = async (req, res) => {
     await candidate.save();
 
     // Send success message
-    res.status(201).json({ msg: 'Candidate added successfully' });
+    res.status(201).json({ message: 'Candidate added successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

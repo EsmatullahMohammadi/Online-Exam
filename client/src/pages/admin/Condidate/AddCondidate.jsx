@@ -39,11 +39,11 @@ const AddCandidate = () => {
         setSuccess(true);
         resetForm(); // Reset form fields after successful submission
       } else {
-        setError(response.data.msg || 'Failed to add candidate. Please try again.');
+        setError(response.data.message || 'Failed to add candidate. Please try again.');
       }
     } catch (err) {
       setError(
-        err.response?.data?.msg || 'Server error. Please try again later.'
+        err.response?.data?.message || 'Server error. Please try again later.'
       );
     }
   };
