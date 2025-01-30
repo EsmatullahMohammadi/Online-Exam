@@ -4,36 +4,36 @@ const testController= require("../controllers/Admin/testController")
 const lecturarController= require("../controllers/Admin/lecturarController");
 const candidateController= require("../controllers/Admin/candidateController")
 const settingController= require("../controllers/Admin/settingController");
-const verifyUser = require('../middleware/varifyUser');
+const varifyUser = require('../middleware/varifyUser');
 
 
 
 
 // Add a Tests
-router.post('/add-test', verifyUser, testController.addTests);
+router.post('/add-test', varifyUser.verifyUser, testController.addTests);
 // All Tests
-router.get('/all-tests', verifyUser, testController.getTests);
+router.get('/all-tests', varifyUser.verifyUser, testController.getTests);
 // get single test
-router.get('/tests/:id', verifyUser, testController.getTestById);
+router.get('/tests/:id', varifyUser.verifyUser, testController.getTestById);
 // Edit a test
-router.put('/tests/:id', verifyUser,  testController.updateTest);
+router.put('/tests/:id', varifyUser.verifyUser,  testController.updateTest);
 // delete one test
-router.delete("/tests/:id", verifyUser, testController.deleteTest);
+router.delete("/tests/:id", varifyUser.verifyUser, testController.deleteTest);
 
 // Add a lecturar
-router.post('/add-lecturar', verifyUser, lecturarController.addLecturar);
+router.post('/add-lecturar', varifyUser.verifyUser, lecturarController.addLecturar);
 // All lecturar
-router.get('/all-lecturars', verifyUser, lecturarController.getLecturar);
+router.get('/all-lecturars', varifyUser.verifyUser, lecturarController.getLecturar);
 // delete one lecturer
-router.delete("/lecturars/:id", verifyUser, lecturarController.deleteLecturer);
+router.delete("/lecturars/:id", varifyUser.verifyUser, lecturarController.deleteLecturer);
 
 // Add a candidates
-router.post('/add-candidates', verifyUser, candidateController.addCandidate);
+router.post('/add-candidates', varifyUser.verifyUser, candidateController.addCandidate);
 // All candidates
-router.get('/all-candidates', verifyUser, candidateController.getCandidates);
+router.get('/all-candidates', varifyUser.verifyUser, candidateController.getCandidates);
 
 // Settings
-router.put('/settings', verifyUser, settingController.editSetting);
+router.put('/settings', varifyUser.verifyUser, settingController.editSetting);
 
 
 module.exports = router;

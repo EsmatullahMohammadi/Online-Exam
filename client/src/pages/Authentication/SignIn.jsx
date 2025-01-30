@@ -11,6 +11,7 @@ import { SUPER_DOMAIN } from "../admin/constant";
 const SignIn = () => {
   const [selectItem, setSelectItem] = useState("Admin");
   const [serverError, setServerError] = useState(""); // State to handle backend error messages
+
   const navigate = useNavigate();
   axios.defaults.withCredentials= true;
 
@@ -37,15 +38,15 @@ const SignIn = () => {
           });
           if (response.status === 200) {
             if(response.data.role==="Admin"){
-              localStorage.setItem("role", response.data.role);
+              sessionStorage.setItem("arole", response.data.role);
               navigate("/admin");
             }
             else if(response.data.role==="Lecturer"){
-              localStorage.setItem("role", response.data.role);
+              sessionStorage.setItem("lrole", response.data.role);
               navigate("/lecturer")
             }
             else if(response.data.role === "Candidate"){
-              localStorage.setItem("role", response.data.role);
+              sessionStorage.setItem("crole", response.data.role);
               navigate("/condidate")
             }
             else{

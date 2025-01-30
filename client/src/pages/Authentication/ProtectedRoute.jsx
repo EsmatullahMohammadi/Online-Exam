@@ -1,43 +1,55 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import axios from "axios";
 import { SUPER_DOMAIN } from "../admin/constant";
 
-const ProtectedRoute = ({ role, requiredRole, children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // null for loading, true/false for state
+const ProtectedRoute = ({ requiredRole, children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const adminRole = sessionStorage.getItem("arole");
+  const lecturerRole = sessionStorage.getItem("lrole");
 
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await axios.get(`${SUPER_DOMAIN}/verify-token`, {
-          withCredentials: true, // Ensure cookies are included in the request
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.data.status) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
+        let isValid = false; 
+        if (adminRole === "Admin") {
+          const response = await axios.get(`${SUPER_DOMAIN}/verify-token`, {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.data.status) {
+            isValid = true;
+          }
         }
+        if (lecturerRole === "Lecturer") {
+          const response = await axios.get(`${SUPER_DOMAIN}/verify-lcturer-token`, {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.data.status) {
+            isValid = true;
+          }
+        }
+        setIsAuthenticated(isValid);
       } catch (err) {
-        setIsAuthenticated(false); // Redirect to sign-in if authentication fails
+        console.error("Error during token verification:", err);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-    };
-
+    }
     verifyToken();
-  }, []);
+  }, [adminRole, lecturerRole]);
+  
 
   // Show a loading screen while checking authentication
-  if (isAuthenticated === null) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  // Redirect to sign-in page if not authenticated
-  if (!isAuthenticated || role !== requiredRole) {
+  // Redirect to sign-in page if not authenticated or role does not match
+  if (!isAuthenticated || (adminRole !== requiredRole && lecturerRole !== requiredRole)) {
     return <Navigate to="/auth/signin" replace />;
   }
 

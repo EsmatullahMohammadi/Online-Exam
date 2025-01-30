@@ -1,5 +1,5 @@
 
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import PageTitle from '../components/PageTitle';
 import AddCondidate from '../pages/admin/Condidate/AddCondidate';
@@ -21,9 +21,10 @@ import AddQuestion from '../pages/lecturer/Questions/AddQuestion';
 import ForgotPassword from '../pages/Authentication/ForgotPassword';
 import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
 
-const role = localStorage.getItem('role');
+const RouterComponent = () => {
+  
 
-const router = createBrowserRouter([
+  const router = createBrowserRouter([
   {
     path: '/',
     element: <App />, // This is the layout component
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
   { 
     path: '/admin' ,
     element:(
-      <ProtectedRoute role={role} requiredRole="Admin">
+      <ProtectedRoute  requiredRole="Admin">
         <DefaultLayout />
       </ProtectedRoute>
     ),
@@ -131,7 +132,7 @@ const router = createBrowserRouter([
   {
     path: '/lecturer',
     element:(
-      <ProtectedRoute role={role} requiredRole="Lecturer">
+      <ProtectedRoute requiredRole="Lecturer">
         <LDefaultLayout />
       </ProtectedRoute>
     ),
@@ -176,6 +177,10 @@ const router = createBrowserRouter([
   { path: '/auth/forgot-password', element: <ForgotPassword /> },
 ]);
 
-export default router;
+return <RouterProvider router={router} />;
+
+};
+
+export default RouterComponent;
 
 

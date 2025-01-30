@@ -10,19 +10,35 @@ import { FaCog, FaUser } from 'react-icons/fa';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate= useNavigate();
+  const adminRole = sessionStorage.getItem("arole");
+  const lecturerRole = sessionStorage.getItem("lrole");
 
     const handleLogout = async () => {
       try {
-        const response = await axios.get(`${SUPER_DOMAIN}/logout`, {
-          withCredentials: true, // Ensure cookies are included in the request
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.data.status) {
-          navigate("/auth/signin")
-        } 
+        if (adminRole === "Admin") {
+          const response = await axios.get(`${SUPER_DOMAIN}/logout-admin`, {
+            withCredentials: true, // Ensure cookies are included in the request
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (response.data.status) {
+            navigate("/auth/signin")
+          } 
+        }
+        if (lecturerRole === "Lecturer") {
+          const response = await axios.get(`${SUPER_DOMAIN}/logout-lecturer`, {
+            withCredentials: true, // Ensure cookies are included in the request
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (response.data.status) {
+            navigate("/auth/signin")
+          } 
+        }
       } catch (err) {
         console.log(err) // Redirect to sign-in if authentication fails
       }

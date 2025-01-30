@@ -5,12 +5,10 @@ import './index.css'
 import './App.css'
 import './css/style.css';
 import './css/satoshi.css';
-import { RouterProvider } from 'react-router-dom'
-import router from './Router/Router.jsx'
+import RouterComponent from './Router/Router';
 
 
-createRoot(document.getElementById('root')).render(
-  // <StrictMode>
-    <RouterProvider router={router} />
-  // </StrictMode>
-)
+
+
+
+createRoot(document.getElementById('root')).render(<RouterComponent />)

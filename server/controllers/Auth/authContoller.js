@@ -54,7 +54,8 @@ const auth = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
           }
         }
-    
+        const lecturerToken= JWT.sign({_id: lecturer._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
+        res.cookie('lecturerToken', lecturerToken, {httpOnly: true, maxAge: 3600000})
         // Return the lecturer data
         res.status(200).json({ message: 'Lecturer retrieved successfully', role: role });
       } catch (error) {
