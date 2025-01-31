@@ -36,6 +36,7 @@ const SignIn = () => {
               password: values.password,
               role: selectItem,
           });
+
           if (response.status === 200) {
             if(response.data.role==="Admin"){
               sessionStorage.setItem("arole", response.data.role);
@@ -43,6 +44,8 @@ const SignIn = () => {
             }
             else if(response.data.role==="Lecturer"){
               sessionStorage.setItem("lrole", response.data.role);
+              sessionStorage.setItem("name", response.data.name);
+              sessionStorage.setItem("category", response.data.category);
               navigate("/lecturer")
             }
             else if(response.data.role === "Candidate"){

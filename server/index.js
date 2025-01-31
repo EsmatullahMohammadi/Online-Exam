@@ -33,6 +33,7 @@ app.use(adminRoutes);
 // Lecturer Routes
 app.use(lecturerRoutes);
 
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
