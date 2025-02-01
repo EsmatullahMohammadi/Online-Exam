@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { MdAdd } from "react-icons/md";
 import { SUPER_DOMAIN } from "../../admin/constant";
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
+import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 
 const Questions = () => {
   const [questions, setQuestions] = useState([]);
@@ -39,7 +39,7 @@ const Questions = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Questions" />
+      <LBreadcrumb pageName="Questions" />
       <div>
         <Link
           to="/lecturer/add-questions"

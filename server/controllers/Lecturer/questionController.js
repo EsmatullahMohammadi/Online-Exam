@@ -13,10 +13,7 @@ const addQuestion = async (req, res) => {
       if (!options.includes(correctAnswer)) {
         return res.status(400).json({ message: "Correct answer must be one of the provided options." });
       }
-  
-      // Debugging: Check received data
-      console.log("Received data:", req.body);
-  
+
       // Save the question
       const newQuestion = new Question({ question, options, correctAnswer, category });
       await newQuestion.save();
@@ -40,7 +37,7 @@ const getQuestionsByCategory = async (req, res) => {
         const questions = await Question.find({ category });
 
         if (questions.length === 0) {
-            return res.status(404).json({ message: "No questions found for this category." });
+            return res.status(404).json({ message: "No questions found for your category." });
         }
 
         res.status(200).json(questions);

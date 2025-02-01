@@ -1,7 +1,7 @@
 import {  useState } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
-import UserOne from '../../images/user/user-0.jpg';
+import UserOne from '../../images/user/user-000.png';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { SUPER_DOMAIN } from '../../pages/admin/constant';
@@ -54,9 +54,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Esamtullah Mohammadi
+            {sessionStorage.getItem("name")}
           </span>
-          <span className="block text-xs">Admin</span>
+          <span className="block text-xs">{adminRole} {lecturerRole}</span>
         </span>
 
         <span className=" flex justify-center ">

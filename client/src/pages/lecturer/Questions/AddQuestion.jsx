@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { SUPER_DOMAIN } from "../../admin/constant";
+import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 
 const AddQuestion = () => {
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ const AddQuestion = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Add Question" />
+      <LBreadcrumb pageName="Add Question" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
           <h3 className="font-medium text-black dark:text-white">
