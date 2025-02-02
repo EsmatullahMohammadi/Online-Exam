@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+
 const Question = require("../../models/questions");
 
 const addQuestion = async (req, res) => {
@@ -46,5 +46,42 @@ const getQuestionsByCategory = async (req, res) => {
         res.status(500).json({ message: "Server Error", error });
     }
 };
+
+// Get all question
+const getAllQuestions = async (req, res) => {
+  try {
+    // Fetch all questions from the database
+    const questions = await Question.find();
+
+    // Check if there are any questions
+    if (!questions.length) {
+      return res.status(404).json({ message: "No questions found." });
+    }
+
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+// Delete a question
+const deleteQuestion = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find and delete the question
+    const deletedQuestion = await Question.findByIdAndDelete(id);
+
+    if (!deletedQuestion) {
+      return res.status(404).json({ message: "Question not found." });
+    }
+
+    res.status(200).json({ message: "Question deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
   
-  module.exports = { addQuestion, getQuestionsByCategory };
+  module.exports = { addQuestion, getQuestionsByCategory, getAllQuestions, deleteQuestion };

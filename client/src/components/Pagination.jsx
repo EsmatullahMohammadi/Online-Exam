@@ -1,59 +1,48 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
-import React from "react";
-
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(i);
-    }
-    return pageNumbers;
-  };
-
+// eslint-disable-next-line react/prop-types
+const Pagination = ({ currentPage, totalPages, setCurrentPage, setItemsPerPage }) => {
   return (
-    <div className="flex items-center justify-center space-x-2 mt-4">
-      {/* Previous Button */}
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className={`px-3 py-1 rounded ${
-          currentPage === 1
-            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "bg-blue-500 text-white hover:bg-blue-600"
-        }`}
-      >
-        Previous
-      </button>
+    totalPages > 1 && (
+      <div className="flex flex-col md:flex-row justify-between items-center my-4">
+        {/* Items Per Page Selector */}
+        <div className="flex items-center space-x-3 mb-2 md:mb-0">
+          <span className="text-black dark:text-white text-lg">Items per page:</span>
+          <select
+            className="border-b p-1 dark:bg-boxdark dark:text-white focus:outline-none"
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            defaultValue={5}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </select>
+        </div>
 
-      {/* Page Numbers */}
-      {getPageNumbers().map((page) => (
-        <button
-          key={page}
-          onClick={() => onPageChange(page)}
-          className={`px-3 py-1 rounded ${
-            page === currentPage
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
+        {/* Pagination Controls */}
+        <div className="flex items-center space-x-4">
+          {/* Previous Button */}
+            <button
+              disabled= {false}
+              className="text-body font-semibold dark:text-gray-300 hover:underline"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            >
+              Prev
+            </button>
 
-      {/* Next Button */}
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className={`px-3 py-1 rounded ${
-          currentPage === totalPages
-            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "bg-blue-500 text-white hover:bg-blue-600"
-        }`}
-      >
-        Next
-      </button>
-    </div>
+          {/* Current Page and Total Pages */}
+          <span className="text-gray-800 dark:text-white">
+            {currentPage} of {totalPages}
+          </span>
+
+          {/* Next Button */}
+            <button
+              className="text-body font-semibold dark:text-gray-300 hover:underline"
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            >
+              Next
+            </button>
+        </div>
+      </div>
+    )
   );
 };
 

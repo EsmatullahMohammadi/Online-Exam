@@ -21,6 +21,7 @@ import AddQuestion from '../pages/lecturer/Questions/AddQuestion';
 import ForgotPassword from '../pages/Authentication/ForgotPassword';
 import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
 import LSettings from '../pages/lecturer/LSettings';
+import QuestionBank from '../pages/admin/QuestionBank/QuestionBank';
 
 const RouterComponent = () => {
   
@@ -125,6 +126,15 @@ const RouterComponent = () => {
           <>
             <PageTitle title="Add Condidate | Admine - KPU Online Exam" />
             <AddCondidate />
+          </>         
+        )
+      },
+      {
+        path:'question-bank',
+        element:(
+          <>
+            <PageTitle title="Question Bank | Admine - KPU Online Exam" />
+            <QuestionBank />
           </>         
         )
       },
