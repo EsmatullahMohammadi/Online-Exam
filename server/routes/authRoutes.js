@@ -8,7 +8,7 @@ const varifyUser = require('../middleware/varifyUser');
 router.post('/login', authContoller.auth);
 // forgot password rout
 router.post('/forgot-password', authContoller.forgotPassword);
-
+// varify admin
 router.get("/verify-token", varifyUser.verifyUser, (req, res) => {
   res.status(200).json({
     status: true,
@@ -16,6 +16,7 @@ router.get("/verify-token", varifyUser.verifyUser, (req, res) => {
     user: req.user, // Assuming `verifyUser` middleware attaches the user to `req`
   });
 });
+// verify lecturer
 router.get("/verify-lcturer-token", varifyUser.verifyLecturer, (req, res) => {
   res.status(200).json({
     status: true,
@@ -23,13 +24,14 @@ router.get("/verify-lcturer-token", varifyUser.verifyLecturer, (req, res) => {
     user: req.user, // Assuming `verifyUser` middleware attaches the user to `req`
   });
 });
-// logout functionality
+// logout admin 
 router.get("/logout-admin", varifyUser.verifyUser, (req, res) => {
   res.clearCookie('token');
   res.status(200).json({
     status: true,
   });
 });
+// logout lecturer
 router.get("/logout-lecturer", varifyUser.verifyLecturer, (req, res) => {
   res.clearCookie('lecturerToken');
   res.status(200).json({

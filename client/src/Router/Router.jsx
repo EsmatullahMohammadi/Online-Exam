@@ -20,6 +20,7 @@ import Questions from '../pages/lecturer/Questions/Questions';
 import AddQuestion from '../pages/lecturer/Questions/AddQuestion';
 import ForgotPassword from '../pages/Authentication/ForgotPassword';
 import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
+import LSettings from '../pages/lecturer/LSettings';
 
 const RouterComponent = () => {
   
@@ -161,6 +162,15 @@ const RouterComponent = () => {
           <>
           <PageTitle title="Add Questions | Lecturer - KPU Online Exam" />
             <AddQuestion />
+          </>         
+        )
+      },
+      {
+        path: "settings", 
+        element:(
+          <>
+          <PageTitle title="Settings | Lecturer - KPU Online Exam" />
+            <LSettings />
           </>         
         )
       },

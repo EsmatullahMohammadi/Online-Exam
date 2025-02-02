@@ -57,7 +57,7 @@ const auth = async (req, res) => {
         const lecturerToken= JWT.sign({_id: lecturer._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
         res.cookie('lecturerToken', lecturerToken, {httpOnly: true, maxAge: 3600000})
         // Return the lecturer data
-        res.status(200).json({ message: 'Lecturer retrieved successfully', role: role, name: `${lecturer.name} ${lecturer.lastName}`, category: lecturer.category });
+        res.status(200).json({ message: 'Lecturer retrieved successfully', role: role, name: `${lecturer.name} ${lecturer.lastName}`, category: lecturer.category, lecturerID: lecturer._id });
       } catch (error) {
         console.error(`Error retrieving lecturer: ${error.message}`);
         res.status(500).json({ message: 'Error retrieving lecturer', error: error.message });

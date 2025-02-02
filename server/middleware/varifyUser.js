@@ -4,7 +4,9 @@ const verifyUser = async (req, res, next) => {
   
     try {
       // Ensure you're using the correct cookie parser middleware
-      const { token } = req.cookies;  
+      const token = req.cookies.token;  
+      console.log(token)
+      console.log("=====================================")
       if (!token) {
         return res.status(401).json({
           status: false,

@@ -15,10 +15,14 @@ const Lecturer = () => {
 
   // Fetch data from the backend using Axios
   useEffect(() => {
-    const fetchLecturers = async () => {
+    async function fetchLecturers ()  {
       try {
         setLoading(true);
-        const response = await axios.get(`${SUPER_DOMAIN}/all-lecturars`); // Update this with your backend endpoint
+        const response = await axios.get(`${SUPER_DOMAIN}/all-lecturars` , {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }); // Update this with your backend endpoint
         setLecturers(response.data.lecturar); // Set the retrieved data to state
       } catch (err) {
         setError(err.response?.data?.message || err.message);

@@ -47,6 +47,7 @@ const SignIn = () => {
               sessionStorage.setItem("lrole", response.data.role);
               sessionStorage.setItem("name", response.data.name);
               sessionStorage.setItem("category", response.data.category);
+              sessionStorage.setItem("lecturerID", response.data.lecturerID);
               navigate("/lecturer")
             }
             else if(response.data.role === "Candidate"){
