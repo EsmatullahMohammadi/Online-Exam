@@ -7,7 +7,7 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { SUPER_DOMAIN } from "../constant";
 
 function AddTest() {
-
+  axios.defaults.withCredentials = true;
   // Formik for form handling
   const formik = useFormik({
     initialValues: {

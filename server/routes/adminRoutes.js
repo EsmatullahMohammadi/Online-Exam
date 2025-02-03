@@ -31,11 +31,11 @@ router.post('/add-candidates', varifyUser.verifyUser, candidateController.addCan
 router.get('/all-candidates', varifyUser.verifyUser, candidateController.getCandidates);
 
 // Get all question
-router.get('/questions', questionController.getAllQuestions)
+router.get('/questions', varifyUser.verifyUser, questionController.getAllQuestions)
 // Delete 
-router.delete('/questions/:id', questionController.deleteQuestion);
+router.delete('/questions/:id', varifyUser.verifyUser, questionController.deleteQuestion);
 // assign-questions rout
-router.post('/assign-questions', testController.assignedQuestion)
+router.post('/assign-questions', varifyUser.verifyUser, testController.assignedQuestion)
 
 // Settings
 router.put('/settings', varifyUser.verifyUser, settingController.editSetting);

@@ -35,6 +35,7 @@ const EditTest = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     async function fetchTest() {

@@ -8,7 +8,7 @@ const Modal = ({ testID, onClose }) => {
   const [test, setTest] = useState(null); // State for test details
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true); // Initial loading state
-
+  axios.defaults.withCredentials = true;
   useEffect(() => {
     async function fetchTest() {
       setLoading(true); // Start loading

@@ -16,6 +16,7 @@ const SelectQuestionsForTest = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5); 
 
+  axios.defaults.withCredentials = true;
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -34,7 +35,6 @@ const SelectQuestionsForTest = () => {
       setLoading(false);
     }
   };
-
   const handleSelectQuestion = (questionId) => {
     setSelectedQuestions((prevSelected) =>
       prevSelected.includes(questionId)
@@ -48,7 +48,6 @@ const SelectQuestionsForTest = () => {
       alert("Please select at least one question.");
       return;
     }
-
     try {
       const response = await axios.post(`${SUPER_DOMAIN}/assign-questions`, {
         testId,
