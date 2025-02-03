@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { SUPER_DOMAIN } from "../constant";
-import { MdDelete, MdEdit } from "react-icons/md";
+import {  MdDelete, MdEdit } from "react-icons/md";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import Pagination from "../../../components/Pagination";
 

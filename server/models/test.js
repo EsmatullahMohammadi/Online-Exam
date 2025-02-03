@@ -9,6 +9,7 @@ const testSchema = new Schema({
       startDate: { type: Date, required: true },
       endDate: { type: Date, required: true },
       description: { type: String, required: true },
+      questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], // Linking Questions
 },{timestamps: true})
 
 const Test = mongoose.model('Test', testSchema);

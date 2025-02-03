@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { SUPER_DOMAIN } from '../constant';
 import TestDetailModel from './ViewTestDetails';
-import { MdAdd, MdDelete, MdEdit, MdVisibility } from 'react-icons/md';
+import { MdAdd, MdDelete, MdEdit,  MdQuiz, MdVisibility } from 'react-icons/md';
 import Pagination from '../../../components/Pagination';
 
 function Test() {
@@ -61,7 +61,7 @@ function Test() {
       alert('Failed to delete test.', err.message);
     }
   };
-
+  
   // pagination concept
   const totalPages = Math.ceil(testData.length / itemsPerPage);
   const paginatedtestData = testData.slice(
@@ -97,6 +97,9 @@ function Test() {
                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                   Status
                 </th>
+                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                  Test Question
+                </th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                   Actions
                 </th>
@@ -131,13 +134,19 @@ function Test() {
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <p
                         className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
-                          test.status === 'Finished'
+                          test.questions.length >0
                             ? 'bg-success text-success'
                             : 'bg-warning text-warning'
                         }`}
                       >
-                        Finished
+                        {test.questions.length>0 ? "Pending":"No Question"}
                       </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
+                      <Link to={`/admin/select-question/${test.title}/${test._id}/${test.numberOfQuestions}`} className="flex items-center gap-2 bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 w-36">
+                        <MdQuiz size={20} className="text-white" />
+                        <span className="font-medium">Add Question</span>
+                      </Link >
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">

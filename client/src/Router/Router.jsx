@@ -22,6 +22,8 @@ import ForgotPassword from '../pages/Authentication/ForgotPassword';
 import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
 import LSettings from '../pages/lecturer/LSettings';
 import QuestionBank from '../pages/admin/QuestionBank/QuestionBank';
+import SelectQuestionsForTest from '../pages/admin/Test/SelectQuestionsForTest';
+
 
 const RouterComponent = () => {
   
@@ -135,6 +137,15 @@ const RouterComponent = () => {
           <>
             <PageTitle title="Question Bank | Admine - KPU Online Exam" />
             <QuestionBank />
+          </>         
+        )
+      },
+      {
+        path:'select-question/:testName/:testId/:numberOfQuestion',
+        element:(
+          <>
+            <PageTitle title="Select Question For Test | Admine - KPU Online Exam" />
+            <SelectQuestionsForTest />
           </>         
         )
       },

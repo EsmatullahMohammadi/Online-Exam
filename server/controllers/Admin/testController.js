@@ -1,4 +1,5 @@
 const Test = require('../../models/test');
+const Question= require('../../models/questions');
 
 // creating tests
 const addTests= async (req,res)=>{
@@ -105,6 +106,48 @@ const deleteTest = async (req, res) => {
     res.status(500).json({ error: "Failed to delete test" });
   }
 };
+// Assign questions to a test
+const assignedQuestion = async (req, res) =>{
+  try {
+    const { testId, questionIds } = req.body;
+
+    if (!testId || !Array.isArray(questionIds)) {
+      return res.status(400).json({ message: "Invalid input data" });
+    }
+
+    // Validate test existence
+    const test = await Test.findById(testId);
+    if (!test) {
+      return res.status(404).json({ message: "Test not found" });
+    }
+
+    // Validate if all question IDs exist
+    const validQuestions = await Question.find({ _id: { $in: questionIds } });
+    if (validQuestions.length !== questionIds.length) {
+      return res.status(400).json({ message: "Some questions do not exist" });
+    }
+
+    // Ensure the assigned questions are exactly equal to numberOfQuestions
+    const requiredQuestions = test.numberOfQuestions;
+    if (questionIds.length !== requiredQuestions) {
+      return res.status(400).json({
+        message: `You must assign exactly ${requiredQuestions} questions to this test.`,
+      });
+    }
+
+    // Assign selected questions to the test
+    test.questions = questionIds;
+    await test.save();
+
+    res.status(200).json({
+      message: "Questions assigned successfully!",
+      test,
+    });
+  } catch (error) {
+    console.error("Error assigning questions:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
   
-module.exports= {addTests, getTests, updateTest, getTestById, deleteTest}
+module.exports= {addTests, getTests, updateTest, getTestById, deleteTest, assignedQuestion}
 

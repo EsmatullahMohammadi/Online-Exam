@@ -17,6 +17,8 @@ const Condidate = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5); 
 
+  axios.defaults.withCredentials = true;
+
   useEffect(() => {
     async function fetchCandidates() {
       try {

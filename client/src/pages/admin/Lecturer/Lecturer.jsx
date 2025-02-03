@@ -18,6 +18,8 @@ const Lecturer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5); 
 
+  axios.defaults.withCredentials = true;
+
   // Fetch data from the backend using Axios
   useEffect(() => {
     async function fetchLecturers ()  {

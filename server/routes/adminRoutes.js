@@ -10,7 +10,7 @@ const varifyUser = require('../middleware/varifyUser');
 // Add a Tests
 router.post('/add-test', varifyUser.verifyUser, testController.addTests);
 // All Tests
-router.get('/all-tests',  testController.getTests);
+router.get('/all-tests', varifyUser.verifyUser, testController.getTests);
 // get single test
 router.get('/tests/:id', varifyUser.verifyUser, testController.getTestById);
 // Edit a test
@@ -34,6 +34,9 @@ router.get('/all-candidates', varifyUser.verifyUser, candidateController.getCand
 router.get('/questions', questionController.getAllQuestions)
 // Delete 
 router.delete('/questions/:id', questionController.deleteQuestion);
+// assign-questions rout
+router.post('/assign-questions', testController.assignedQuestion)
+
 // Settings
 router.put('/settings', varifyUser.verifyUser, settingController.editSetting);
 
