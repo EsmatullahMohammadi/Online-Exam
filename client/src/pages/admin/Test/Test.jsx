@@ -5,6 +5,7 @@ import axios from 'axios';
 import { SUPER_DOMAIN } from '../constant';
 import TestDetailModel from './ViewTestDetails';
 import { MdAdd, MdDelete, MdEdit, MdVisibility } from 'react-icons/md';
+import Pagination from '../../../components/Pagination';
 
 function Test() {
   const [testData, setTestData] = useState([]);
@@ -13,6 +14,9 @@ function Test() {
   const [isOpenModel, setIsOpenModel] = useState(false);
   const handleCloseModal = () => setIsOpenModel(false);
   const [testID, setTestID] = useState();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); 
  
   axios.defaults.withCredentials = true;
 
@@ -57,6 +61,13 @@ function Test() {
       alert('Failed to delete test.', err.message);
     }
   };
+
+  // pagination concept
+  const totalPages = Math.ceil(testData.length / itemsPerPage);
+  const paginatedtestData = testData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <>
@@ -104,8 +115,8 @@ function Test() {
                     {error}
                   </td>
                 </tr>
-              ) : testData.length > 0 ? (
-                testData.map((test, key) => (
+              ) : paginatedtestData.length > 0 ? (
+                paginatedtestData.map((test, key) => (
                   <tr key={key}>
                     <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
                       <h5 className="font-medium text-black dark:text-white">
@@ -159,8 +170,14 @@ function Test() {
             </tbody>
           </table>
         </div>
-        {/* pagination */}
-        <div className="flex justify-center text-black space-x-8 my-4"></div>
+        <div className="my-3">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
+          />
+        </div>
       </div>
       {isOpenModel && <TestDetailModel testID={testID} onClose={handleCloseModal} />}
     </>

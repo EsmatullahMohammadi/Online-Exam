@@ -1,14 +1,17 @@
 // eslint-disable-next-line react/prop-types
 const Pagination = ({ currentPage, totalPages, setCurrentPage, setItemsPerPage }) => {
   return (
-    totalPages > 1 && (
-      <div className="flex flex-col md:flex-row justify-between items-center my-4">
+    // totalPages > 1 && (
+      <div className="flex flex-col md:flex-row justify-between items-center">
         {/* Items Per Page Selector */}
         <div className="flex items-center space-x-3 mb-2 md:mb-0">
           <span className="text-black dark:text-white text-lg">Items per page:</span>
           <select
             className="border-b p-1 dark:bg-boxdark dark:text-white focus:outline-none"
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            onChange={(e) =>{ 
+              setItemsPerPage(Number(e.target.value))
+              setCurrentPage(1)
+            }}
             defaultValue={5}
           >
             <option value={5}>5</option>
@@ -43,7 +46,7 @@ const Pagination = ({ currentPage, totalPages, setCurrentPage, setItemsPerPage }
         </div>
       </div>
     )
-  );
+  // );
 };
 
 export default Pagination;

@@ -9,7 +9,7 @@ const QuestionBank = () => {
   const [questions, setQuestions] = useState([]);
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // New state for items per page
+  const [itemsPerPage, setItemsPerPage] = useState(5); 
 
   useEffect(() => {
     fetchQuestions();
@@ -109,12 +109,14 @@ const QuestionBank = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          setCurrentPage={setCurrentPage}
-          setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
-        />
+        <div className="my-3">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
+          />
+        </div>
       </div>
     </>
   );

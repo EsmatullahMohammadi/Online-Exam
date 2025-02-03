@@ -7,11 +7,16 @@ import { Link } from 'react-router-dom';
 import { MdAdd, MdDelete} from 'react-icons/md';
 import axios from 'axios';
 import { SUPER_DOMAIN } from '../constant';
+import Pagination from '../../../components/Pagination';
 
 const Lecturer = () => {
   const [lecturers, setLecturers] = useState([]); // State to store lecturers
   const [error, setError] = useState(''); // State to store any errors
   const [loading, setLoading] = useState(true);
+
+  // pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); 
 
   // Fetch data from the backend using Axios
   useEffect(() => {
@@ -48,6 +53,12 @@ const Lecturer = () => {
       alert("Failed to delete lecturer.",err.message);
     }
   };
+  // pagination concept
+  const totalPages = Math.ceil(lecturers.length / itemsPerPage);
+  const paginatedLecturer = lecturers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <>
@@ -98,8 +109,8 @@ const Lecturer = () => {
                   </td>
                 </tr>
               ) :
-              lecturers.length > 0 ? (
-                lecturers.map((lecturer, key) => (
+              paginatedLecturer.length > 0 ? (
+                paginatedLecturer.map((lecturer, key) => (
                   <tr key={key}>
                     <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
                       <h5 className="font-medium text-black dark:text-white">
@@ -142,9 +153,14 @@ const Lecturer = () => {
             </tbody>
           </table>
         </div>
-        <div className='flex justify-center text-black space-x-8 my-4'>
-            {/* <button className='hover:underline hover:text-lg' onClick={console.log("pre")}>Previouse</button>
-            <button className='hover:underline hover:text-lg' onClick={console.log("next")}>Next</button> */}
+        {/* Pagination */}
+        <div className="my-3">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
+          />
         </div>
       </div>
     </>

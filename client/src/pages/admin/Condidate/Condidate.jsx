@@ -6,12 +6,16 @@ import { Link } from 'react-router-dom';
 import { MdAdd, MdDelete, MdEdit, MdVisibility } from 'react-icons/md';
 import axios from 'axios';  // Import axios for API requests
 import { SUPER_DOMAIN } from '../constant';
+import Pagination from '../../../components/Pagination';
 
 const Condidate = () => {
   // State to store the candidates data
   const [candidates, setCandidates] = useState();
   const [loading, setLoading] = useState(true);  // Loading state
   const [error, setError] = useState(null);  // Error state
+  // pagination concep
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); 
 
   useEffect(() => {
     async function fetchCandidates() {
@@ -38,6 +42,12 @@ const Condidate = () => {
     fetchCandidates();
   }, []);
 
+  // pagination concept
+  const totalPages = Math.ceil(candidates?.length / itemsPerPage);
+  const paginatedCondidates = candidates?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <>
@@ -85,8 +95,8 @@ const Condidate = () => {
                     {error}
                   </td>
                 </tr>
-              ) : candidates?.length > 0 ? (
-              candidates.map((candidate, key) => (
+              ) : paginatedCondidates?.length > 0 ? (
+              paginatedCondidates.map((candidate, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
                     <h5 className="font-medium text-black dark:text-white">
@@ -135,10 +145,14 @@ const Condidate = () => {
             </tbody>
           </table>
         </div>
-        {/* pagination */}
-        <div className='flex justify-center text-black space-x-8 my-4'>
-          {/* <button className='hover:underline hover:text-lg' onClick={""}>Previous</button>
-          <button className='hover:underline hover:text-lg' onClick={""}>Next</button> */}
+        {/* Pagination */}
+        <div className="my-3">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
+          />
         </div>
       </div>
     </>
