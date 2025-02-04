@@ -12,6 +12,7 @@ const DropdownUser = () => {
   const navigate= useNavigate();
   const adminRole = sessionStorage.getItem("arole");
   const lecturerRole = sessionStorage.getItem("lrole");
+  const candidateRole = sessionStorage.getItem("crole");
 
     const handleLogout = async () => {
       try {
@@ -39,6 +40,18 @@ const DropdownUser = () => {
             navigate("/auth/signin")
           } 
         }
+        if (candidateRole === "Candidate") {
+          const response = await axios.get(`${SUPER_DOMAIN}/logout-candidate`, {
+            withCredentials: true, // Ensure cookies are included in the request
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (response.data.status) {
+            navigate("/auth/signin")
+          } 
+        }
       } catch (err) {
         console.log(err) // Redirect to sign-in if authentication fails
       }
@@ -56,7 +69,7 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {sessionStorage.getItem("name")}
           </span>
-          <span className="block text-xs">{adminRole} {lecturerRole}</span>
+          <span className="block text-xs">{adminRole} {lecturerRole} {candidateRole}</span>
         </span>
 
         <span className=" flex justify-center ">

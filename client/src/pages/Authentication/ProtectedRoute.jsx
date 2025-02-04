@@ -9,6 +9,7 @@ const ProtectedRoute = ({ requiredRole, children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const adminRole = sessionStorage.getItem("arole");
   const lecturerRole = sessionStorage.getItem("lrole");
+  const candidateRole = sessionStorage.getItem("crole");
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -32,6 +33,15 @@ const ProtectedRoute = ({ requiredRole, children }) => {
             isValid = true;
           }
         }
+        if (candidateRole === "Candidate") {
+          const response = await axios.get(`${SUPER_DOMAIN}/verify-candidate-token`, {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.data.status) {
+            isValid = true;
+          }
+        }
         setIsAuthenticated(isValid);
       } catch (err) {
         console.error("Error during token verification:", err);
@@ -41,15 +51,16 @@ const ProtectedRoute = ({ requiredRole, children }) => {
       }
     }
     verifyToken();
-  }, [adminRole, lecturerRole]);
+  }, [adminRole, lecturerRole, candidateRole]);
   
 
   // Show a loading screen while checking authentication
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   // Redirect to sign-in page if not authenticated or role does not match
-  if (!isAuthenticated || (adminRole !== requiredRole && lecturerRole !== requiredRole)) {
+  if (!isAuthenticated || (adminRole !== requiredRole && lecturerRole !== requiredRole && candidateRole !== requiredRole)) {
     return <Navigate to="/auth/signin" replace />;
   }
 

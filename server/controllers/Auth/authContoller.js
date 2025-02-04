@@ -3,11 +3,11 @@ const JWT = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 const Setting = require('../../models/setting');
-const Lecturer = require('../../models/lecturer');
+const Lecturer = require('../../models/lecturer'); 
+const Candidate = require('../../models/candidate');
 
 const auth = async (req, res) => {
     const { emailAddress, password, role } = req.body; 
-
     if(role==="Admin"){
       try {
         // Fetch the user setting (assuming there is only one record)
@@ -61,6 +61,32 @@ const auth = async (req, res) => {
       } catch (error) {
         console.error(`Error retrieving lecturer: ${error.message}`);
         res.status(500).json({ message: 'Error retrieving lecturer', error: error.message });
+      }
+    }
+    else if(role==="Candidate"){
+      
+      try {
+        // Fetch the lecturer by email
+        const email= emailAddress;
+        const candidate = await Candidate.findOne({ email });
+        if (!candidate) {
+          return res.status(404).json({ message: 'Invalid email' });
+        }
+    
+        // If a password is provided, validate it
+        if (password) {
+          const isPasswordValid = await bcrypt.compare(password, candidate.password);
+          if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+          }
+        }
+        const candidateToken= JWT.sign({_id: candidate._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
+        res.cookie('candidateToken', candidateToken, {httpOnly: true, maxAge: 3600000})
+        // Return the candidate data
+        res.status(200).json({ message: 'candidate retrieved successfully', role: role, name: candidate.name});
+      } catch (error) {
+        console.error(`Error retrieving candidate: ${error.message}`);
+        res.status(500).json({ message: 'Error retrieving candidate', error: error.message });
       }
     }
   };

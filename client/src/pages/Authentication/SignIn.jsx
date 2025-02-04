@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { SUPER_DOMAIN } from "../admin/constant";
 
+
 const SignIn = () => {
   const [selectItem, setSelectItem] = useState("Admin");
   const [serverError, setServerError] = useState(""); // State to handle backend error messages
@@ -36,7 +37,6 @@ const SignIn = () => {
               password: values.password,
               role: selectItem,
           });
-
           if (response.status === 200) {
             if(response.data.role==="Admin"){
               sessionStorage.setItem("name", response.data.name);
@@ -52,6 +52,7 @@ const SignIn = () => {
             }
             else if(response.data.role === "Candidate"){
               sessionStorage.setItem("crole", response.data.role);
+              sessionStorage.setItem("name", response.data.name);
               navigate("/condidate")
             }
             else{
@@ -235,7 +236,7 @@ const SignIn = () => {
                           Admin
                         </option>
                         <option value="Lecturer">Lecturer</option>
-                        <option value="Condidate">Candidate</option>
+                        <option value="Candidate">Candidate</option>
                       </select>
                     </div>
                   </div>

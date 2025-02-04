@@ -199,7 +199,11 @@ const RouterComponent = () => {
   },
   {
     path: '/condidate',
-    element: <SDefaultLayout />,
+    element:(
+      <ProtectedRoute requiredRole="Candidate">
+        <SDefaultLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {}
     ]
