@@ -23,6 +23,8 @@ import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
 import LSettings from '../pages/lecturer/LSettings';
 import QuestionBank from '../pages/admin/QuestionBank/QuestionBank';
 import SelectQuestionsForTest from '../pages/admin/Test/SelectQuestionsForTest';
+import CandidateExam from '../pages/student/Tests/CandidateExam';
+import GetRelatedTest from '../pages/student/Tests/GetReleatedTest';
 
 
 const RouterComponent = () => {
@@ -198,14 +200,40 @@ const RouterComponent = () => {
     ]
   },
   {
-    path: '/condidate',
+    path: '/candidate',
     element:(
       <ProtectedRoute requiredRole="Candidate">
         <SDefaultLayout />
       </ProtectedRoute>
     ),
     children: [
-      {}
+      {
+        index: true, 
+        element:(
+          <>
+            <PageTitle title="Dashbord | Candidate - KPU Online Exam" />
+            <Dashbord />
+          </>         
+        )
+      },
+      {
+        path: "candidate-question/:testId", 
+        element:(
+          <>
+            <PageTitle title="Submit Question | Candidate - KPU Online Exam" />
+            <CandidateExam />
+          </>         
+        )
+      },
+      {
+        path: "all-tests", 
+        element:(
+          <>
+            <PageTitle title="Candidate Exam | Candidate - KPU Online Exam" />
+            <GetRelatedTest />
+          </>         
+        )
+      },
     ]
   },
   { path: '/auth/signin', element: <SignIn /> },

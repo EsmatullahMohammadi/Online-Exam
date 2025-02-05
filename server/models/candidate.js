@@ -13,6 +13,7 @@ const CandidateSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   status: { type: String, default: 'Pending' },
+  testId: { type: mongoose.Schema.Types.ObjectId, ref: "Test" },
 }, {timestamps: true});
 
 const Candidate = mongoose.model('Candidate', CandidateSchema);

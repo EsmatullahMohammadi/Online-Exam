@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 const adminRoutes = require('./routes/adminRoutes');
 const lecturerRoutes = require('./routes/lecturerRoutes');
 const authRoutes = require('./routes/authRoutes');
-
+const candidateRoutes = require('./routes/candidateRoutes')
 // Middleware
 app.use(express.json());
 app.use(cors({
@@ -32,6 +32,9 @@ app.use(adminRoutes);
 
 // Lecturer Routes
 app.use(lecturerRoutes);
+
+// Candidate Routes
+app.use(candidateRoutes);
 
 
 app.listen(port, () => {

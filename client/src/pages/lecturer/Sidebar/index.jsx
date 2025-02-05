@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaClipboardList, FaChalkboardTeacher, FaTachometerAlt, FaUserGraduate, FaBook, FaUser, FaCog } from "react-icons/fa"; 
+import {  FaTachometerAlt,  FaBook, FaUser, FaCog } from "react-icons/fa"; 
 
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {

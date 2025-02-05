@@ -53,7 +53,8 @@ const SignIn = () => {
             else if(response.data.role === "Candidate"){
               sessionStorage.setItem("crole", response.data.role);
               sessionStorage.setItem("name", response.data.name);
-              navigate("/condidate")
+              sessionStorage.setItem("_id", response.data.id);
+              navigate("/candidate")
             }
             else{
               return <div>the type user do not authenticated</div>

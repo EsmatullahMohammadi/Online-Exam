@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -9,6 +9,23 @@ import { SUPER_DOMAIN } from '../constant';
 const AddCandidate = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [tests, setTests] = useState([]);
+    // Fetch available tests
+    axios.defaults.withCredentials = true;
+    useEffect(() => {
+      const fetchTests = async () => {
+        try {
+          const response = await axios.get(`${SUPER_DOMAIN}/all-tests`);
+          if (response.status === 200) {
+            setTests(response.data.tests);
+          }
+        } catch (error) {
+          console.error("Error fetching tests:", error);
+        }
+      };
+  
+      fetchTests();
+    }, []);
 
   // Validation schema using Yup
   const validationSchema = Yup.object({
@@ -25,6 +42,7 @@ const AddCandidate = () => {
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Password is required'),
+    testId: Yup.string().required('Test is required'),
   });
 
   // Handle form submission
@@ -114,6 +132,7 @@ const AddCandidate = () => {
           phoneNumber: '',
           email: '',
           password: '',
+          testId: '',
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
@@ -160,12 +179,33 @@ const AddCandidate = () => {
                     />
                   </div>
                 ))}
+                {/* Test Selection Dropdown */}
+                <div>
+                  <label htmlFor="testId" className="mb-3 block text-black dark:text-white">
+                    Select Test
+                  </label>
+                  <Field
+                    as="select"
+                    name="testId"
+                    id="testId"
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  >
+                    <option value="">Select a Test</option>
+                    {tests.map((test) => (
+                      <option key={test._id} value={test._id}>
+                        {test.title}
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="testId" component="div" className="text-red-600 text-sm mt-1" />
+                </div>
+
                 {/* Submit Button */}
                 <div className="flex flex-col h-full">
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3.5 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 w-full mt-auto"
+                    className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3.5 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 w-full mt-auto "
                   >
                     {isSubmitting ? 'Adding...' : 'Add Candidate'}
                   </button>

@@ -83,7 +83,7 @@ const auth = async (req, res) => {
         const candidateToken= JWT.sign({_id: candidate._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
         res.cookie('candidateToken', candidateToken, {httpOnly: true, maxAge: 3600000})
         // Return the candidate data
-        res.status(200).json({ message: 'candidate retrieved successfully', role: role, name: candidate.name});
+        res.status(200).json({ message: 'candidate retrieved successfully', role: role, name: candidate.name, id: candidate._id});
       } catch (error) {
         console.error(`Error retrieving candidate: ${error.message}`);
         res.status(500).json({ message: 'Error retrieving candidate', error: error.message });

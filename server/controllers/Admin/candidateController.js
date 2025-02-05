@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Candidate = require('../../models/candidate'); // Adjust the path based on your folder structure
+const Test = require('../../models/test')
 
 // Add a candidate
 const addCandidate = async (req, res) => {
@@ -19,6 +20,7 @@ const addCandidate = async (req, res) => {
     phoneNumber,
     email,
     password,
+    testId,
   } = req.body;
 
   try {
@@ -42,11 +44,19 @@ const addCandidate = async (req, res) => {
       phoneNumber,
       email,
       password: hashedPassword,
+      testId,
     });
 
     // Save the candidate to the database
     await candidate.save();
-
+    //  Add Candidate ID to the Test Model
+    if (testId) {
+      await Test.findByIdAndUpdate(
+        testId,
+        { $push: { candidates: candidate._id } }, // Add candidateId to test
+        { new: true, useFindAndModify: false }
+      );
+    }
     // Send success message
     res.status(201).json({ message: 'Candidate added successfully' });
   } catch (err) {
