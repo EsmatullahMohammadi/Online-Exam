@@ -11,6 +11,8 @@ const ProtectedRoute = ({ requiredRole, children }) => {
   const lecturerRole = sessionStorage.getItem("lrole");
   const candidateRole = sessionStorage.getItem("crole");
 
+  axios.defaults.withCredentials = true;
+
   useEffect(() => {
     const verifyToken = async () => {
       try {

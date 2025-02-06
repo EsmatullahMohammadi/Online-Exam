@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { SUPER_DOMAIN } from "../../admin/constant";
+import CBreadcrumb from "../../../components/Breadcrumbs/CBreadcrump";
 
 const GetRelatedTest = () => {
   const candidateId = sessionStorage.getItem("_id");
@@ -44,7 +45,9 @@ const GetRelatedTest = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl border border-gray-200 mt-10">
+    <>
+    <CBreadcrumb pageName={"Candidate test"}/>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-sm border border-gray-200 mt-10">
       {/* Header Message */}
       <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center leading-relaxed">
         📄 Welcome, Candidates!  
@@ -80,6 +83,8 @@ const GetRelatedTest = () => {
         <p className="text-center text-gray-500 text-lg">No test assigned yet.</p>
       )}
     </div>
+    </>
+
   );
 };
 

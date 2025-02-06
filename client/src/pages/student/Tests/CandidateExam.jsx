@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SUPER_DOMAIN } from "../../admin/constant";
+import CBreadcrumb from "../../../components/Breadcrumbs/CBreadcrump";
 
 const CandidateExam = () => {
   const { testId } = useParams(); // Get test ID from URL params
@@ -86,6 +87,8 @@ const CandidateExam = () => {
   if (submitted) return <div>Exam submitted. Thank you!</div>;
 
   return (
+    <>
+    <CBreadcrumb pageName={"Candidate test"}/>
     <div className="max-w-3xl mx-auto mt-5 p-5 border rounded-lg shadow-lg bg-white">
       {/* Exam Header */}
       <div className="flex justify-between items-center mb-4">
@@ -133,6 +136,7 @@ const CandidateExam = () => {
         Submit Exam
       </button>
     </div>
+    </>
   );
 };
 

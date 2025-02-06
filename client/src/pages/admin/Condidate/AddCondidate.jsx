@@ -153,7 +153,6 @@ const AddCandidate = () => {
                   { name: 'university', label: 'University', type: 'text' },
                   { name: 'faculty', label: 'Faculty', type: 'text' },
                   { name: 'department', label: 'Department', type: 'text' },
-                  { name: 'educationDegree', label: 'Education Degree', type: 'text' },
                   { name: 'phoneNumber', label: 'Phone Number', type: 'text' },
                   { name: 'email', label: 'Email', type: 'email' },
                   { name: 'password', label: 'Password', type: 'password' },
@@ -179,6 +178,23 @@ const AddCandidate = () => {
                     />
                   </div>
                 ))}
+
+                <div>
+                  <label htmlFor="testId" className="mb-3 block text-black dark:text-white">
+                    Select Education Degree
+                  </label>
+                  <Field
+                    as="select"
+                    name="educationDegree"
+                    id="educationDegree"
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  >
+                    <option value="">Select a Education Degree</option>
+                    <option  value={"Lisans"}>Lisans</option>
+                    <option  value={"Master"}>Master</option>
+                  </Field>
+                  <ErrorMessage name="testId" component="div" className="text-red-600 text-sm mt-1" />
+                </div>
                 {/* Test Selection Dropdown */}
                 <div>
                   <label htmlFor="testId" className="mb-3 block text-black dark:text-white">

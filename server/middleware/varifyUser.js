@@ -56,7 +56,7 @@ const verifyCandidate = async (req, res, next) => {
   
   try {
     // Ensure you're using the correct cookie parser middleware
-    const { candidateToken } = req.cookies;  
+    const { candidateToken } = req.cookies; 
     if (!candidateToken) {
       return res.status(401).json({
         status: false,
