@@ -78,4 +78,5 @@ const verifyCandidate = async (req, res, next) => {
   }
 };
 
+
 module.exports = { verifyUser, verifyLecturer, verifyCandidate };

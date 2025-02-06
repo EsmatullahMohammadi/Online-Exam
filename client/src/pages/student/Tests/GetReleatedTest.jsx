@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { SUPER_DOMAIN } from "../../admin/constant";
 import CBreadcrumb from "../../../components/Breadcrumbs/CBreadcrump";
+import { FaRegFileAlt, FaClock, FaPlayCircle, FaCalendarAlt, FaListOl } from "react-icons/fa";
 
 const GetRelatedTest = () => {
   const candidateId = sessionStorage.getItem("_id");
@@ -12,12 +13,14 @@ const GetRelatedTest = () => {
   const [error, setError] = useState("");
 
   axios.defaults.withCredentials = true;
+
   useEffect(() => {
-    const fetchTest = async () => {
+    const fetchTestDetails = async () => {
       try {
-        const response = await axios.get(`${SUPER_DOMAIN}/${candidateId}/test`);
-        if (response.status === 200) {
-          setTest(response.data.test);
+        setLoading(true);
+        const testResponse = await axios.get(`${SUPER_DOMAIN}/${candidateId}/test`);
+        if (testResponse.status === 200) {
+          setTest(testResponse.data.test);
         } else {
           setError("No assigned test found.");
         }
@@ -28,7 +31,7 @@ const GetRelatedTest = () => {
       }
     };
 
-    fetchTest();
+    fetchTestDetails();
   }, [candidateId]);
 
   // Format date function
@@ -46,45 +49,76 @@ const GetRelatedTest = () => {
 
   return (
     <>
-    <CBreadcrumb pageName={"Candidate test"}/>
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-sm border border-gray-200 mt-10">
-      {/* Header Message */}
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center leading-relaxed">
-        📄 Welcome, Candidates!  
-        <span className="block text-lg text-gray-600 mt-2">
-          ✅ You can **only submit your answers once**, so double-check before submitting.  
-          ⏳ The exam is **timed**, so complete it within the given duration.  
-          🎯 Ensure all answers are submitted before time runs out.  
-        </span>
-        <span className="text-blue-600 font-semibold mt-2 block">Good luck! 🍀</span>
-      </h2>
+      <CBreadcrumb pageName="Candidate Test" />
 
-      {test ? (
-        <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-          <p className="text-lg font-semibold text-gray-800">
-            <span className="text-blue-600">📌 Title:</span> {test.title}
-          </p>
-          <p className="text-gray-700"><strong>📝 Description:</strong> {test.description}</p>
-          <p className="text-gray-700"><strong>📋 Number of Questions:</strong> {test.numberOfQuestions}</p>
-          <p className="text-gray-700"><strong>⏳ Duration:</strong> {test.examDuration} minutes</p>
-          <p className="text-gray-700"><strong>🏆 Total Marks:</strong> {test.totalMarks}</p>
-          <p className="text-gray-700"><strong>📅 Start Date:</strong> {formatDate(test.startDate)}</p>
-          <p className="text-gray-700"><strong>⏰ End Date:</strong> {formatDate(test.endDate)}</p>
+      <div className="container mx-auto p-6">
+        <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+          {test ? (
+            <>
+              {/* 📄 Welcome Message */}
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-200 mb-6 text-center leading-relaxed">
+                <FaRegFileAlt className="inline-block text-blue-600 mr-2" />
+                Welcome, {sessionStorage.getItem("name")}!
+                <span className="block text-lg text-gray-600 dark:text-gray-400 mt-2">
+                  You can **only submit your answers once**, so double-check before submitting.
+                  The exam is **timed**, so complete it within the given duration.
+                  Ensure all answers are submitted before time runs out.
+                </span>
+                <span className="text-blue-600 font-semibold mt-2 block">Good luck! 🍀</span>
+              </h2>
 
-          {/* Start Test Button */}
-          <button
-            onClick={() => navigate(`/candidate/candidate-question/${test._id}`)}
-            className="w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md"
-          >
-            🚀 Start Test
-          </button>
+              {/* 📋 Test Details */}
+              <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg shadow-md">
+                <p className="text-lg font-semibold text-gray-800 dark:text-gray-300 flex items-center">
+                  <FaRegFileAlt className="mr-2 text-blue-600" />
+                  <span className="text-blue-600">Title:</span> {test.title}
+                </p>
+                <p className="text-gray-700 dark:text-gray-400"><strong>📝 Description:</strong> {test.description}</p>
+                <p className="text-gray-700 dark:text-gray-400 flex items-center">
+                  <FaListOl className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <strong>Questions:</strong> {test.numberOfQuestions}
+                </p>
+                <p className="text-gray-700 dark:text-gray-400 flex items-center">
+                  <FaClock className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <strong>Duration:</strong> {test.examDuration} minutes
+                </p>
+                <p className="text-gray-700 dark:text-gray-400 flex items-center">
+                  <FaRegFileAlt className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <strong>Total Marks:</strong> {test.totalMarks}
+                </p>
+                <p className="text-gray-700 dark:text-gray-400 flex items-center">
+                  <FaCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <strong>Start Date:</strong> {formatDate(test.startDate)}
+                </p>
+                <p className="text-gray-700 dark:text-gray-400 flex items-center">
+                  <FaCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <strong>End Date:</strong> {formatDate(test.endDate)}
+                </p>
+
+                {/* ▶ Start Test Button */}
+                <button
+                  onClick={() => navigate(`/candidate/candidate-question/${test._id}`)}
+                  className="w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md flex items-center justify-center"
+                >
+                  <FaPlayCircle className="mr-2 text-white text-xl" />
+                  Start Test
+                </button>
+              </div>
+            </>
+          ) : (
+            // ❌ No Test Assigned Message
+            <div className="p-6 rounded-lg bg-gray-100 dark:bg-gray-700 shadow-md text-center">
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex justify-center items-center">
+                <FaRegFileAlt className="mr-2 text-gray-600 dark:text-gray-400" /> No Test Assigned
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mt-2">
+                You currently do not have any assigned tests. Please check back later.
+              </p>
+            </div>
+          )}
         </div>
-      ) : (
-        <p className="text-center text-gray-500 text-lg">No test assigned yet.</p>
-      )}
-    </div>
+      </div>
     </>
-
   );
 };
 

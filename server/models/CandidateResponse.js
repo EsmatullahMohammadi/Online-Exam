@@ -5,6 +5,8 @@ const candidateResponseSchema = new mongoose.Schema({
   testId: { type: mongoose.Schema.Types.ObjectId, ref: "Test", required: true },
   answers: { type: Map, of: String, required: true }, // Maps questionId → selectedOption
   score: { type: Number, default: 0 },
+  obtainedMarks: { type: Number, default: 0 }, // Marks based on score & total marks
+  status: { type: String, enum: ["Passed", "Failed", "Pending"], default: "Pending" }, // Pass/Fail status
   submittedAt: { type: Date, default: Date.now }
 });
 

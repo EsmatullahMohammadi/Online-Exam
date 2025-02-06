@@ -25,6 +25,7 @@ import QuestionBank from '../pages/admin/QuestionBank/QuestionBank';
 import SelectQuestionsForTest from '../pages/admin/Test/SelectQuestionsForTest';
 import CandidateExam from '../pages/student/Tests/CandidateExam';
 import GetRelatedTest from '../pages/student/Tests/GetReleatedTest';
+import CondidateResult from '../pages/student/Result/CondidateResult';
 
 
 const RouterComponent = () => {
@@ -231,6 +232,15 @@ const RouterComponent = () => {
           <>
             <PageTitle title="Candidate Exam | Candidate - KPU Online Exam" />
             <GetRelatedTest />
+          </>         
+        )
+      },
+      {
+        path: "candidate-result", 
+        element:(
+          <>
+            <PageTitle title="Candidate Result | Candidate - KPU Online Exam" />
+            <CondidateResult />
           </>         
         )
       },
