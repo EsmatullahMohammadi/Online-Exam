@@ -67,7 +67,6 @@ const getCandidateTest = async (req, res) => {
       if (!candidate.testId) {
         return res.status(404).json({ message: "No test assigned to this candidate" });
     }
-    console.log(candidate.testId)
     res.status(200).json({ test: candidate.testId });
   } catch (error) {
       res.status(500).json({ message: 'Error retrieving test', error });

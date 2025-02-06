@@ -2,31 +2,31 @@
 const bcrypt = require('bcryptjs');
 const Lecturer = require('../../models/lecturer');
 
-const getLecturer = async (req, res) => {
-  const { email, password } = req.body; // Corrected variable names for clarity
+// const getLecturer = async (req, res) => {
+//   const { email, password } = req.body; // Corrected variable names for clarity
 
-  try {
-    // Fetch the lecturer by email
-    const lecturer = await Lecturer.findOne({ email });
-    if (!lecturer) {
-      return res.status(404).json({ message: 'Invalid email or password' });
-    }
+//   try {
+//     // Fetch the lecturer by email
+//     const lecturer = await Lecturer.findOne({ email });
+//     if (!lecturer) {
+//       return res.status(404).json({ message: 'Invalid email or password' });
+//     }
 
-    // If a password is provided, validate it
-    if (password) {
-      const isPasswordValid = await bcrypt.compare(password, lecturer.password);
-      if (!isPasswordValid) {
-        return res.status(400).json({ message: 'Invalid email or password' });
-      }
-    }
+//     // If a password is provided, validate it
+//     if (password) {
+//       const isPasswordValid = await bcrypt.compare(password, lecturer.password);
+//       if (!isPasswordValid) {
+//         return res.status(400).json({ message: 'Invalid email or password' });
+//       }
+//     }
 
-    // Return the lecturer data
-    res.status(200).json({ message: 'Lecturer retrieved successfully', lecturer });
-  } catch (error) {
-    console.error(`Error retrieving lecturer: ${error.message}`);
-    res.status(500).json({ message: 'Error retrieving lecturer', error: error.message });
-  }
-};
+//     // Return the lecturer data
+//     res.status(200).json({ message: 'Lecturer retrieved successfully', lecturer });
+//   } catch (error) {
+//     console.error(`Error retrieving lecturer: ${error.message}`);
+//     res.status(500).json({ message: 'Error retrieving lecturer', error: error.message });
+//   }
+// };
 
 // edit lecturer
 const editLecturer = async (req, res) => {
@@ -71,4 +71,4 @@ const editLecturer = async (req, res) => {
   }
 };
 
-module.exports = { getLecturer, editLecturer };
+module.exports = { editLecturer };

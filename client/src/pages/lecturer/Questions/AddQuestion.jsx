@@ -9,7 +9,8 @@ import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 const AddQuestion = () => {
   const [loading, setLoading] = useState(false);
 	const category = sessionStorage.getItem("category");
-
+  axios.defaults.withCredentials = true;
+  
   const formik = useFormik({
     initialValues: {
       question: "",

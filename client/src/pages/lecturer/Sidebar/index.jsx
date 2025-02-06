@@ -124,7 +124,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   }`}
                 >
                 <FaBook className="text-2xl" />  
-                 Add Question
+                 Questions
                 </NavLink>
               </li>
 

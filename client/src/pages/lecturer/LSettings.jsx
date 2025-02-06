@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 const LSettings = () => {
   const [lecturerId, setLecturerId] = useState("");
 
+  axios.defaults.withCredentials = true;
   // Fetch lecturer ID from localStorage or context
   useEffect(() => {
     const storedId = sessionStorage.getItem("lecturerID"); 

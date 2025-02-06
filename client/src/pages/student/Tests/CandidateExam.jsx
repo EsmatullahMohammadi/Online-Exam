@@ -13,10 +13,24 @@ const CandidateExam = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0); // Timer state in seconds
 
+  axios.defaults.withCredentials = true;
   useEffect(() => {
     fetchTestAndQuestions();
   }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0 && test) {
+      handleSubmit(); // Auto-submit when timer reaches 0
+    }
+  }, [timeLeft, test]);
 
   const fetchTestAndQuestions = async () => {
     try {
@@ -25,9 +39,10 @@ const CandidateExam = () => {
       if (response.status === 200) {
         setTest(response.data.test);
         setQuestions(response.data.questions);
+        setTimeLeft(response.data.test.examDuration * 60); // Convert minutes to seconds
       }
     } catch (err) {
-      setError("Failed to load test details.");
+      setError(err.response.data.message || "Failed to load test details.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +62,7 @@ const CandidateExam = () => {
       const response = await axios.post(`${SUPER_DOMAIN}/tests/submit-exam`, {
         testId,
         answers,
-        candidateId: sessionStorage.getItem('_id'),
+        candidateId: sessionStorage.getItem("_id"),
       });
       if (response.status === 200) {
         setSubmitted(true);
@@ -55,20 +70,35 @@ const CandidateExam = () => {
         navigate("/candidate"); // Redirect after submission
       }
     } catch (err) {
-      alert("Failed to submit exam. Please try again.");
+      alert(err.response.data.message || "Failed to submit exam. Please try again.");
     }
   };
 
-  if (loading) return <div>Loading exam...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  // Convert seconds to MM:SS format
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
+  if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
   if (submitted) return <div>Exam submitted. Thank you!</div>;
 
   return (
     <div className="max-w-3xl mx-auto mt-5 p-5 border rounded-lg shadow-lg bg-white">
-      <h2 className="text-2xl font-bold mb-4">{test?.title}</h2>
+      {/* Exam Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">{test?.title}</h2>
+        <div className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold">
+          ⏳ Time Left: {formatTime(timeLeft)}
+        </div>
+      </div>
+      
       <p className="text-gray-700 mb-2">Duration: {test?.examDuration} mins</p>
       <p className="text-gray-700 mb-4">Total Marks: {test?.totalMarks}</p>
 
+      {/* Questions Section */}
       {questions?.map((question, index) => (
         <div key={question._id} className="mb-4 p-3 border-b">
           <h3 className="font-semibold">
@@ -76,7 +106,10 @@ const CandidateExam = () => {
           </h3>
           <div className="mt-2">
             {question.options.map((option, idx) => (
-              <label key={idx} className="block p-2 border rounded-md cursor-pointer">
+              <label
+                key={idx}
+                className="block p-2 border rounded-md cursor-pointer hover:bg-gray-100"
+              >
                 <input
                   type="radio"
                   name={`question-${question._id}`}
@@ -92,9 +125,10 @@ const CandidateExam = () => {
         </div>
       ))}
 
+      {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300 mt-4"
       >
         Submit Exam
       </button>

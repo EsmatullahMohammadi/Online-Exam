@@ -10,6 +10,7 @@ const GetRelatedTest = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  axios.defaults.withCredentials = true;
   useEffect(() => {
     const fetchTest = async () => {
       try {
