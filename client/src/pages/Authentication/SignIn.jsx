@@ -54,6 +54,7 @@ const SignIn = () => {
               sessionStorage.setItem("crole", response.data.role);
               sessionStorage.setItem("name", response.data.name);
               sessionStorage.setItem("_id", response.data.id);
+              sessionStorage.setItem("candidateID", response.data.lecturerID);
               navigate("/candidate")
             }
             else{

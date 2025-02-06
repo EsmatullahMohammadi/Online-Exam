@@ -143,7 +143,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 </NavLink>
               </li>
               {/* <!-- Menu Item Settings --> */}
-              
             </ul>
           </div>
         </nav>
