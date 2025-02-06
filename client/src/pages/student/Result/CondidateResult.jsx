@@ -72,7 +72,7 @@ const CandidateResult = () => {
       <div className="container mx-auto p-6">
         <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           {submittedTest ? (
-            // ✅ Test Result Section
+            //  Test Result Section
             <div className="p-6 rounded-lg bg-green-100 dark:bg-green-900 shadow-md">
               <h3 className="text-2xl font-bold text-green-800 dark:text-green-300 flex items-center">
                 <FaTrophy className="mr-2 text-green-500" /> Test Results

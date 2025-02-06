@@ -10,7 +10,7 @@ router.post('/tests/submit-exam', verifyCandidate, testController.submitQuestion
 // Route to get the assigned test for a candidate
 router.get('/:candidateId/test', verifyCandidate, testController.getCandidateTest);
 // route for get the result
-router.get("/candidate/:candidateId/submission/:testId",testController.getResult)
+router.get("/candidate/:candidateId/submission/:testId", verifyCandidate, testController.getResult)
 
 
 module.exports = router;

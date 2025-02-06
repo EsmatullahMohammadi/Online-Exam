@@ -1,9 +1,6 @@
 /* eslint-disable react/prop-types */
-import { Link } from 'react-router-dom';
-// import DropdownMessage from './DropdownMessage';
-// import DropdownNotification from './DropdownNotification';
+
 import DropdownUser from './DropdownUser';
-import LogoIcon from '../../images/logo/logo-icon.svg';
 import DarkModeSwitcher from './DarkModeSwitcher';
 
 const Header = ({ sidebarOpen, setSidebarOpen }) => {
@@ -53,10 +50,6 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
             </span>
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
-
-          <Link className="block flex-shrink-0 lg:hidden" to="/">
-            <img src={LogoIcon} alt="Logo" />
-          </Link>
         </div>
 
         <div className="hidden sm:block">
@@ -97,15 +90,6 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
           <ul className="flex items-center gap-2 2xsm:gap-4">
             {/* <!-- Dark Mode Toggler --> */}
             <DarkModeSwitcher />
-            {/* <!-- Dark Mode Toggler --> */}
-
-            {/* <!-- Notification Menu Area --> */}
-            {/* <DropdownNotification /> */}
-            {/* <!-- Notification Menu Area --> */}
-
-            {/* <!-- Chat Notification Area --> */}
-            {/* <DropdownMessage /> */}
-            {/* <!-- Chat Notification Area --> */}
           </ul>
 
           {/* <!-- User Area --> */}
