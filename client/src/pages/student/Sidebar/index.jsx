@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import {  FaTachometerAlt,  FaBook, FaUser, FaCog, FaArrowLeft } from "react-icons/fa"; 
+import {  FaTachometerAlt,  FaBook,  FaCog, FaArrowLeft, FaFileAlt } from "react-icons/fa"; 
 
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -125,7 +125,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     'bg-graydark dark:bg-meta-4'
                   }`}
                 >
-                <FaBook className="text-2xl" />
+                <FaFileAlt className="text-2xl" />
                   Result
                 </NavLink>
               </li>

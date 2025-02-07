@@ -1,5 +1,70 @@
 const bcrypt = require('bcryptjs');
 const Setting = require('../../models/setting');
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "userImage/"); // Save images in userImage folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// Controller the edit images
+const editAdminImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const admin = await Setting.findById(id);
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Check if there was a previous image
+    if (admin.profileImage) {
+      const oldImagePath = path.join(__dirname, "../../userImage/", admin.profileImage);
+
+      // Ensure the old image exists before trying to delete it
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath); // Delete the old image
+      }
+    }
+
+    // Ensure a new file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    // Update profile image in DB
+    admin.profileImage = req.file.filename;
+    await admin.save();
+
+    res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating profile image", error: error.message });
+  }
+};
+// Fetch admin image 
+const getImage= async (req, res) =>{
+  try {
+    const admin = await Setting.findById(req.params.id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.json({ profileImage: admin.profileImage }); // Send back the image filename
+  } catch (error) {
+    console.error("Error fetching admin:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
 
 const editSetting = async (req, res) => {
   const { emailAddress, fullName, phoneNumber, currentPassword, newPassword } = req.body;
@@ -72,4 +137,4 @@ const getSetting = async (req, res) => {
   }
 };
 
-module.exports = { editSetting, getSetting };
+module.exports = { editSetting, getSetting, upload, editAdminImage, getImage };

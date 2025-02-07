@@ -41,6 +41,7 @@ const SignIn = () => {
             if(response.data.role==="Admin"){
               sessionStorage.setItem("name", response.data.name);
               sessionStorage.setItem("arole", response.data.role);
+              sessionStorage.setItem("adminId", response.data.adminId);
               navigate("/admin");
             }
             else if(response.data.role==="Lecturer"){

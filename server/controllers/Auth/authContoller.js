@@ -32,7 +32,7 @@ const auth = async (req, res) => {
         const token= JWT.sign({_id: setting._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
         res.cookie('token', token, {httpOnly: true, maxAge: 3600000})
         // Return the setting data
-        res.status(200).json({ message: 'Settings retrieved successfully', role: role, name: setting.fullName});
+        res.status(200).json({ message: 'Settings retrieved successfully', role: role, name: setting.fullName, adminId: setting._id});
       } catch (error) {
         console.error(`Error retrieving settings: ${error.message}`);
         res.status(500).json({ message: 'Error retrieving settings', error: error.message });

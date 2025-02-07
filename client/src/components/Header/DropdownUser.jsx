@@ -1,4 +1,4 @@
-import {  useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-000.png';
@@ -9,79 +9,78 @@ import { FiLogOut } from 'react-icons/fi';
 import { FaChevronDown, FaCog, FaUser } from 'react-icons/fa';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const adminRole = sessionStorage.getItem("arole");
   const lecturerRole = sessionStorage.getItem("lrole");
   const candidateRole = sessionStorage.getItem("crole");
+  const imageProfile = sessionStorage.getItem("imageProfile");
+  const handleLogout = async () => {
+    try {
+      if (adminRole === "Admin") {
+        const response = await axios.get(`${SUPER_DOMAIN}/logout-admin`, {
+          withCredentials: true, // Ensure cookies are included in the request
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-    const handleLogout = async () => {
-      try {
-        if (adminRole === "Admin") {
-          const response = await axios.get(`${SUPER_DOMAIN}/logout-admin`, {
-            withCredentials: true, // Ensure cookies are included in the request
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (response.data.status) {
-            navigate("/auth/signin")
-          } 
+        if (response.data.status) {
+          navigate("/auth/signin")
         }
-        if (lecturerRole === "Lecturer") {
-          const response = await axios.get(`${SUPER_DOMAIN}/logout-lecturer`, {
-            withCredentials: true, // Ensure cookies are included in the request
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (response.data.status) {
-            navigate("/auth/signin")
-          } 
-        }
-        if (candidateRole === "Candidate") {
-          const response = await axios.get(`${SUPER_DOMAIN}/logout-candidate`, {
-            withCredentials: true, // Ensure cookies are included in the request
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (response.data.status) {
-            navigate("/auth/signin")
-          } 
-        }
-      } catch (err) {
-        console.log(err) // Redirect to sign-in if authentication fails
       }
-    };
+      if (lecturerRole === "Lecturer") {
+        const response = await axios.get(`${SUPER_DOMAIN}/logout-lecturer`, {
+          withCredentials: true, // Ensure cookies are included in the request
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.data.status) {
+          navigate("/auth/signin")
+        }
+      }
+      if (candidateRole === "Candidate") {
+        const response = await axios.get(`${SUPER_DOMAIN}/logout-candidate`, {
+          withCredentials: true, // Ensure cookies are included in the request
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.data.status) {
+          navigate("/auth/signin")
+        }
+      }
+    } catch (err) {
+      console.log(err) // Redirect to sign-in if authentication fails
+    }
+  };
 
 
   return (
-    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
+    <ClickOutside onClick={ () => setDropdownOpen(false) } className="relative">
       <Link
-        onClick={() => setDropdownOpen(!dropdownOpen)}
+        onClick={ () => setDropdownOpen(!dropdownOpen) }
         className="flex items-center gap-4"
         to="#"
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {sessionStorage.getItem("name")}
+            { sessionStorage.getItem("name") }
           </span>
-          <span className="block text-xs">{adminRole} {lecturerRole} {candidateRole}</span>
+          <span className="block text-xs">{ adminRole } { lecturerRole } { candidateRole }</span>
         </span>
-
         <span className=" flex justify-center ">
-          <img src={UserOne} alt="User" className='h-12 w-12 rounded-full object-cover'/>
+          <img src={ imageProfile || UserOne } alt="User" className='h-12 w-12 rounded-full object-cover' />
         </span>
-        <FaChevronDown className="hidden sm:block text-current" size={15} />
+        <FaChevronDown className="hidden sm:block text-current" size={ 15 } />
       </Link>
 
-      {/* <!-- Dropdown Start --> */}
-      {dropdownOpen && (
+      {/* <!-- Dropdown Start --> */ }
+      { dropdownOpen && (
         <div
-          className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
+          className={ `absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark` }
         >
           <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
             <li>
@@ -89,7 +88,7 @@ const DropdownUser = () => {
                 to="/profile"
                 className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
               >
-                <FaUser size={22} className="text-gray-500" />
+                <FaUser size={ 22 } className="text-gray-500" />
                 My Profile
               </Link>
             </li>
@@ -98,18 +97,18 @@ const DropdownUser = () => {
                 to="/admin/settings"
                 className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
               >
-                <FaCog size={22} className='text-gray-500'/>
+                <FaCog size={ 22 } className='text-gray-500' />
                 Account Settings
               </Link>
             </li>
           </ul>
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={handleLogout}>
-            <FiLogOut size={22} className="text-gray-500" />
+          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={ handleLogout }>
+            <FiLogOut size={ 22 } className="text-gray-500" />
             Log Out
           </button>
         </div>
-      )}
-      {/* <!-- Dropdown End --> */}
+      ) }
+      {/* <!-- Dropdown End --> */ }
     </ClickOutside>
   );
 };

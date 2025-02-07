@@ -39,6 +39,8 @@ router.post('/assign-questions', varifyUser.verifyUser, testController.assignedQ
 
 // Settings
 router.put('/settings', varifyUser.verifyUser, settingController.editSetting);
+router.put("/update-image/:id", settingController.upload.single("profileImage"), settingController.editAdminImage);
+router.get('/admin/:id',  settingController.getImage);
 
 
 module.exports = router;

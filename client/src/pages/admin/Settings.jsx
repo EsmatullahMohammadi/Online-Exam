@@ -9,6 +9,8 @@ import { SUPER_DOMAIN } from './constant';
 import UploadPhoto from './Profile/UploadPhoto';
 
 const Settings = () => {
+  const adminId= sessionStorage.getItem("adminId");
+
   const validationSchema = Yup.object().shape({
     fullName: Yup.string().required('Full Name is required'),
     phoneNumber: Yup.string()
@@ -237,7 +239,7 @@ const Settings = () => {
               </div>
             </div>
           </div>
-          <UploadPhoto />
+          <UploadPhoto adminId={adminId}/>
         </div>
       </div>
     </>

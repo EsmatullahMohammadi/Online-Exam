@@ -6,6 +6,7 @@ const SettingsSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true },
     emailAddress: { type: String, required: true, unique: true },
     currentPassword: { type: String, required: true },
+    profileImage: { type: String, default: "" }, // Store image URL
   },
   {timestamps: true}
 );

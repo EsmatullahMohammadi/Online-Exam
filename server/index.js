@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require("path");
 const cookieParser = require('cookie-parser');
 const app = express();
 require('dotenv').config();
@@ -16,6 +17,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
+app.use("/userImage", express.static(path.join(__dirname, "userImage")));
 
 // MongoDB connection using Mongoose
 const mongoURI = process.env.MONGO_URI || `mongodb://localhost:27017/${process.env.DB_NAME}`; 
