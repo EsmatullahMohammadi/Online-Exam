@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { SUPER_DOMAIN } from "../../admin/constant";
 import CBreadcrumb from "../../../components/Breadcrumbs/CBreadcrump";
 import { FaRegFileAlt, FaClock, FaPlayCircle, FaCalendarAlt, FaListOl } from "react-icons/fa";
+import { MdDescription } from "react-icons/md";
 
 const GetRelatedTest = () => {
   const candidateId = sessionStorage.getItem("_id");
@@ -68,12 +69,15 @@ const GetRelatedTest = () => {
               </h2>
 
               {/* 📋 Test Details */}
-              <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg shadow-md">
-                <p className="text-lg font-semibold text-gray-800 dark:text-gray-300 flex items-center">
-                  <FaRegFileAlt className="mr-2 text-blue-600" />
-                  <span className="text-blue-600">Title:</span> {test.title}
+              <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg shadow-md space-y-3">
+                <p className="text-lg font-bold text-gray-700 dark:text-gray-400 flex items-center">
+                  <FaRegFileAlt className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <span >Title:</span> {test.title}
                 </p>
-                <p className="text-gray-700 dark:text-gray-400"><strong>📝 Description:</strong> {test.description}</p>
+                <p className="text-gray-700 dark:text-gray-400 flex items-center">
+                  <MdDescription className="mr-2 text-gray-600 dark:text-gray-300" />
+                  <strong>Description:</strong>  {test.description}
+                </p>
                 <p className="text-gray-700 dark:text-gray-400 flex items-center">
                   <FaListOl className="mr-2 text-gray-600 dark:text-gray-300" />
                   <strong>Questions:</strong> {test.numberOfQuestions}
