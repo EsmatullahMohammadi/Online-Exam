@@ -5,6 +5,7 @@ const QuestionSchema = new mongoose.Schema({
   options: { type: [String], required: true, validate: v => v.length === 4 }, 
   correctAnswer: { type: String, required: true },
   category: { type: String, required: true },
+  listeningFile: { type: String }, // Optional field for Listening questions
 },{timestamps: true});
 
 const Question= mongoose.model("Question", QuestionSchema);

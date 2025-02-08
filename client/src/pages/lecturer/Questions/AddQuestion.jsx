@@ -8,14 +8,15 @@ import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 
 const AddQuestion = () => {
   const [loading, setLoading] = useState(false);
-	const category = sessionStorage.getItem("category");
+  const category = sessionStorage.getItem("category");
   axios.defaults.withCredentials = true;
-  
+
   const formik = useFormik({
     initialValues: {
       question: "",
       options: ["", "", "", ""],
       correctAnswer: "",
+      listeningFile: null,
     },
     validationSchema: Yup.object({
       question: Yup.string().required("Question is required"),
@@ -23,13 +24,26 @@ const AddQuestion = () => {
         .of(Yup.string().required("Each option is required"))
         .min(4, "All 4 options are required"),
       correctAnswer: Yup.string().required("Correct answer is required"),
+      listeningFile: category === "Listening" ? Yup.mixed().required("Listening file is required") : Yup.mixed().notRequired(),
     }),
     onSubmit: async (values, { resetForm }) => {
       setLoading(true);
       try {
-				const payload = { ...values, category };
-        const response = await axios.post(`${SUPER_DOMAIN}/add-question`, payload);
-        
+        const payload = new FormData();
+        payload.append("question", values.question);
+        payload.append("correctAnswer", values.correctAnswer);
+        payload.append("category", category);
+        values.options.forEach((option, index) => {
+          payload.append(`options[${index}]`, option);
+        });
+        if (category === "Listening" && values.listeningFile) {
+          payload.append("listeningFile", values.listeningFile);
+        }
+
+        const response = await axios.post(`${SUPER_DOMAIN}/add-question`, payload, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
         if (response.status === 201) {
           alert(response.data.message);
           resetForm();
@@ -45,25 +59,35 @@ const AddQuestion = () => {
     },
   });
 
-  const handleOptionChange = (index, value) => {
-    const updatedOptions = [...formik.values.options];
-    updatedOptions[index] = value;
-    formik.setFieldValue("options", updatedOptions);
-  };
-
   return (
     <>
       <LBreadcrumb pageName="Add Question" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
           <h3 className="font-medium text-black dark:text-white">
-            You are in {category} Category Please Make {category} Question
+            You are in {category} Category. Please Make a {category} Question.
           </h3>
         </div>
         <form
           onSubmit={formik.handleSubmit}
           className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5"
         >
+          {/* Listening File Upload (Only for Listening Category) */}
+          {category === "Listening" && (
+            <div className="col-span-2">
+              <label className="mb-3 block text-black dark:text-white">Upload Listening File</label>
+              <input
+                type="file"
+                accept="audio/*"
+                onChange={(event) => formik.setFieldValue("listeningFile", event.currentTarget.files[0])}
+                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              />
+              {formik.touched.listeningFile && formik.errors.listeningFile && (
+                <span className="text-red-500 text-sm">{formik.errors.listeningFile}</span>
+              )}
+            </div>
+          )}
+
           {/* Question Field */}
           <div className="col-span-2">
             <label className="mb-3 block text-black dark:text-white">Question</label>
@@ -93,9 +117,13 @@ const AddQuestion = () => {
                   </label>
                   <input
                     type="text"
-										name={`options[${index + 1}]`}
+                    name={`options[${index + 1}]`}
                     value={option}
-                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                    onChange={(e) => {
+                      const updatedOptions = [...formik.values.options];
+                      updatedOptions[index] = e.target.value;
+                      formik.setFieldValue("options", updatedOptions);
+                    }}
                     onBlur={formik.handleBlur}
                     className={`w-full rounded-lg border-[1.5px] ${
                       formik.touched.options &&

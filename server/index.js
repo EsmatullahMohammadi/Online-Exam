@@ -18,6 +18,7 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use("/userImage", express.static(path.join(__dirname, "userImage")));
+app.use("/listening", express.static(path.join(__dirname, "listening"))); // Serve uploaded files
 
 // MongoDB connection using Mongoose
 const mongoURI = process.env.MONGO_URI || `mongodb://localhost:27017/${process.env.DB_NAME}`; 

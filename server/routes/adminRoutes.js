@@ -39,7 +39,9 @@ router.post('/assign-questions', varifyUser.verifyUser, testController.assignedQ
 
 // Settings
 router.put('/settings', varifyUser.verifyUser, settingController.editSetting);
+// update image with role and id in all role
 router.put("/update-image/:role/:id", settingController.upload.single("profileImage"), settingController.editAdminImage);
+// get the image of a user by the id and role 
 router.get('/get-image/:role/:id',  settingController.getImage);
 
 
