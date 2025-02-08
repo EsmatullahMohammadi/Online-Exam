@@ -239,7 +239,7 @@ const Settings = () => {
               </div>
             </div>
           </div>
-          <UploadPhoto adminId={adminId}/>
+          <UploadPhoto id={adminId} role={"Admin"}/>
         </div>
       </div>
     </>

@@ -16,6 +16,7 @@ const CandidateSchema = new mongoose.Schema({
   password: { type: String, required: true },
   status: { type: String, default: 'Pending' },
   testId: { type: mongoose.Schema.Types.ObjectId, ref: "Test" },
+  profileImage: { type: String, default: "" }, // Store image URL
 }, {timestamps: true});
 
 const Candidate = mongoose.model('Candidate', CandidateSchema);

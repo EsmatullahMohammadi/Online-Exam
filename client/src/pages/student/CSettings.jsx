@@ -137,7 +137,7 @@ const CSettings = () => {
               </div>
             </div>
           </div>
-          <UploadPhoto />
+          <UploadPhoto id={sessionStorage.getItem("_id")} role={"Candidate"}/>
         </div>
       </div>
     </>

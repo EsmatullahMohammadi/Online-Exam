@@ -5,29 +5,29 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { SUPER_DOMAIN } from '../constant';
 
-const UploadPhoto = ({ adminId }) => {
+const UploadPhoto = ({ id, role }) => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
-	sessionStorage.setItem("imageProfile", uploadedImage)
+
   // Fetch existing admin image on mount
   useEffect(() => {
     const fetchAdminImage = async () => {
       try {
-        const response = await axios.get(`${SUPER_DOMAIN}/admin/${adminId}`);
+        const response = await axios.get(`${SUPER_DOMAIN}/get-image/${role}/${id}`);
 				
         if (response.data.profileImage) {
           setUploadedImage(`${SUPER_DOMAIN}/userImage/${response.data.profileImage}`);
         }
       } catch (error) {
-        console.error("Error fetching admin image:", error);
+        console.error("Error fetching user image:", error);
       }
     };
 
     fetchAdminImage();
-  }, [adminId, uploadedImage]);
+  }, [id, uploadedImage, role]);
   // Handle file selection
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -48,7 +48,7 @@ const UploadPhoto = ({ adminId }) => {
     setError(null);
 
     try {
-      const response = await axios.put(`${SUPER_DOMAIN}/update-image/${adminId}`, formData, {
+      const response = await axios.put(`${SUPER_DOMAIN}/update-image/${role}/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -131,7 +131,7 @@ const UploadPhoto = ({ adminId }) => {
               </button>
             </div>
 
-            {error && <p className="text-red-500 mt-3">{error}</p>}
+            {error && <p className="text-red-500 mt-3 font-bold">{error}</p>}
           </form>
         </div>
       </div>

@@ -184,7 +184,7 @@ const LSettings = () => {
               </div>
             </div>
           </div>
-          <UploadPhoto />
+          <UploadPhoto id={sessionStorage.getItem("lecturerID")} role={"Lecturer"}/>
         </div>
       </div>
     </>

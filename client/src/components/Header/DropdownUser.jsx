@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-000.png';
@@ -13,7 +13,28 @@ const DropdownUser = () => {
   const adminRole = sessionStorage.getItem("arole");
   const lecturerRole = sessionStorage.getItem("lrole");
   const candidateRole = sessionStorage.getItem("crole");
-  const imageProfile = sessionStorage.getItem("imageProfile");
+  const [imageProfile ,setImageProfile] = useState(null);
+  const adminId= sessionStorage.getItem("adminId");
+  const lecturerId= sessionStorage.getItem("lecturerID");
+  const candidateId= sessionStorage.getItem("candidateID");
+
+  // Fetch existing admin image on mount
+  axios.defaults.withCredentials = true;
+  useEffect(() => {
+    const fetchAdminImage = async () => {
+      try {
+        const response = await axios.get(`${SUPER_DOMAIN}/get-image/${adminRole || lecturerRole || candidateRole}/${adminId || lecturerId || candidateId}`);
+				
+        if (response.data.profileImage) {
+          setImageProfile(`${SUPER_DOMAIN}/userImage/${response.data.profileImage}`);
+        }
+      } catch (error) {
+        console.error("Error fetching user image:", error);
+      }
+    };
+
+    fetchAdminImage();
+  }, [adminId]);
   const handleLogout = async () => {
     try {
       if (adminRole === "Admin") {

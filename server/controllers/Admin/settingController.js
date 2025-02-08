@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const Setting = require('../../models/setting');
+const Candidate = require('../../models/candidate');
+const Lecturer = require('../../models/lecturer');
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
@@ -19,33 +21,73 @@ const upload = multer({ storage });
 // Controller the edit images
 const editAdminImage = async (req, res) => {
   try {
-    const { id } = req.params;
-    const admin = await Setting.findById(id);
-
-    if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
-    }
-
-    // Check if there was a previous image
-    if (admin.profileImage) {
-      const oldImagePath = path.join(__dirname, "../../userImage/", admin.profileImage);
-
-      // Ensure the old image exists before trying to delete it
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath); // Delete the old image
+    const { id, role } = req.params;
+    if(role==="Admin"){
+      const admin = await Setting.findById(id);
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
       }
+      // Check if there was a previous image
+      if (admin.profileImage) {
+        const oldImagePath = path.join(__dirname, "../../userImage/", admin.profileImage);
+        // Ensure the old image exists before trying to delete it
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath); // Delete the old image
+        }
+      }
+      // Ensure a new file was uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "No image uploaded" });
+      }
+      // Update profile image in DB
+      admin.profileImage = req.file.filename;
+      await admin.save();
+      res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
     }
-
-    // Ensure a new file was uploaded
-    if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
+    if(role==="Lecturer"){
+      const lecturer = await Lecturer.findById(id);
+      if (!lecturer) {
+        return res.status(404).json({ message: "lecturer not found" });
+      }
+      // Check if there was a previous image
+      if (lecturer.profileImage) {
+        const oldImagePath = path.join(__dirname, "../../userImage/", lecturer.profileImage);
+        // Ensure the old image exists before trying to delete it
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath); // Delete the old image
+        }
+      }
+      // Ensure a new file was uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "No image uploaded" });
+      }
+      // Update profile image in DB
+      lecturer.profileImage = req.file.filename;
+      await lecturer.save();
+      res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
     }
-
-    // Update profile image in DB
-    admin.profileImage = req.file.filename;
-    await admin.save();
-
-    res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
+    if(role==="Candidate"){
+      const candidate = await Candidate.findById(id);
+      if (!candidate) {
+        return res.status(404).json({ message: "candidate not found" });
+      }
+      // Check if there was a previous image
+      if (candidate.profileImage) {
+        const oldImagePath = path.join(__dirname, "../../userImage/", candidate.profileImage);
+        // Ensure the old image exists before trying to delete it
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath); // Delete the old image
+        }
+      }
+      // Ensure a new file was uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "No image uploaded" });
+      }
+      // Update profile image in DB
+      candidate.profileImage = req.file.filename;
+      await candidate.save();
+      res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
+    }
   } catch (error) {
     res.status(500).json({ message: "Error updating profile image", error: error.message });
   }
@@ -53,14 +95,31 @@ const editAdminImage = async (req, res) => {
 // Fetch admin image 
 const getImage= async (req, res) =>{
   try {
-    const admin = await Setting.findById(req.params.id);
-    if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
+    const { id, role } = req.params;
+    if(role === "Admin"){
+      const admin = await Setting.findById(id);
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+      res.json({ profileImage: admin.profileImage }); // Send back the image filename
+    }
+    if(role === "Lecturer"){
+      const lecturar = await Lecturer.findById(id);
+      if (!lecturar) {
+        return res.status(404).json({ message: "lecturar not found" });
+      }
+      res.json({ profileImage: lecturar.profileImage }); // Send back the image filename
+    }
+    if(role === "Candidate"){
+      const candidate = await Candidate.findById(id);
+      if (!candidate) {
+        return res.status(404).json({ message: "candidate not found" });
+      }
+      res.json({ profileImage: candidate.profileImage }); // Send back the image filename
     }
 
-    res.json({ profileImage: admin.profileImage }); // Send back the image filename
   } catch (error) {
-    console.error("Error fetching admin:", error);
+    console.error("Error fetching user:", error);
     res.status(500).json({ message: "Server error" });
   }
 }
