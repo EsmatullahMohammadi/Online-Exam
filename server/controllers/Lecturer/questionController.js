@@ -5,25 +5,44 @@ const Question = require("../../models/questions");
 const addQuestion = async (req, res) => {
   try {
     const { question, options, correctAnswer, category } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     let listeningFile = req.file ? req.file.filename : null; // File path if uploaded
-    // Ensure all required fields are provided
-    if (!question || !Array.isArray(options) || options.length !== 4 || !correctAnswer) {
-      return res.status(400).json({ message: "All fields are required and must contain exactly 4 options." });
+
+    // Convert options to an array if it's not already (in case of incorrect format)
+    const parsedOptions = typeof options === "string" ? JSON.parse(options) : options;
+
+    // Validate required fields
+    if (!question || !Array.isArray(parsedOptions) || !correctAnswer || !category) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // Validate options length based on category
+    if (category === "Listening") {
+      if (parsedOptions.length !== 2 && parsedOptions.length !== 4) {
+        return res.status(400).json({ message: "Listening questions must have either 2 or 4 options." });
+      }
+      if (!listeningFile) {
+        return res.status(400).json({ message: "Listening file is required for Listening questions." });
+      }
+    } else {
+      if (parsedOptions.length !== 4) {
+        return res.status(400).json({ message: "Non-Listening questions must have exactly 4 options." });
+      }
     }
 
     // Ensure correctAnswer exists in the options array
-    if (!options.includes(correctAnswer)) {
+    if (!parsedOptions.includes(correctAnswer)) {
       return res.status(400).json({ message: "Correct answer must be one of the provided options." });
     }
 
-    // If category is "Listening", a file must be provided
-    if (category === "Listening" && !listeningFile) {
-      return res.status(400).json({ message: "Listening file is required for Listening questions." });
-    }
-
     // Save the question
-    const newQuestion = new Question({ question, options, correctAnswer, category, listeningFile });
+    const newQuestion = new Question({
+      question,
+      options: parsedOptions,
+      correctAnswer,
+      category,
+      listeningFile,
+    });
     await newQuestion.save();
 
     res.status(201).json({ message: "Question added successfully!", newQuestion });
