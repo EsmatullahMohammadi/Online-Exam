@@ -115,8 +115,8 @@ const Condidate = () => {
                       className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
                         candidate.status === 'Pending'
                           ? 'bg-warning text-warning'
-                          : Condidate.status=== "Passed"? 'bg-success text-success':
-                          "Failed"
+                          : candidate.status=== "Passed"? 'bg-success text-success':
+                          "bg-danger text-danger"
                       }`}
                     >
                       {candidate.status}

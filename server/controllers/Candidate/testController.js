@@ -71,6 +71,7 @@ const submitQuestion = async (req, res) => {
 
       // Determine pass/fail status
       const status = obtainedMarks >= passingMarks ? "Passed" : "Failed";
+      candidate.status = status;
 
       // Save candidate response
       const candidateResponse = new CandidateResponse({
@@ -83,6 +84,7 @@ const submitQuestion = async (req, res) => {
       });
 
       await candidateResponse.save();
+      await candidate.save();
 
       res.json({ 
           message: "Test submitted successfully", 

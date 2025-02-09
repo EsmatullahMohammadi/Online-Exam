@@ -5,7 +5,6 @@ const Question = require("../../models/questions");
 const addQuestion = async (req, res) => {
   try {
     const { question, options, correctAnswer, category } = req.body;
-    console.log(req.body);
     let listeningFile = req.file ? req.file.filename : null; // File path if uploaded
 
     // Convert options to an array if it's not already (in case of incorrect format)
