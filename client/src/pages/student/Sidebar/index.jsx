@@ -1,11 +1,16 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {  FaTachometerAlt,  FaBook,  FaCog, FaArrowLeft, FaFileAlt } from "react-icons/fa"; 
+import { FiLogOut } from 'react-icons/fi';
+import axios from 'axios';
+import { SUPER_DOMAIN } from '../../admin/constant';
 
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+  const navigate = useNavigate();
+
   const location = useLocation();
   const { pathname } = location;
 
@@ -52,6 +57,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       document.querySelector('body')?.classList.remove('sidebar-expanded');
     }
   }, [sidebarExpanded]);
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(`${SUPER_DOMAIN}/logout-candidate`, {
+        withCredentials: true, // Ensure cookies are included in the request
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.data.status) {
+        navigate("/auth/signin")
+      }
+    } catch (err) {
+      console.log(err) // Redirect to sign-in if authentication fails
+    }
+  };
 
   return (
     <aside
@@ -143,6 +165,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 </NavLink>
               </li>
               {/* <!-- Menu Item Settings --> */}
+              <li>
+                <button
+                  onClick={ handleLogout }
+                  className={ `group relative w-full flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('settings') &&
+                    'bg-graydark dark:bg-meta-4'
+                    }` }
+                >
+                  <FiLogOut className="text-2xl" />
+                  Logout
+                </button>
+              </li>
             </ul>
           </div>
         </nav>
