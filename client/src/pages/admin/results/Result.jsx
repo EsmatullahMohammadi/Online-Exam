@@ -8,6 +8,7 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 
 const Result = () => {
   const [results, setResults] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpenModel, setIsOpenModel] = useState(false);
@@ -16,15 +17,20 @@ const Result = () => {
   const [itemsPerPage, setItemsPerPage] = useState(2);
   const [selectedResult, setSelectedResult] = useState(null);
 
+  // Filters
+  const [selectedTest, setSelectedTest] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+
   useEffect(() => {
     const fetchResults = async () => {
       try {
         const response = await axios.get(`${SUPER_DOMAIN}/results`, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
         setResults(response.data);
+        setFilteredResults(response.data); // Initialize filtered results
       } catch (err) {
         console.log(err);
         setError("Failed to fetch results.");
@@ -35,19 +41,59 @@ const Result = () => {
     fetchResults();
   }, []);
 
+  // Apply filters
+  useEffect(() => {
+    let filtered = results;
+
+    if (selectedTest) {
+      filtered = filtered.filter((result) => result.testId?.title === selectedTest);
+    }
+
+    if (selectedStatus) {
+      filtered = filtered.filter((result) => result.status === selectedStatus);
+    }
+
+    setFilteredResults(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  }, [selectedTest, selectedStatus, results]);
+
+  // Get unique test titles for dropdown
+  const testTitles = [...new Set(results.map((result) => result.testId?.title).filter(Boolean))];
+
   // Pagination Logic
-  const totalPages = Math.ceil(results.length / itemsPerPage);
-  const paginatedResults = results.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+  const paginatedResults = filteredResults.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <>
-      <Breadcrumb pageName={"Results"}/>
+      <Breadcrumb pageName={"Results"} />
       <div className="p-6 bg-white shadow-md rounded-sm border border-stroke">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Candidate Results</h2>
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 mb-4 justify-end">
+          <select
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+            value={selectedTest}
+            onChange={(e) => setSelectedTest(e.target.value)}
+          >
+            <option value="">All Tests</option>
+            {testTitles.map((title) => (
+              <option key={title} value={title}>
+                {title}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="Passed">Passed</option>
+            <option value="Failed">Failed</option>
+          </select>
         </div>
+
         <div className="max-w-full overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -61,19 +107,19 @@ const Result = () => {
               </tr>
             </thead>
             <tbody>
-            {loading ? (
+              {loading ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-3">
+                  <td colSpan="6" className="text-center py-3">
                     Loading...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-3 text-red-500">
+                  <td colSpan="6" className="text-center py-3 text-red-500">
                     {error}
                   </td>
                 </tr>
-              ) :paginatedResults.length > 0 ? (
+              ) : paginatedResults.length > 0 ? (
                 paginatedResults.map((result, index) => (
                   <tr key={result._id} className="border-b border-gray-200">
                     <td className="py-3 px-4">{(currentPage - 1) * itemsPerPage + index + 1}</td>
@@ -94,11 +140,12 @@ const Result = () => {
                     </td>
                     <td className="py-3 px-4">{new Date(result.submittedAt).toLocaleString()}</td>
                     <td className="py-3 px-4">
-                      <button className="text-blue-500 hover:text-blue-600" 
-                        onClick={() =>{ 
-                          setIsOpenModel(!isOpenModel)
-                          setSelectedResult(result)
-                        }} 
+                      <button
+                        className="text-blue-500 hover:text-blue-600"
+                        onClick={() => {
+                          setIsOpenModel(true);
+                          setSelectedResult(result);
+                        }}
                       >
                         <MdVisibility className="text-2xl" />
                       </button>
@@ -124,7 +171,7 @@ const Result = () => {
           />
         </div>
       </div>
-      {isOpenModel && <ViewResultsDetails result={selectedResult}  onClose={handleCloseModal} />}
+      {isOpenModel && <ViewResultsDetails result={selectedResult} onClose={handleCloseModal} />}
     </>
   );
 };
