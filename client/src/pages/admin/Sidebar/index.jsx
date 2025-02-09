@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaClipboardList, FaChalkboardTeacher, FaTachometerAlt, FaUserGraduate, FaBook, FaUser, FaCog, FaArrowLeft } from "react-icons/fa"; 
+import { FaClipboardList, FaChalkboardTeacher, FaTachometerAlt, FaUserGraduate, FaBook, FaUser, FaCog, FaArrowLeft, FaFileAlt } from "react-icons/fa"; 
 
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -169,7 +169,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   Profile
                 </NavLink>
               </li>
-
+              {/* Menu Item Result */}
+              <li>
+                <NavLink
+                  to="/admin/results"
+                  className={({ isActive }) =>
+                    `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    isActive &&
+                    'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                <FaFileAlt className="text-2xl" />
+                  Result
+                </NavLink>
+              </li>
               {/* <!-- Menu Item Settings --> */}
               <li>
                 <NavLink

@@ -27,6 +27,7 @@ import CandidateExam from '../pages/student/Tests/CandidateExam';
 import GetRelatedTest from '../pages/student/Tests/GetReleatedTest';
 import CondidateResult from '../pages/student/Result/CondidateResult';
 import CSettings from '../pages/student/CSettings';
+import Result from '../pages/admin/results/Result';
 
 
 const RouterComponent = () => {
@@ -150,6 +151,15 @@ const RouterComponent = () => {
           <>
             <PageTitle title="Select Question For Test | Admine - KPU Online Exam" />
             <SelectQuestionsForTest />
+          </>         
+        )
+      },
+      {
+        path: "results", 
+        element:(
+          <>
+          <PageTitle title="Result | Lecturer - KPU Online Exam" />
+            <Result />
           </>         
         )
       },
