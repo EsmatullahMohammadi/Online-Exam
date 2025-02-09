@@ -5,6 +5,7 @@ const lecturarController= require("../controllers/Admin/lecturarController");
 const candidateController= require("../controllers/Admin/candidateController")
 const settingController= require("../controllers/Admin/settingController");
 const questionController= require("../controllers/Lecturer/questionController");
+const resultController= require("../controllers/Admin/resultController");
 const varifyUser = require('../middleware/varifyUser');
 
 // Add a Tests
@@ -36,6 +37,9 @@ router.get('/questions', varifyUser.verifyUser, questionController.getAllQuestio
 router.delete('/questions/:id', varifyUser.verifyUser, questionController.deleteQuestion);
 // assign-questions rout
 router.post('/assign-questions', varifyUser.verifyUser, testController.assignedQuestion)
+
+// Result routs 
+router.get('/results', resultController.getResults);
 
 // Settings
 router.put('/settings', varifyUser.verifyUser, settingController.editSetting);
