@@ -70,6 +70,7 @@ const Condidate = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-300 text-left dark:bg-meta-4">
+                <th className=" py-4 px-4 font-medium text-black dark:text-white">#</th>
                 <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                   Candidate Name
                 </th>
@@ -100,6 +101,7 @@ const Condidate = () => {
               ) : paginatedCondidates?.length > 0 ? (
               paginatedCondidates.map((candidate, key) => (
                 <tr key={key}>
+                  <td className="py-3 px-4">{(currentPage - 1) * itemsPerPage + key + 1}</td>
                   <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
                     <h5 className="font-medium text-black dark:text-white">
                       {candidate.name}

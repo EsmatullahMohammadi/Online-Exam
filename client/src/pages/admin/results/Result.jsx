@@ -102,7 +102,7 @@ const Result = () => {
                 <th className="py-4 px-4 font-medium text-black dark:text-white">Candidate Name</th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">Test Title</th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">Status</th>
-                <th className="py-4 px-4 font-medium text-black dark:text-white">Submitted At</th>
+                <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white">Submitted At</th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">Actions</th>
               </tr>
             </thead>

@@ -124,7 +124,13 @@ const SelectQuestionsForTest = () => {
       <Breadcrumb pageName="Select Questions" />
 
       {/* Action Buttons */}
-      <div className="mb-3 flex justify-between">       
+      <div className="mb-3 flex justify-end space-x-3"> 
+        {/* Assign Random Questions */}
+        <Link to={`/admin/demo-question/${testId}`}
+          className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+        >
+          See Demo Questions
+        </Link>      
         {/* Assign Random Questions */}
         <button
           className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
@@ -132,12 +138,6 @@ const SelectQuestionsForTest = () => {
         >
           Assign Random Questions
         </button>
-        {/* Assign Random Questions */}
-        <Link to={`/admin/demo-question/${testId}`}
-          className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
-        >
-          See Demo Questions
-        </Link>
         {/* Assign Selected Questions */}
         <button
           className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
