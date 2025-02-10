@@ -1,21 +1,25 @@
 /* eslint-disable react/no-unknown-property */
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react'
+
+import  { useEffect, useState } from 'react'
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb'
 import { Link } from 'react-router-dom';
 import { MdAdd, MdDelete, MdEdit, MdVisibility } from 'react-icons/md';
 import axios from 'axios';  // Import axios for API requests
 import { SUPER_DOMAIN } from '../constant';
 import Pagination from '../../../components/Pagination';
+import ViewCandidateDetails from './ViewCandidateDetails';
 
 const Condidate = () => {
   // State to store the candidates data
   const [candidates, setCandidates] = useState();
   const [loading, setLoading] = useState(true);  // Loading state
   const [error, setError] = useState(null);  // Error state
+  const [isOpenModel, setIsOpenModel] = useState(false);
+  const handleCloseModal = () => setIsOpenModel(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
   // pagination concep
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); 
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   axios.defaults.withCredentials = true;
 
@@ -86,7 +90,7 @@ const Condidate = () => {
               </tr>
             </thead>
             <tbody>
-            { loading ? (
+              { loading ? (
                 <tr>
                   <td colSpan="4" className="text-center py-3">
                     Loading...
@@ -95,70 +99,75 @@ const Condidate = () => {
               ) : error ? (
                 <tr>
                   <td colSpan="4" className="text-center py-3 text-red-500">
-                    {error}
+                    { error }
                   </td>
                 </tr>
               ) : paginatedCondidates?.length > 0 ? (
-              paginatedCondidates.map((candidate, key) => (
-                <tr key={key}>
-                  <td className="py-3 px-4">{(currentPage - 1) * itemsPerPage + key + 1}</td>
-                  <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                    <h5 className="font-medium text-black dark:text-white">
-                      {candidate.name}
-                    </h5>
-                  </td>
-                  <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
-                    <p className="text-black dark:text-white">
-                      {candidate.fatherName}
-                    </p>
-                  </td>
-                  <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
-                    <p
-                      className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
-                        candidate.status === 'Pending'
-                          ? 'bg-warning text-warning'
-                          : candidate.status=== "Passed"? 'bg-success text-success':
-                          "bg-danger text-danger"
-                      }`}
-                    >
-                      {candidate.status}
-                    </p>
-                  </td>
-                  <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
-                    <div className="flex items-center space-x-3.5">
-                      <button className="hover:text-primary">
-                        <MdVisibility className='text-2xl text-blue-500 hover:text-blue-600' />
-                      </button>
-                      <button className="hover:text-primary">
-                        <MdDelete className='text-2xl text-red-500 hover:text-red-600' />
-                      </button>
-                      <button className="hover:text-primary">
-                        <MdEdit className='text-2xl text-indigo-500 hover:text-indigo-600' />
-                      </button>
-                    </div>
+                paginatedCondidates.map((candidate, key) => (
+                  <tr key={ key }>
+                    <td className="py-3 px-4">{ (currentPage - 1) * itemsPerPage + key + 1 }</td>
+                    <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                      <h5 className="font-medium text-black dark:text-white">
+                        { candidate.name }
+                      </h5>
+                    </td>
+                    <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
+                      <p className="text-black dark:text-white">
+                        { candidate.fatherName }
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
+                      <p
+                        className={ `inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${candidate.status === 'Pending'
+                            ? 'bg-warning text-warning'
+                            : candidate.status === "Passed" ? 'bg-success text-success' :
+                              "bg-danger text-danger"
+                          }` }
+                      >
+                        { candidate.status }
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
+                      <div className="flex items-center space-x-3.5">
+                        <button className="hover:text-primary"
+                          onClick={ () => {
+                            setIsOpenModel(true);
+                            setSelectedCandidate(candidate);
+                          } }
+                        >
+                          <MdVisibility className='text-2xl text-blue-500 hover:text-blue-600' />
+                        </button>
+                        <button className="hover:text-primary">
+                          <MdDelete className='text-2xl text-red-500 hover:text-red-600' />
+                        </button>
+                        <button className="hover:text-primary">
+                          <MdEdit className='text-2xl text-indigo-500 hover:text-indigo-600' />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center py-3">
+                    No candidates found.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="text-center py-3">
-                  No candidates found.
-                </td>
-              </tr>
-            )}
+              ) }
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
+        {/* Pagination */ }
         <div className="my-3">
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-            setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
+            currentPage={ currentPage }
+            totalPages={ totalPages }
+            setCurrentPage={ setCurrentPage }
+            setItemsPerPage={ setItemsPerPage } // Pass the setItemsPerPage function
           />
         </div>
       </div>
+      {isOpenModel && <ViewCandidateDetails candidate={selectedCandidate} onClose={handleCloseModal} />}
     </>
   );
 }

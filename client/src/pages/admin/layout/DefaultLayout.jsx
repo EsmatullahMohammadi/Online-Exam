@@ -34,6 +34,9 @@ const DefaultLayout = ({ children }) => {
               <Outlet />
             </div>
           </main>
+          {/* <footer className='w-full'>
+            <p className='text-center mb-5'>Copyright at ©2025 Kabul Polytechnic University. All Rights Reserved</p>
+          </footer> */}
           {/* <!-- ===== Main Content End ===== --> */}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
