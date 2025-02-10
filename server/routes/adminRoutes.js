@@ -18,6 +18,8 @@ router.get('/tests/:id', varifyUser.verifyUser, testController.getTestById);
 router.put('/tests/:id', varifyUser.verifyUser,  testController.updateTest);
 // delete one test
 router.delete("/tests/:id", varifyUser.verifyUser, testController.deleteTest);
+// get demo test
+router.get('/demo-test-byid/:testId', varifyUser.verifyUser, testController.getDemoTestById);
 
 // Add a lecturar
 router.post('/add-lecturar', varifyUser.verifyUser, lecturarController.addLecturar);

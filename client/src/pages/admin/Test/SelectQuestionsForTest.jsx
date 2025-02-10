@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { SUPER_DOMAIN } from "../constant";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import Pagination from "../../../components/Pagination";
@@ -127,14 +127,20 @@ const SelectQuestionsForTest = () => {
       <div className="mb-3 flex justify-between">       
         {/* Assign Random Questions */}
         <button
-          className="flex items-center gap-2 bg-green-500 text-white px-6 py-2 rounded-md shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+          className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onClick={handleAssignRandomQuestions}
         >
           Assign Random Questions
         </button>
+        {/* Assign Random Questions */}
+        <Link to={`/admin/demo-question/${testId}`}
+          className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+        >
+          See Demo Questions
+        </Link>
         {/* Assign Selected Questions */}
         <button
-          className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-md shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+          className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onClick={handleSubmit}
         >
           Assign Selected Questions

@@ -148,6 +148,23 @@ const assignedQuestion = async (req, res) =>{
     res.status(500).json({ message: "Server error" });
   }
 }
-  
-module.exports= {addTests, getTests, updateTest, getTestById, deleteTest, assignedQuestion}
+// get demo test 
+const getDemoTestById = async (req, res) => {
+  const { testId } = req.params;  
+  try {  
+    const test = await Test.findById(testId).populate("questions");
+    if (!test) {
+      return res.status(404).json({ message: "Test not found!" });
+    }
+    res.status(200).json({
+      message: "Test retrieved successfully!",
+      test,
+      questions: test.questions
+    });
+  } catch (error) {
+    console.error("Error retrieving test:", error.message);
+    res.status(500).json({ error: "Failed to retrieve test" });
+  }
+};
+module.exports= {addTests, getTests, updateTest, getTestById, deleteTest, assignedQuestion, getDemoTestById}
 
