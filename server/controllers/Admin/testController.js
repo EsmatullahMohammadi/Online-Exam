@@ -84,7 +84,7 @@ const updateTest = async (req, res) => {
       console.error("Error updating test:", error.message);
       res.status(500).json({ error: "Failed to update test" });
     }
-  };
+};
   // Deleting a test by ID
 const deleteTest = async (req, res) => {
   const { id } = req.params;

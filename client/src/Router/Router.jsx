@@ -29,6 +29,7 @@ import CondidateResult from '../pages/student/Result/CondidateResult';
 import CSettings from '../pages/student/CSettings';
 import Result from '../pages/admin/results/Result';
 import DemoQuestions from '../pages/admin/Test/DemoQuestions';
+import EditCondidate from '../pages/admin/Condidate/EditCondidate';
 
 
 const RouterComponent = () => {
@@ -123,7 +124,7 @@ const RouterComponent = () => {
         path:'condidate',
         element:(
           <>
-            <PageTitle title="Condidate | Admine - KPU Online Exam" />
+            <PageTitle title="Candidate | Admine - KPU Online Exam" />
             <Condidate />
           </>         
         )
@@ -132,8 +133,17 @@ const RouterComponent = () => {
         path:'addCondidate',
         element:(
           <>
-            <PageTitle title="Add Condidate | Admine - KPU Online Exam" />
+            <PageTitle title="Add Candidate | Admine - KPU Online Exam" />
             <AddCondidate />
+          </>         
+        )
+      },
+      {
+        path:'condidate/edit-candidate',
+        element:(
+          <>
+            <PageTitle title="Edit Candidate | Admine - KPU Online Exam" />
+            <EditCondidate />
           </>         
         )
       },

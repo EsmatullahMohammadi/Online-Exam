@@ -32,6 +32,8 @@ router.delete("/lecturars/:id", varifyUser.verifyUser, lecturarController.delete
 router.post('/add-candidates', varifyUser.verifyUser, candidateController.addCandidate);
 // All candidates
 router.get('/all-candidates', varifyUser.verifyUser, candidateController.getCandidates);
+// Edit a candidate
+router.put('/update-candidate/:id', varifyUser.verifyUser,  candidateController.updateCandidate);
 
 // Get all question
 router.get('/questions', varifyUser.verifyUser, questionController.getAllQuestions)

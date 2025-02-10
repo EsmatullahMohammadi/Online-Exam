@@ -68,7 +68,7 @@ const addCandidate = async (req, res) => {
 const getCandidates = async (req, res) => {
   try {
     // Retrieve all tests from the database
-    const candidate = await Candidate.find().sort({createdAt: -1});
+    const candidate = await Candidate.find().sort({ createdAt: -1 });
     res.status(200).json({
       message: "Candidate retrieved successfully!",
       candidate,
@@ -78,5 +78,43 @@ const getCandidates = async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve candidate" });
   }
 };
+// Editing a candidadte
+const updateCandidate = async (req, res) => {
+  const { id } = req.params;
+  const { name, fatherName, university, faculty, department, educationDegree, phoneNumber, email, password } = req.body;
 
-module.exports = { addCandidate, getCandidates };
+  try {
+    // Create an update object without the password initially
+    const updateFields = { name, fatherName, university, faculty, department, educationDegree, phoneNumber, email };
+
+    // If password is not empty, add it to updateFields
+    if (password && password.trim() !== "") {
+      // Hash the password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateFields.password = hashedPassword;
+    }
+
+    // Find candidate by ID and update its fields
+    const updatedCandidate = await Candidate.findByIdAndUpdate(
+      id,
+      updateFields,
+      { new: true, runValidators: true } // Return updated document & validate fields
+    );
+
+    if (!updatedCandidate) {
+      return res.status(404).json({ message: "Candidate not found!" });
+    }
+
+    res.status(200).json({
+      message: "Candidate updated successfully!",
+      candidate: updatedCandidate,
+    });
+  } catch (error) {
+    console.error("Error updating candidate:", error.message);
+    res.status(500).json({ error: "Failed to update candidate" });
+  }
+};
+
+
+module.exports = { addCandidate, getCandidates, updateCandidate };

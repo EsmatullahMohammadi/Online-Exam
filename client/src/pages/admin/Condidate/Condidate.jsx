@@ -140,9 +140,9 @@ const Condidate = () => {
                         <button className="hover:text-primary">
                           <MdDelete className='text-2xl text-red-500 hover:text-red-600' />
                         </button>
-                        <button className="hover:text-primary">
+                        <Link to={`/admin/condidate/edit-candidate`} state={{ candidate }} className="hover:text-primary">
                           <MdEdit className='text-2xl text-indigo-500 hover:text-indigo-600' />
-                        </button>
+                        </Link>
                       </div>
                     </td>
                   </tr>

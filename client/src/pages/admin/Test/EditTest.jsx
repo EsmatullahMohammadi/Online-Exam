@@ -89,11 +89,13 @@ const EditTest = () => {
   return (
     <>
       <Breadcrumb pageName="Edit Test" />
-      <FiArrowLeft size={36} />
+      <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-gray-900 mb-4">
+        <FiArrowLeft size={24} className="mr-2" /> Back
+      </button>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
           <h3 className="font-medium text-black dark:text-white">
-            Please update the test details
+            Update the test details
           </h3>
         </div>
         <Formik
