@@ -143,7 +143,8 @@ function Test() {
                       </p>
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
-                      <Link to={`/admin/select-question/${test.title}/${test._id}/${test.numberOfQuestions}`} className="flex items-center gap-2 bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 w-36">
+                      <Link to={`/admin/select-question/${test.title}`}
+                      state={{ testId: test._id, numberOfQuestion: test.numberOfQuestions }} className="flex items-center gap-2 bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 w-36">
                         <MdQuiz size={20} className="text-white" />
                         <span className="font-medium">Add Question</span>
                       </Link >

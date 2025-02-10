@@ -146,7 +146,7 @@ const RouterComponent = () => {
         )
       },
       {
-        path:'select-question/:testName/:testId/:numberOfQuestion',
+        path:'select-question/:testName',
         element:(
           <>
             <PageTitle title="Select Question For Test | Admine - KPU Online Exam" />
