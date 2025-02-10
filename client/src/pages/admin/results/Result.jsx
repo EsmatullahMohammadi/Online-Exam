@@ -67,11 +67,11 @@ const Result = () => {
   return (
     <>
       <Breadcrumb pageName={"Results"} />
-      <div className="p-6 bg-white shadow-md rounded-sm border border-stroke">
+      <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-4 justify-end">
           <select
-            className="border border-gray-300 rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
             value={selectedTest}
             onChange={(e) => setSelectedTest(e.target.value)}
           >
@@ -84,7 +84,7 @@ const Result = () => {
           </select>
 
           <select
-            className="border border-gray-300 rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
@@ -121,10 +121,10 @@ const Result = () => {
                 </tr>
               ) : paginatedResults.length > 0 ? (
                 paginatedResults.map((result, index) => (
-                  <tr key={result._id} className="border-b border-gray-200">
+                  <tr key={result._id} className="border-b border-gray-200 dark:border-strokedark">
                     <td className="py-3 px-4">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                    <td className="py-3 px-4">{result.candidateId?.name}</td>
-                    <td className="py-3 px-4">{result.testId?.title}</td>
+                    <td className="py-3 px-4 text-black dark:text-white">{result.candidateId?.name}</td>
+                    <td className="py-3 px-4 text-black dark:text-white">{result.testId?.title}</td>
                     <td className="py-3 px-4">
                       <span
                         className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
@@ -138,7 +138,7 @@ const Result = () => {
                         {result.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4">{new Date(result.submittedAt).toLocaleString()}</td>
+                    <td className="py-3 px-4 text-black dark:text-white">{new Date(result.submittedAt).toLocaleString()}</td>
                     <td className="py-3 px-4">
                       <button
                         className="text-blue-500 hover:text-blue-600"
