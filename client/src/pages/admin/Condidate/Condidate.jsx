@@ -48,6 +48,22 @@ const Condidate = () => {
     fetchCandidates();
   }, []);
 
+  const deleteCandidate = async (candidateID) => {
+    try {
+      const confirmDelete = window.confirm('Are you sure you want to delete this candidate?');
+      if (!confirmDelete) return; // If the user cancels the delete, exit
+
+      // Send DELETE request to the backend
+      const response = await axios.delete(`${SUPER_DOMAIN}/candidates/${candidateID}`);
+      
+      // Remove the deleted test from the state
+      setCandidates((prevCandidates) => prevCandidates.filter((candidate) => candidate._id !== candidateID));
+      alert(response.data.message || 'Test deleted successfully!');
+    } catch (err) {
+      alert('Failed to delete test.', err.message);
+    }
+  };
+
   // pagination concept
   const totalPages = Math.ceil(candidates?.length / itemsPerPage);
   const paginatedCondidates = candidates?.slice(
@@ -137,7 +153,7 @@ const Condidate = () => {
                         >
                           <MdVisibility className='text-2xl text-blue-500 hover:text-blue-600' />
                         </button>
-                        <button className="hover:text-primary">
+                        <button className="hover:text-primary" onClick={() => deleteCandidate(candidate._id)}>
                           <MdDelete className='text-2xl text-red-500 hover:text-red-600' />
                         </button>
                         <Link to={`/admin/condidate/edit-candidate`} state={{ candidate }} className="hover:text-primary">

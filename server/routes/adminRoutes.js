@@ -34,6 +34,8 @@ router.post('/add-candidates', varifyUser.verifyUser, candidateController.addCan
 router.get('/all-candidates', varifyUser.verifyUser, candidateController.getCandidates);
 // Edit a candidate
 router.put('/update-candidate/:id', varifyUser.verifyUser,  candidateController.updateCandidate);
+// delete one candidate
+router.delete("/candidates/:id", varifyUser.verifyUser, candidateController.deleteTest);
 
 // Get all question
 router.get('/questions', varifyUser.verifyUser, questionController.getAllQuestions)

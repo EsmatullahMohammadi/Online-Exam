@@ -115,6 +115,27 @@ const updateCandidate = async (req, res) => {
     res.status(500).json({ error: "Failed to update candidate" });
   }
 };
+  // Deleting a candidate by ID
+  const deleteTest = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      // Find the test by ID and delete it
+      const deletedCandidate = await Candidate.findByIdAndDelete(id);
+  
+      if (!deletedCandidate) {
+        return res.status(404).json({ message: "Candidate not found!" });
+      }
+  
+      res.status(200).json({
+        message: "Candidate deleted successfully!",
+        candidate: deletedCandidate, // Optionally return the deleted test details
+      });
+    } catch (error) {
+      console.error("Error deleting candidate:", error.message);
+      res.status(500).json({ error: "Failed to delete candidate" });
+    }
+  };
 
 
-module.exports = { addCandidate, getCandidates, updateCandidate };
+module.exports = { addCandidate, getCandidates, updateCandidate, deleteTest };
