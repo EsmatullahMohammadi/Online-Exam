@@ -20,7 +20,7 @@ const Result = () => {
   // Filters
   const [selectedTest, setSelectedTest] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-
+  axios.defaults.withCredentials = true;
   useEffect(() => {
     const fetchResults = async () => {
       try {

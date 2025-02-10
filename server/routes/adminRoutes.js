@@ -45,7 +45,7 @@ router.delete('/questions/:id', varifyUser.verifyUser, questionController.delete
 router.post('/assign-questions', varifyUser.verifyUser, testController.assignedQuestion)
 
 // Result routs 
-router.get('/results', resultController.getResults);
+router.get('/results', varifyUser.verifyUser, resultController.getResults);
 
 // Settings
 router.put('/settings', varifyUser.verifyUser, settingController.editSetting);

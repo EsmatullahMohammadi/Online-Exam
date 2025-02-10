@@ -10,7 +10,7 @@ import UploadPhoto from './Profile/UploadPhoto';
 
 const Settings = () => {
   const adminId= sessionStorage.getItem("adminId");
-
+  axios.defaults.withCredentials = true;
   const validationSchema = Yup.object().shape({
     fullName: Yup.string().required('Full Name is required'),
     phoneNumber: Yup.string()

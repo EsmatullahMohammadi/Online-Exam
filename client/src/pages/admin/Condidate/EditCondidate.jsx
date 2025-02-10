@@ -41,7 +41,7 @@ const EditCandidate = () => {
 		email: "",
 		password: "",
 	});
-
+	axios.defaults.withCredentials = true;
 	useEffect(() => {
 		if (candidate) {
 			setInitialValues({
