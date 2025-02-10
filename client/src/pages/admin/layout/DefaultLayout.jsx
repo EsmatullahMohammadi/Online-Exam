@@ -6,7 +6,7 @@ import Sidebar from '../Sidebar';
 import { Outlet } from 'react-router-dom';
 import Loader from '../../../loader/Loader';
 
-const DefaultLayout = ({ children }) => {
+const DefaultLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] =useState(true);
   useEffect(()=>{

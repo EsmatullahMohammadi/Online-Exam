@@ -1,14 +1,19 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../../components/Header';
 import Sidebar from '../Sidebar';
 import { Outlet } from 'react-router-dom';
+import Loader from '../../../loader/Loader';
 
-const SDefaultLayout = ({ children }) => {
+const SDefaultLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [loading, setLoading] =useState(true);
+    useEffect(()=>{
+      setTimeout(()=> setLoading(false), 1000)
+    },[])
 
-  return (
+  return  loading ? (<Loader />) :(
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
