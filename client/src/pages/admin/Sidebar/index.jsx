@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { FaClipboardList, FaChalkboardTeacher, FaTachometerAlt, FaUserGraduate, FaBook, FaUser, FaCog, FaArrowLeft, FaFileAlt } from "react-icons/fa";
+import { FaClipboardList, FaChalkboardTeacher, FaTachometerAlt, FaUserGraduate, FaBook, FaCog, FaArrowLeft, FaFileAlt } from "react-icons/fa";
 import { FiLogOut } from 'react-icons/fi';
 import { SUPER_DOMAIN } from '../constant';
 import axios from 'axios';
