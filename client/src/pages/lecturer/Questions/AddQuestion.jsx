@@ -142,10 +142,10 @@ const AddQuestion = () => {
                     } }
                     onBlur={ formik.handleBlur }
                     className={ `w-full rounded-lg border-[1.5px] ${formik.touched.options &&
-                        formik.errors.options &&
-                        formik.errors.options[index]
-                        ? "border-red-500"
-                        : "border-stroke"
+                      formik.errors.options &&
+                      formik.errors.options[index]
+                      ? "border-red-500"
+                      : "border-stroke"
                       } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary` }
                     placeholder={ `Option ${index + 1}` }
                   />
