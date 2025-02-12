@@ -6,10 +6,10 @@ const testSchema = new Schema({
       examDuration: { type: Number, required: true },
       numberOfQuestions: { type: Number, required: true },
       totalMarks: { type: Number, required: true },
-      startDate: { type: Date, required: true },
-      endDate: { type: Date, required: true },
-      startTime: { type: String, required: true },  // Added Start Time
-      endTime: { type: String, required: true }, 
+      startDate: { type: Date },
+      endDate: { type: Date },
+      startTime: { type: String },  // Added Start Time
+      endTime: { type: String }, 
       description: { type: String, required: true },
       questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], // Linking Questions
       candidates: [{ type: mongoose.Schema.Types.ObjectId, ref: "Candidate" }],
