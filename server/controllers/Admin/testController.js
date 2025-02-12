@@ -4,11 +4,12 @@ const Question= require('../../models/questions');
 // creating tests
 const addTests= async (req,res)=>{
     const { title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description,
-      } = req.body;
+      startTime, endTime, } = req.body;
+      console.log(req.body)
     
       try {
         // Create a new test
-        const newTest = new Test({ title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description,
+        const newTest = new Test({ title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, startTime, endTime, description,
         });
     
         // Save test to the database
