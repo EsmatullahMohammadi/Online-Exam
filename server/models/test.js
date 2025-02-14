@@ -8,8 +8,6 @@ const testSchema = new Schema({
       totalMarks: { type: Number, required: true },
       startDate: { type: Date },
       endDate: { type: Date },
-      startTime: { type: String },  // Added Start Time
-      endTime: { type: String }, 
       description: { type: String, required: true },
       questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], // Linking Questions
       candidates: [{ type: mongoose.Schema.Types.ObjectId, ref: "Candidate" }],

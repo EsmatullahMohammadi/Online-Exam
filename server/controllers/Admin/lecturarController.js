@@ -41,7 +41,7 @@ const addLecturar = async (req, res) => {
 
     // Save the lecturer to the database
     await lecturer.save();
-
+    
     // Send success message
     res.status(201).json({ message: 'Lecturer added successfully' });
   } catch (err) {

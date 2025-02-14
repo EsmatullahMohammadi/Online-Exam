@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken");
 
 const verifyUser = async (req, res, next) => {
-  
+
     try {
       // Ensure you're using the correct cookie parser middleware
       const token = req.cookies.token;  

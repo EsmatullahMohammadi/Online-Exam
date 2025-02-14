@@ -71,7 +71,7 @@ const CandidateExam = () => {
         answers,
         candidateId: sessionStorage.getItem("_id"),
       });
-      sessionStorage.setItem("results", JSON.stringify(response.data));
+      // sessionStorage.setItem("results", JSON.stringify(response.data));
       if (response.status === 200) {
         setSubmitted(true);
         alert("Exam submitted successfully!");
@@ -89,7 +89,7 @@ const CandidateExam = () => {
   };
 
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
-  if (error) return <p className="text-center text-red-500">{ error }</p>;
+  if (error) return <p className="text-center font-bold text-red-500">{ error }</p>;
   if (submitted) return <div className="text-center text-lg font-semibold text-green-500">Exam submitted. Thank you!</div>;
 
   return (

@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -50,18 +50,24 @@ function AddTest() {
         otherwise: (schema) => schema.notRequired(),
       }),
       endDate: Yup.string().when("fixedTime", {
-        is: true,
-        then: (schema) => schema
-          .required("End Date is required")
-          .test("is-valid-end-date", "End Date cannot be before Start Date.", function (value) {
-            const { startDate } = this.parent;
-            if (!startDate || !value) return true; // Skip validation if either is not set
-            const start = new Date(startDate);
-            const end = new Date(value);
-            return end >= start;
-          }),
+          is: () => fixedTime,
+          then: (schema) =>
+            schema
+              .required("End Date is required")
+              .test(
+                "is-valid-end-date",
+                "End Date cannot be before Start Date",
+                function (value) {
+                  const { startDate } = this.parent;
+                  if (!startDate || !value) return true;
+                  const start = new Date(startDate);
+                  const end = new Date(value);
+                  return end >= start;
+                }
+              ),
+          otherwise: (schema) => schema.notRequired(),
       }),
-      
+
       startTime: Yup.string().when([], {
         is: () => fixedTime,
         then: (schema) => schema.required("Start Time is required"),
@@ -110,12 +116,12 @@ function AddTest() {
         );
         alert(
           error.response?.data.message ||
-            "Failed to add test. Please try again."
+          "Failed to add test. Please try again."
         );
       }
     },
   });
-  
+
   return (
     <>
       <Breadcrumb pageName="Add Test" />
