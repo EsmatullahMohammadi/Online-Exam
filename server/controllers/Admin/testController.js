@@ -6,16 +6,21 @@ const moment = require("moment-timezone");
 const addTests = async (req, res) => {
   const { title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description,
     startTime, endTime, } = req.body;
-  // Combine date and time and set the correct timezone (e.g., Asia/Kabul)
-  const startDateTime = moment.tz(`${startDate} ${startTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul").toDate();
-  const endDateTime = moment.tz(`${endDate} ${endTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul").toDate();
-  // const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
-  // const endDateTime = new Date(`${endDate}T${endTime}:00Z`);
 
+    // Initializing date variables
+    let startDateTime = null;
+    let endDateTime = null;
+    // Combining date and time only if both are provided
+    if (startDate && startTime) {
+      startDateTime = moment.tz(`${startDate} ${startTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul").toDate();
+    } 
+    if (endDate && endTime) {
+      endDateTime = moment.tz(`${endDate} ${endTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul").toDate();
+    }
   try {
     // Create a new test
     const newTest = new Test({
-      title, examDuration, numberOfQuestions, totalMarks, startDate: startDateTime, endDate: endDateTime, startTime, endTime, description,
+      title, examDuration, numberOfQuestions, totalMarks, startDate: startDateTime, endDate: endDateTime, description,
     });
 
     // Save test to the database

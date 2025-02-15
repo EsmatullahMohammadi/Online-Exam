@@ -82,25 +82,25 @@ const GetRelatedTest = () => {
                 </p>
                 <p className="text-gray-700 dark:text-gray-400 flex items-center">
                   <FaCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
-                  <strong>Start Date:</strong> { new Date(test.startDate).toLocaleString('en-US', {
+                  <strong>Start Date:</strong> { test.startDate ? new Date(test.startDate).toLocaleString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
-                  }) }
+                  }): "No Start Date Set"}
                 </p>
                 <p className="text-gray-700 dark:text-gray-400 flex items-center">
                   <FaCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
-                  <strong>End Date:</strong> { new Date(test.endDate).toLocaleString('en-US', {
+                  <strong>End Date:</strong> { test.endDate ? new Date(test.endDate).toLocaleString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
-                  }) }
+                  }): "No End Date Set" }
                 </p>
 
                 {/* ▶ Start Test Button */ }

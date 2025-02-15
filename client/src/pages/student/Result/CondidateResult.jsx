@@ -41,16 +41,6 @@ const CandidateResult = () => {
     fetchTestDetails();
   }, [candidateId]);
 
-  // Format date function
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   // Status Styling
   const getStatusStyle = (status) => {
     switch (status) {
@@ -93,7 +83,14 @@ const CandidateResult = () => {
               </p>
               <p className="text-gray-700 dark:text-gray-400 flex items-center">
                 <FaRegCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
-                <strong className="mr-3">Submitted On:</strong> {formatDate(submittedTest?.submittedAt)}
+                <strong className="mr-3">Submitted On:</strong> { new Date(submittedTest?.submittedAt).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  }) }
               </p>
               {/* Dynamic Status with Nice Styling */}
               <p className="flex items-center">
@@ -129,11 +126,25 @@ const CandidateResult = () => {
                 </p>
                 <p className="text-gray-700 dark:text-gray-400 flex items-center">
                   <FaRegCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
-                  <strong className="mr-3">Start Date:</strong> {formatDate(test.startDate)}
+                  <strong className="mr-3">Start Date:</strong> { test.startDate ? new Date(test.startDate).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  }): "No Start Date Set" }
                 </p>
                 <p className="text-gray-700 dark:text-gray-400 flex items-center">
                   <FaRegCalendarAlt className="mr-2 text-gray-600 dark:text-gray-300" />
-                  <strong className="mr-3">End Date:</strong> {formatDate(test.endDate)}
+                  <strong className="mr-3">End Date:</strong> { test.endDate ? new Date(test.endDate).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  }): "No End Date Set" }
                 </p>
               </div>
             </div>

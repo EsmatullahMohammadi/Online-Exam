@@ -27,17 +27,11 @@ const getTestById = async (req, res) => {
       const now = moment.tz("Asia/Kabul");
       const start = moment.tz(test.startDate, "Asia/Kabul");
       const end = moment.tz(test.endDate, "Asia/Kabul");
-    
-      console.log("Start:", start.format("M/D/YYYY, h:mm:ss A"));
-      console.log("End:", end.format("M/D/YYYY, h:mm:ss A"));
-      console.log("Now:", now.format("M/D/YYYY, h:mm:ss A"));
-    
       if (now.isBefore(start)) {
         return res.status(403).json({ 
           message: "The exam has not started yet. Please check the scheduled time." 
         });
-      }
-    
+      }  
       if (now.isAfter(end)) {
         return res.status(403).json({ 
           message: "The exam has ended. You can no longer access this test." 
