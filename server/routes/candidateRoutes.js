@@ -13,6 +13,9 @@ router.get('/:candidateId/test', verifyCandidate, testController.getCandidateTes
 // route for get the result
 router.get("/candidate/:candidateId/submission/:testId", verifyCandidate, testController.getResult);
 
+router.post('/tests/save-progress', verifyCandidate, testController.saveProgress);
+router.get('/tests/progress/:testId/:candidateId', verifyCandidate, testController.getProgress);
+
 // get lecturer for setting in the frontend
 router.put('/candidate-settings/:candidateId', verifyCandidate, settingCController.editCandidate);
 

@@ -9,7 +9,8 @@ const getTestById = async (req, res) => {
   try {
     // Find the test by ID
     const submission = await CandidateResponse.findOne({ candidateId, testId });
-    if (submission) {
+    
+    if (submission && submission.status !== "Pending") {
       return res.status(200).json({
         submitted: true,
         obtainedMarks: submission.obtainedMarks,
@@ -56,9 +57,16 @@ const submitQuestion = async (req, res) => {
     const { testId, answers, candidateId } = req.body;
 
     // Check if candidate has already submitted the test
-    const existingResponse = await CandidateResponse.findOne({ testId, candidateId });
-    if (existingResponse) {
-      return res.status(400).json({ message: "You have already submitted this test. Submission is allowed only once." });
+    const existingResponse = await CandidateResponse.findOne({
+      testId,
+      candidateId,
+    });
+
+    if (existingResponse && existingResponse.status !== "Pending") {
+      return res.status(400).json({
+        message:
+          "You have already submitted this test. Submission is allowed only once.",
+      });
     }
 
     // Find test
@@ -67,7 +75,8 @@ const submitQuestion = async (req, res) => {
 
     // Find candidate
     const candidate = await Candidate.findById(candidateId);
-    if (!candidate) return res.status(404).json({ message: "Candidate not found" });
+    if (!candidate)
+      return res.status(404).json({ message: "Candidate not found" });
 
     // Find questions
     const questions = await Question.find({ _id: { $in: test.questions } });
@@ -92,30 +101,34 @@ const submitQuestion = async (req, res) => {
     const status = obtainedMarks >= passingMarks ? "Passed" : "Failed";
     candidate.status = status;
 
-    // Save candidate response
-    const candidateResponse = new CandidateResponse({
-      testId,
-      candidateId,
-      answers,
-      score,
-      obtainedMarks,
-      status,
-    });
+    // Update existing response (if available), or create new one
+    await CandidateResponse.findOneAndUpdate(
+      { testId, candidateId },
+      {
+        $set: {
+          answers,
+          score,
+          obtainedMarks,
+          status,
+          submittedAt: new Date(),
+        },
+      },
+      { upsert: true }
+    );
 
-    await candidateResponse.save();
     await candidate.save();
 
     res.json({
       message: "Test submitted successfully",
       obtainedMarks,
       status,
-      passingMarks
+      passingMarks,
     });
-
   } catch (error) {
     res.status(500).json({ message: "Error submitting test", error });
   }
 };
+
 // Get assigned test for a candidate
 const getCandidateTest = async (req, res) => {
   try {
@@ -155,4 +168,75 @@ const getResult = async (req, res) => {
   }
 }
 
-module.exports = { getTestById, submitQuestion, getCandidateTest, getResult }
+const saveProgress = async (req, res) => {
+  try {
+    const { testId, candidateId, answers, currentPage } = req.body;
+
+    // Find or create the candidate response
+    let response = await CandidateResponse.findOneAndUpdate(
+      { testId, candidateId },
+      { 
+        $set: { 
+          answers,
+          currentPage,
+          lastSaved: new Date() 
+        }
+      },
+      { 
+        upsert: true, 
+        new: true,
+        setDefaultsOnInsert: true 
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Progress saved successfully",
+      currentPage: response.currentPage
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error saving progress", 
+      error: error.message 
+    });
+  }
+};
+
+// New function to get saved progress
+const getProgress = async (req, res) => {
+  try {
+    const { testId, candidateId } = req.params;
+
+    const response = await CandidateResponse.findOne({ 
+      testId, 
+      candidateId 
+    });
+    if (!response) {
+      return res.status(200).json({
+        answers: {},
+        currentPage: 1,
+        submitted: false
+      });
+    }
+
+    res.status(200).json({
+      answers: response.answers || {},
+      currentPage: response.currentPage || 1,
+      submitted: response.status !== "Pending"
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error fetching progress", 
+      error: error.message 
+    });
+  }
+};
+
+module.exports = { 
+  getTestById, 
+  submitQuestion, 
+  getCandidateTest, 
+  getResult,
+  saveProgress,
+  getProgress
+}

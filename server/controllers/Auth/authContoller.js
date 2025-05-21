@@ -13,7 +13,7 @@ const auth = async (req, res) => {
         // Fetch the user setting (assuming there is only one record)
         const setting = await Setting.findOne();
         if (!setting) {
-          return res.status(404).json({ message: 'Settings not found' });
+          return res.status(404).json({ message: 'Admin not found' });
         }
     
         // If an email address is provided, validate it
@@ -31,8 +31,8 @@ const auth = async (req, res) => {
         
         const token= JWT.sign({_id: setting._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
         res.cookie('token', token, {httpOnly: true, maxAge: 3600000})
-        // Return the setting data
-        res.status(200).json({ message: 'Settings retrieved successfully', role: role, name: setting.fullName, adminId: setting._id});
+        // Return the admin data
+        res.status(200).json({ message: 'Admin retrieved successfully', role: role, name: setting.fullName, adminId: setting._id});
       } catch (error) {
         console.error(`Error retrieving settings: ${error.message}`);
         res.status(500).json({ message: 'Error retrieving settings', error: error.message });
@@ -66,7 +66,7 @@ const auth = async (req, res) => {
     else if(role==="Candidate"){
       
       try {
-        // Fetch the lecturer by email
+        // Fetch the condidate by userName
         const email= emailAddress;
         const candidate = await Candidate.findOne({ email });
         if (!candidate) {
@@ -75,10 +75,10 @@ const auth = async (req, res) => {
     
         // If a password is provided, validate it
         if (password) {
-          const isPasswordValid = await bcrypt.compare(password, candidate.password);
-          if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Invalid email or password' });
-          }
+          // const isPasswordValid = await bcrypt.compare(password, candidate.password);
+          // if (!isPasswordValid) {
+          //   return res.status(400).json({ message: 'Invalid email or password' });
+          // }
         }
         const candidateToken= JWT.sign({_id: candidate._id}, process.env.TOKEN_KEY, {expiresIn: '1h'});
         res.cookie('candidateToken', candidateToken, {httpOnly: true, maxAge: 3600000})

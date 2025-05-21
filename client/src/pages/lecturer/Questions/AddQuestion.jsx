@@ -9,6 +9,7 @@ import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 const AddQuestion = () => {
   const [loading, setLoading] = useState(false);
   const category = sessionStorage.getItem("category");
+  const lecturerId = sessionStorage.getItem("lecturerID");
   axios.defaults.withCredentials = true;
 
   const formik = useFormik({
@@ -40,7 +41,7 @@ const AddQuestion = () => {
           payload.append("listeningFile", values.listeningFile);
         }
 
-        const response = await axios.post(`${SUPER_DOMAIN}/add-question`, payload, {
+        const response = await axios.post(`${SUPER_DOMAIN}/add-question/${lecturerId}`, payload, {
           headers: { "Content-Type": "multipart/form-data" },
         });
 

@@ -39,7 +39,7 @@ const ViewCandidateDetails = ({ candidate, onClose }) => {
               Phone Number: <span className="font-normal">{candidate?.phoneNumber || "N/A"}</span>
             </h3>
             <h3 className="text-base font-medium text-gray-700">
-              Email: <span className="font-normal">{candidate?.email || "N/A"}</span>
+              UserName: <span className="font-normal">{candidate?.userName || "N/A"}</span>
             </h3>
             <h3 className="text-base font-medium text-gray-700">
               Status:

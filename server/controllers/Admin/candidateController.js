@@ -1,11 +1,28 @@
-const { validationResult } = require('express-validator');
-const bcrypt = require('bcryptjs');
-const Candidate = require('../../models/candidate'); // Adjust the path based on your folder structure
-const Test = require('../../models/test')
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const Candidate = require("../../models/candidate"); // Adjust the path based on your folder structure
+const Test = require("../../models/test");
+const crypto = require("crypto");
 
-// Add a candidate
 const addCandidate = async (req, res) => {
-  // Check for validation errors
+  const AES_SECRET = crypto
+    .createHash("sha256")
+    .update("your-strong-secret")
+    .digest();
+
+  // AES encryption function
+  const encryptAES = (text) => {
+    const cipher = crypto.createCipheriv(
+      "aes-256-cbc",
+      AES_SECRET,
+      Buffer.alloc(16, 0)
+    );
+    let encrypted = cipher.update(text, "utf8", "hex");
+    encrypted += cipher.final("hex");
+    return encrypted;
+  };
+
+  // Validate incoming fields (except email/password)
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -18,23 +35,157 @@ const addCandidate = async (req, res) => {
     department,
     educationDegree,
     phoneNumber,
-    email,
-    password,
     testId,
   } = req.body;
 
   try {
-    // Check if candidate already exists
-    let candidate = await Candidate.findOne({ email });
-    if (candidate) {
-      return res.status(400).json({ message: 'Candidate already exists' });
+    // Ensure phone number is unique
+    const existingByPhone = await Candidate.findOne({ phoneNumber });
+    if (existingByPhone) {
+      return res.status(400).json({ message: "Phone number already exists" });
     }
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new candidate object
-    candidate = new Candidate({
+    // Generate random credentials
+    const generateRandomNumberString = (length) => {
+      return Math.random()
+        .toString()
+        .slice(2, 2 + length);
+    };
+
+    let randomUserName;
+    let existingByUserName;
+    do {
+      randomUserName = `${name}@${generateRandomNumberString(5)}`;
+      existingByUserName = await Candidate.findOne({
+        userName: randomUserName,
+      });
+    } while (existingByUserName);
+
+    const randomPassword = generateRandomNumberString(8); // 8-digit number
+
+    // Encrypt password using AES 256
+    const encryptedPassword = encryptAES(randomPassword);
+
+    // Create a new candidate object with generated credentials
+    const candidate = new Candidate({
+      name,
+      fatherName,
+      university,
+      faculty,
+      department,
+      educationDegree,
+      phoneNumber,
+      userName: randomUserName,
+      password: encryptedPassword,
+      testId,
+    });
+
+    // Save the candidate to the database (store encrypted password)
+    await candidate.save();
+
+    // Optionally add Candidate ID to the Test model
+    if (testId) {
+      await Test.findByIdAndUpdate(
+        testId,
+        { $push: { candidates: candidate._id } },
+        { new: true }
+      );
+    }
+
+    // Return generated credentials to the admin
+    res.status(201).json({
+      message: "Candidate added successfully",
+      candidateId: candidate._id,
+      userName: randomUserName,
+      password: randomPassword, // plaintext password returned only to admin
+    });
+  } catch (err) {
+    console.error("Error adding candidate:", err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+// get all candidate
+const getCandidates = async (req, res) => {
+  try {
+    // Retrieve all tests from the database
+    const candidate = await Candidate.find().sort({ createdAt: -1 });
+    const tests = await Test.find().sort({ createdAt: -1 });
+    res.status(200).json({
+      message: "Candidate retrieved successfully!",
+      candidate,
+      tests,
+    });
+  } catch (error) {
+    console.error("Error retrieving candidate:", error.message);
+    res.status(500).json({ error: "Failed to retrieve candidate" });
+  }
+};
+
+const getCandidatesByTest = async (req, res) => {
+  try {
+    const { testId } = req.query;
+    if (!testId) {
+      return res.status(400).json({ error: "پارامتر testId الزامی است." });
+    }
+
+    const AES_SECRET = crypto
+      .createHash("sha256")
+      .update("your-strong-secret")
+      .digest();
+
+    // AES decryption function
+    const decryptAES = (encryptedText) => {
+      const decipher = crypto.createDecipheriv(
+        "aes-256-cbc",
+        AES_SECRET,
+        Buffer.alloc(16, 0)
+      );
+      let decrypted = decipher.update(encryptedText, "hex", "utf8");
+      decrypted += decipher.final("utf8");
+      return decrypted;
+    };
+
+    // Fetch candidates by testId
+    const candidates = await Candidate.find({ testId }).sort({ createdAt: -1 });
+
+    // Decrypt password for each candidate
+    const candidatesWithDecryptedPassword = candidates.map((candidate) => {
+      const decryptedPassword = decryptAES(candidate.password);
+      return {
+        ...candidate.toObject(),
+        password: decryptedPassword,
+      };
+    });
+
+    res.status(200).json({
+      message: "کاندیداها با موفقیت دریافت شدند.",
+      candidates: candidatesWithDecryptedPassword,
+    });
+  } catch (error) {
+    console.error("Error retrieving candidates by test:", error.message);
+    res.status(500).json({ error: "خطا در دریافت کاندیداها." });
+  }
+};
+
+// Editing a candidadte
+const updateCandidate = async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    fatherName,
+    university,
+    faculty,
+    department,
+    educationDegree,
+    phoneNumber,
+    email,
+    password,
+  } = req.body;
+
+  try {
+    // Create an update object without the password initially
+    const updateFields = {
       name,
       fatherName,
       university,
@@ -43,49 +194,7 @@ const addCandidate = async (req, res) => {
       educationDegree,
       phoneNumber,
       email,
-      password: hashedPassword,
-      testId,
-    });
-
-    // Save the candidate to the database
-    await candidate.save();
-    //  Add Candidate ID to the Test Model
-    if (testId) {
-      await Test.findByIdAndUpdate(
-        testId,
-        { $push: { candidates: candidate._id } }, // Add candidateId to test
-        { new: true, useFindAndModify: false }
-      );
-    }
-    // Send success message
-    res.status(201).json({ message: 'Candidate added successfully' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
-// get all candidate
-const getCandidates = async (req, res) => {
-  try {
-    // Retrieve all tests from the database
-    const candidate = await Candidate.find().sort({ createdAt: -1 });
-    res.status(200).json({
-      message: "Candidate retrieved successfully!",
-      candidate,
-    });
-  } catch (error) {
-    console.error("Error retrieving candidate:", error.message);
-    res.status(500).json({ error: "Failed to retrieve candidate" });
-  }
-};
-// Editing a candidadte
-const updateCandidate = async (req, res) => {
-  const { id } = req.params;
-  const { name, fatherName, university, faculty, department, educationDegree, phoneNumber, email, password } = req.body;
-
-  try {
-    // Create an update object without the password initially
-    const updateFields = { name, fatherName, university, faculty, department, educationDegree, phoneNumber, email };
+    };
 
     // If password is not empty, add it to updateFields
     if (password && password.trim() !== "") {
@@ -115,27 +224,32 @@ const updateCandidate = async (req, res) => {
     res.status(500).json({ error: "Failed to update candidate" });
   }
 };
-  // Deleting a candidate by ID
-  const deleteTest = async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      // Find the test by ID and delete it
-      const deletedCandidate = await Candidate.findByIdAndDelete(id);
-  
-      if (!deletedCandidate) {
-        return res.status(404).json({ message: "Candidate not found!" });
-      }
-  
-      res.status(200).json({
-        message: "Candidate deleted successfully!",
-        candidate: deletedCandidate, // Optionally return the deleted test details
-      });
-    } catch (error) {
-      console.error("Error deleting candidate:", error.message);
-      res.status(500).json({ error: "Failed to delete candidate" });
+// Deleting a candidate by ID
+const deleteTest = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the test by ID and delete it
+    const deletedCandidate = await Candidate.findByIdAndDelete(id);
+
+    if (!deletedCandidate) {
+      return res.status(404).json({ message: "Candidate not found!" });
     }
-  };
 
+    res.status(200).json({
+      message: "Candidate deleted successfully!",
+      candidate: deletedCandidate, // Optionally return the deleted test details
+    });
+  } catch (error) {
+    console.error("Error deleting candidate:", error.message);
+    res.status(500).json({ error: "Failed to delete candidate" });
+  }
+};
 
-module.exports = { addCandidate, getCandidates, updateCandidate, deleteTest };
+module.exports = {
+  addCandidate,
+  getCandidates,
+  updateCandidate,
+  deleteTest,
+  getCandidatesByTest,
+};

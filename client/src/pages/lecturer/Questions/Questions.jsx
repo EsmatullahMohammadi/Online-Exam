@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -10,15 +9,14 @@ const Questions = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const category = sessionStorage.getItem("category"); // Get category from session storage
-
-  axios.defaults.withCredentials = true;
+  // const category = sessionStorage.getItem("category");
+  const lecturerId = sessionStorage.getItem("lecturerID");
 
   useEffect(() => {
     async function fetchQuestions() {
       try {
         setLoading(true);
-        const response = await axios.get(`${SUPER_DOMAIN}/all-questions/${category}`, {
+        const response = await axios.get(`${SUPER_DOMAIN}/all-questions/${lecturerId}`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -35,7 +33,7 @@ const Questions = () => {
     }
 
     fetchQuestions();
-  }, [category]); // Fetch when category changes
+  }, [lecturerId]);
 
   return (
     <>

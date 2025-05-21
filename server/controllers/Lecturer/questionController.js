@@ -4,6 +4,7 @@ const Question = require("../../models/questions");
 // Add Question Controller
 const addQuestion = async (req, res) => {
   try {
+    const createdBy = req.params.userId;
     const { question, options, correctAnswer, category } = req.body;
     let listeningFile = req.file ? req.file.filename : null; // File path if uploaded
 
@@ -41,6 +42,7 @@ const addQuestion = async (req, res) => {
       correctAnswer,
       category,
       listeningFile,
+      createdBy
     });
     await newQuestion.save();
 
@@ -54,16 +56,16 @@ const addQuestion = async (req, res) => {
   // Get questions by category
 const getQuestionsByCategory = async (req, res) => {
     try {
-        const { category } = req.params;
+        const { userId } = req.params;
 
-        if (!category) {
-            return res.status(400).json({ message: "Category is required." });
+        if (!userId) {
+            return res.status(400).json({ message: "UserId is required." });
         }
 
-        const questions = await Question.find({ category });
-
+        const questions = await Question.find({ createdBy: userId });
+        
         if (questions.length === 0) {
-            return res.status(404).json({ message: "No questions found for your category." });
+            return res.status(404).json({ message: "No questions found for this user." });
         }
 
         res.status(200).json(questions);

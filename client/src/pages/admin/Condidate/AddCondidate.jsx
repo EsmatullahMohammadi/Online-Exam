@@ -38,10 +38,6 @@ const AddCandidate = () => {
     phoneNumber: Yup.string()
     .matches(/^[0-9]{10,15}$/, 'Phone Number must be between 10 and 15 digits')
     .required('Phone Number is required'),
-    email: Yup.string().email('Invalid email address').required('Email is required'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .required('Password is required'),
     testId: Yup.string().required('Test is required'),
   });
 
@@ -154,8 +150,6 @@ const AddCandidate = () => {
                   { name: 'faculty', label: 'Faculty', type: 'text' },
                   { name: 'department', label: 'Department', type: 'text' },
                   { name: 'phoneNumber', label: 'Phone Number', type: 'text' },
-                  { name: 'email', label: 'Email', type: 'email' },
-                  { name: 'password', label: 'Password', type: 'password' },
                 ].map(({ name, label, type }) => (
                   <div key={name}>
                     <label

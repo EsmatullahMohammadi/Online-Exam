@@ -18,6 +18,11 @@ const QuestionSchema = new mongoose.Schema({
   correctAnswer: { type: String, required: true },
   category: { type: String, required: true },
   listeningFile: { type: String }, // Optional field for Listening questions
+  createdBy: { 
+    type: mongoose.Schema.Types.ObjectId, // Reference to User model
+    ref: "Lecturer", // Ensure you have a User model
+    required: true,
+  },
 },{timestamps: true});
 
 const Question= mongoose.model("Question", QuestionSchema);

@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -23,17 +23,17 @@ const CandidateExam = () => {
     fetchTestAndQuestions();
   }, []);
 
-  useEffect(() => {
-    if (timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prevTime) => prevTime - 1);
-      }, 1000);
+  // useEffect(() => {
+  //   if (timeLeft > 0) {
+  //     const timer = setInterval(() => {
+  //       setTimeLeft((prevTime) => prevTime - 1);
+  //     }, 1000);
 
-      return () => clearInterval(timer);
-    } else if (timeLeft === 0 && test) {
-      handleSubmit();
-    }
-  }, [timeLeft, test]);
+  //     return () => clearInterval(timer);
+  //   } else if (timeLeft === 0 && test) {
+  //     handleSubmit();
+  //   }
+  // }, [timeLeft, test]);
 
   const fetchTestAndQuestions = async () => {
     try {
@@ -60,11 +60,6 @@ const CandidateExam = () => {
   };
 
   const handleSubmit = async () => {
-    if (Object.keys(answers).length !== questions.length) {
-      alert("Please answer all questions before submitting.");
-      return;
-    }
-
     try {
       const response = await axios.post(`${SUPER_DOMAIN}/tests/submit-exam`, {
         testId,

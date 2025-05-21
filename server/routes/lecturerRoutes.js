@@ -25,9 +25,9 @@ const upload = multer({ storage });
 // router.post('/get-lecturer', settingLController.getLecturer);
 
 // adding question
-router.post("/add-question", verifyLecturer, upload.single("listeningFile"), questionController.addQuestion);
+router.post("/add-question/:userId", verifyLecturer, upload.single("listeningFile"), questionController.addQuestion);
 // get questions by the category
-router.get("/all-questions/:category", verifyLecturer, questionController.getQuestionsByCategory);
+router.get("/all-questions/:userId", verifyLecturer, questionController.getQuestionsByCategory);
 
 // get lecturer for setting in the frontend
 router.put('/settings/:lecturerId', verifyLecturer, settingLController.editLecturer);
