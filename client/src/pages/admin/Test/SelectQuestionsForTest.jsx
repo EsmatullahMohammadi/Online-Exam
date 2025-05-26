@@ -14,10 +14,10 @@ const SelectQuestionsForTest = () => {
   const [filterType, setFilterType] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); 
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   axios.defaults.withCredentials = true;
 
@@ -70,7 +70,7 @@ const SelectQuestionsForTest = () => {
       alert("Not enough questions available to assign.");
       return;
     }
-  
+
     // Group questions by category
     const categoryMap = questions.reduce((acc, question) => {
       if (!acc[question.category]) acc[question.category] = [];
@@ -78,20 +78,45 @@ const SelectQuestionsForTest = () => {
       return acc;
     }, {});
 
-    const categories = Object.keys(categoryMap);
-    const numCategories = categories.length;
-    const questionsPerCategory = Math.floor(numberOfQuestion / numCategories);
-    let remainingQuestions = numberOfQuestion % numCategories;
-    let selectedQuestions = [];
-
-    categories.forEach((category) => {
-      let shuffled = [...categoryMap[category]].sort(() => 0.5 - Math.random());
-      let count = questionsPerCategory + (remainingQuestions > 0 ? 1 : 0);
-      remainingQuestions--;
-      selectedQuestions.push(...shuffled.slice(0, count));
+    // Shuffle all questions in each category
+    Object.keys(categoryMap).forEach((cat) => {
+      categoryMap[cat] = categoryMap[cat].sort(() => 0.5 - Math.random());
     });
-  
-    // Extract selected question IDs
+
+    let selectedQuestions = [];
+    let remainingCount = numberOfQuestion;
+
+    // First attempt: allocate evenly
+    const categories = Object.keys(categoryMap);
+    const basePerCategory = Math.floor(numberOfQuestion / categories.length);
+    let extra = numberOfQuestion % categories.length;
+
+    for (const category of categories) {
+      const available = categoryMap[category];
+      let count = basePerCategory + (extra > 0 ? 1 : 0);
+      extra--;
+
+      const toTake = Math.min(count, available.length);
+      selectedQuestions.push(...available.splice(0, toTake));
+      remainingCount -= toTake;
+    }
+
+    // Second attempt: fill from any leftover questions in any category
+    if (remainingCount > 0) {
+      const leftovers = Object.values(categoryMap)
+        .flat()
+        .sort(() => 0.5 - Math.random());
+
+      selectedQuestions.push(...leftovers.slice(0, remainingCount));
+      remainingCount -= leftovers.length;
+    }
+
+    // Final check
+    if (selectedQuestions.length !== numberOfQuestion) {
+      alert("Could not assign the required number of questions.");
+      return;
+    }
+
     const randomQuestionIds = selectedQuestions.map((q) => q._id);
 
     try {
@@ -100,17 +125,22 @@ const SelectQuestionsForTest = () => {
         questionIds: randomQuestionIds,
       });
       if (response.status === 200) {
-        alert(response.data.message || "Random questions assigned successfully!");
+        alert(
+          response.data.message || "Random questions assigned successfully!"
+        );
         setSelectedQuestions(randomQuestionIds);
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to assign random questions.");
+      alert(
+        error.response?.data?.message || "Failed to assign random questions."
+      );
     }
   };
-  
 
   const filteredQuestions =
-    filterType === "all" ? questions : questions.filter((q) => q.category === filterType);
+    filterType === "all"
+      ? questions
+      : questions.filter((q) => q.category === filterType);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage);
@@ -123,22 +153,19 @@ const SelectQuestionsForTest = () => {
     <>
       <Breadcrumb pageName="Select Questions" />
 
-      {/* Action Buttons */}
-      <div className="mb-3 flex justify-end space-x-3"> 
-        {/* Assign Random Questions */}
-        <Link to={`/admin/demo-question/${testId}`}
+      <div className="mb-3 flex justify-end space-x-3">
+        <Link
+          to={`/admin/demo-question/${testId}`}
           className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
         >
           See Demo Questions
-        </Link>      
-        {/* Assign Random Questions */}
+        </Link>
         <button
           className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onClick={handleAssignRandomQuestions}
         >
           Assign Random Questions
         </button>
-        {/* Assign Selected Questions */}
         <button
           className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onClick={handleSubmit}
@@ -154,7 +181,9 @@ const SelectQuestionsForTest = () => {
 
           {/* Filter Dropdown */}
           <div>
-            <label className="mr-2 font-medium text-black dark:text-white">Filter by Type:</label>
+            <label className="mr-2 font-medium text-black dark:text-white">
+              Filter by Type:
+            </label>
             <select
               className="border p-2 rounded-md bg-white dark:bg-boxdark dark:text-white focus:outline-none"
               value={filterType}
@@ -174,15 +203,24 @@ const SelectQuestionsForTest = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-300 dark:bg-meta-4">
-                <th className="py-3 px-4 text-left text-black dark:text-white">Select</th>
-                <th className="py-3 px-4 text-left text-black dark:text-white">Question</th>
-                <th className="py-3 px-4 text-left text-black dark:text-white">Category</th>
+                <th className="py-3 px-4 text-left text-black dark:text-white">
+                  Select
+                </th>
+                <th className="py-3 px-4 text-left text-black dark:text-white">
+                  Question
+                </th>
+                <th className="py-3 px-4 text-left text-black dark:text-white">
+                  Category
+                </th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="3" className="text-center py-3 text-black dark:text-white">
+                  <td
+                    colSpan="3"
+                    className="text-center py-3 text-black dark:text-white"
+                  >
                     Loading...
                   </td>
                 </tr>
@@ -194,9 +232,14 @@ const SelectQuestionsForTest = () => {
                 </tr>
               ) : paginatedQuestions.length > 0 ? (
                 paginatedQuestions.map((question, index) => (
-                  <tr key={index} className="border-b border-[#eee] dark:border-strokedark">
+                  <tr
+                    key={index}
+                    className="border-b border-[#eee] dark:border-strokedark"
+                  >
                     <td className="py-3 px-4 flex items-center justify-between">
-                      <span className="pr-2 border-r-4 rounded-full">{(currentPage - 1) * itemsPerPage + index + 1}</span>
+                      <span className="pr-2 border-r-4 rounded-full">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </span>
                       <input
                         type="checkbox"
                         className="form-checkbox text-primary rounded focus:ring-primary focus:ring-opacity-50"
@@ -204,7 +247,9 @@ const SelectQuestionsForTest = () => {
                         onChange={() => handleSelectQuestion(question._id)}
                       />
                     </td>
-                    <td className="py-3 px-4 text-black dark:text-white">{question.question}</td>
+                    <td className="py-3 px-4 text-black dark:text-white">
+                      {question.question}
+                    </td>
                     <td className="py-3 px-4 capitalize text-black dark:text-white">
                       {question.category}
                     </td>
@@ -212,7 +257,10 @@ const SelectQuestionsForTest = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="text-center py-3 text-black dark:text-white">
+                  <td
+                    colSpan="3"
+                    className="text-center py-3 text-black dark:text-white"
+                  >
                     No questions found.
                   </td>
                 </tr>

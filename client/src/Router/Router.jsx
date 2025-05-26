@@ -54,7 +54,7 @@ const RouterComponent = () => {
           <AboutHome />
           <Footer />
         </>
-      ), // This is the layout component
+      ), 
     },
     {
       path: "/admin",
