@@ -7,7 +7,7 @@ const crypto = require("crypto");
 const addCandidate = async (req, res) => {
   const AES_SECRET = crypto
     .createHash("sha256")
-    .update("your-strong-secret")
+    .update(process.env.AESSECRET)
     .digest();
 
   // AES encryption function
@@ -126,12 +126,12 @@ const getCandidatesByTest = async (req, res) => {
   try {
     const { testId } = req.query;
     if (!testId) {
-      return res.status(400).json({ error: "پارامتر testId الزامی است." });
+      return res.status(400).json({ error: "testId is requiered" });
     }
 
     const AES_SECRET = crypto
       .createHash("sha256")
-      .update("your-strong-secret")
+      .update(process.env.AESSECRET)
       .digest();
 
     // AES decryption function
@@ -159,12 +159,12 @@ const getCandidatesByTest = async (req, res) => {
     });
 
     res.status(200).json({
-      message: "کاندیداها با موفقیت دریافت شدند.",
+      message: "Condiate retrived successfully",
       candidates: candidatesWithDecryptedPassword,
     });
   } catch (error) {
     console.error("Error retrieving candidates by test:", error.message);
-    res.status(500).json({ error: "خطا در دریافت کاندیداها." });
+    res.status(500).json({ error: "Error retriving condidates" });
   }
 };
 
