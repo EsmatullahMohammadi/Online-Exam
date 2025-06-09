@@ -1,63 +1,75 @@
-/* eslint-disable no-unused-vars */
-
-/* eslint-disable react/no-unknown-property */
-import  { useEffect, useState } from 'react';
-import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import { Link } from 'react-router-dom';
-import { MdAdd, MdDelete} from 'react-icons/md';
-import axios from 'axios';
-import { SUPER_DOMAIN } from '../constant';
-import Pagination from '../../../components/Pagination';
+import { useEffect, useState } from "react";
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
+import { Link } from "react-router-dom";
+import { MdAdd, MdDelete } from "react-icons/md";
+import axios from "axios";
+import { SUPER_DOMAIN } from "../constant";
+import Pagination from "../../../components/Pagination";
+import { useSearch } from "../../../context/SearchContext";
 
 const Lecturer = () => {
-  const [lecturers, setLecturers] = useState([]); // State to store lecturers
-  const [error, setError] = useState(''); // State to store any errors
+  const { searchValue } = useSearch();
+  const [lecturers, setLecturers] = useState([]);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); 
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   axios.defaults.withCredentials = true;
 
-  // Fetch data from the backend using Axios
   useEffect(() => {
-    async function fetchLecturers ()  {
+    async function fetchLecturers() {
       try {
         setLoading(true);
-        const response = await axios.get(`${SUPER_DOMAIN}/all-lecturars` , {
+        const response = await axios.get(`${SUPER_DOMAIN}/all-lecturars`, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        }); // Update this with your backend endpoint
-        setLecturers(response.data.lecturar); // Set the retrieved data to state
+        });
+        setLecturers(response.data.lecturar);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchLecturers();
   }, []);
 
+  const filteredLecturers = lecturers.filter((lecturer) => {
+    const searchLower = searchValue.toLowerCase();
+    return (
+      lecturer.name.toLowerCase().includes(searchLower) ||
+      lecturer.lastName.toLowerCase().includes(searchLower) ||
+      lecturer.email.toLowerCase().includes(searchLower) ||
+      lecturer.category.toLowerCase().includes(searchLower)
+    );
+  });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchValue]);
+
   const deleteLecturer = async (lecturarID) => {
     try {
-      const confirmDelete = window.confirm("Are you sure you want to delete this lecturer?");
-      if (!confirmDelete) return; // If the user cancels the delete, exit
-
-      // Send DELETE request to the backend
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this lecturer?"
+      );
+      if (!confirmDelete) return;
       await axios.delete(`${SUPER_DOMAIN}/lecturars/${lecturarID}`);
-      // Remove the deleted lecturer from the state
-      setLecturers((prevLecturer) => prevLecturer.filter((lecturar) => lecturar._id !== lecturarID));
+      setLecturers((prevLecturer) =>
+        prevLecturer.filter((lecturar) => lecturar._id !== lecturarID)
+      );
       alert("Lecturer deleted successfully!");
     } catch (err) {
-      alert("Failed to delete lecturer.",err.message);
+      alert("Failed to delete lecturer.", err.message);
     }
   };
-  // pagination concept
-  const totalPages = Math.ceil(lecturers.length / itemsPerPage);
-  const paginatedLecturer = lecturers.slice(
+
+  const totalPages = Math.ceil(filteredLecturers.length / itemsPerPage);
+  const paginatedLecturer = filteredLecturers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -80,7 +92,9 @@ const Lecturer = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-300 text-left dark:bg-meta-4">
-                <th className=" py-4 px-4 font-medium text-black dark:text-white">#</th>
+                <th className=" py-4 px-4 font-medium text-black dark:text-white">
+                  #
+                </th>
                 <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                   Name
                 </th>
@@ -99,23 +113,24 @@ const Lecturer = () => {
               </tr>
             </thead>
             <tbody>
-            {loading ? (
+              {loading ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-3">
+                  <td colSpan="6" className="text-center py-3">
                     Loading...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-3 text-red-500">
+                  <td colSpan="6" className="text-center py-3 text-red-500">
                     {error}
                   </td>
                 </tr>
-              ) :
-              paginatedLecturer.length > 0 ? (
+              ) : filteredLecturers.length > 0 ? (
                 paginatedLecturer.map((lecturer, key) => (
                   <tr key={key}>
-                    <td className="py-3 px-4">{(currentPage - 1) * itemsPerPage + key + 1}</td>
+                    <td className="py-3 px-4">
+                      {(currentPage - 1) * itemsPerPage + key + 1}
+                    </td>
                     <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
                       <h5 className="font-medium text-black dark:text-white">
                         {lecturer.name}
@@ -140,7 +155,10 @@ const Lecturer = () => {
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">
-                        <button className="hover:text-primary" onClick={() => deleteLecturer(lecturer._id)}>
+                        <button
+                          className="hover:text-primary"
+                          onClick={() => deleteLecturer(lecturer._id)}
+                        >
                           <MdDelete className="text-2xl text-red-500 hover:text-red-600" />
                         </button>
                       </div>
@@ -149,21 +167,21 @@ const Lecturer = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center py-4">
-                    No lecturers found.
+                  <td colSpan="6" className="text-center py-4">
+                    No lecturers found{" "}
+                    {searchValue && `matching "${searchValue}"`}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
         <div className="my-3">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             setCurrentPage={setCurrentPage}
-            setItemsPerPage={setItemsPerPage} // Pass the setItemsPerPage function
+            setItemsPerPage={setItemsPerPage}
           />
         </div>
       </div>

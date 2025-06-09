@@ -31,9 +31,9 @@ const auth = async (req, res) => {
       }
 
       const token = JWT.sign({ _id: setting._id }, process.env.TOKEN_KEY, {
-        expiresIn: "1h",
+        expiresIn: "1d",
       });
-      res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
+      res.cookie("token", token, { httpOnly: true, maxAge: 36000000 });
       res.status(200).json({
         message: "Admin retrieved successfully",
         role: role,
@@ -65,11 +65,11 @@ const auth = async (req, res) => {
       const lecturerToken = JWT.sign(
         { _id: lecturer._id },
         process.env.TOKEN_KEY,
-        { expiresIn: "1h" }
+        { expiresIn: "1d" }
       );
       res.cookie("lecturerToken", lecturerToken, {
         httpOnly: true,
-        maxAge: 3600000,
+        maxAge: 36000000,
       });
       res.status(200).json({
         message: "Lecturer retrieved successfully",
@@ -104,12 +104,12 @@ const auth = async (req, res) => {
       const candidateToken = JWT.sign(
         { _id: candidate._id },
         process.env.TOKEN_KEY,
-        { expiresIn: "1h" }
+        { expiresIn: "1d" }
       );
 
       res.cookie("candidateToken", candidateToken, {
         httpOnly: true,
-        maxAge: 3600000,
+        maxAge: 36000000,
       });
 
       res.status(200).json({
