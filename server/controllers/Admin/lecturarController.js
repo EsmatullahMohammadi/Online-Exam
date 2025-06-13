@@ -13,7 +13,7 @@ const addLecturar = async (req, res) => {
   const { name, lastName, email, password, category } = req.body; // Extract category
   try {
     // Validate the category
-    const validCategories = ['Reading', 'Writing', 'Speaking', 'Listening'];
+    const validCategories = ['Reading', 'Writing', 'Grammar', 'Listening'];
     if (!validCategories.includes(category)) {
       return res
         .status(400)

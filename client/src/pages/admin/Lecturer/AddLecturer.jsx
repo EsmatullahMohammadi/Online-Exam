@@ -7,6 +7,7 @@ import { SUPER_DOMAIN } from '../constant';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { QuestionCategory } from '../../../types/questionType';
 
 const AddLecturer = () => {
   const [error, setError] = useState('');
@@ -64,11 +65,11 @@ const AddLecturer = () => {
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <Formik
           initialValues={{
-            name: '',
-            lastName: '',
-            email: '',
-            password: '',
-            category: '',
+            name: "",
+            lastName: "",
+            email: "",
+            password: "",
+            category: "",
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
@@ -77,55 +78,81 @@ const AddLecturer = () => {
             <Form className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5">
               {/* Name */}
               <div>
-                <label className="mb-3 block text-black dark:text-white">Name</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Name
+                </label>
                 <Field
                   type="text"
                   name="name"
                   placeholder="Name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-                <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
               </div>
 
               {/* Last Name */}
               <div>
-                <label className="mb-3 block text-black dark:text-white">Last Name</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Last Name
+                </label>
                 <Field
                   type="text"
                   name="lastName"
                   placeholder="Last Name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-                <ErrorMessage name="lastName" component="div" className="text-red-500 text-sm" />
+                <ErrorMessage
+                  name="lastName"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
               </div>
 
               {/* Email */}
               <div>
-                <label className="mb-3 block text-black dark:text-white">Email</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Email
+                </label>
                 <Field
                   type="email"
                   name="email"
                   placeholder="Email"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-                <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
               </div>
 
               {/* Password */}
               <div>
-                <label className="mb-3 block text-black dark:text-white">Password</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Password
+                </label>
                 <Field
                   type="password"
                   name="password"
                   placeholder="Password"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-                <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
               </div>
 
               {/* Category */}
               <div>
-                <label className="mb-3 block text-black dark:text-white">Select a Category</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Select a Category
+                </label>
                 <div className="relative z-20 bg-white dark:bg-form-input">
                   <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
                     <MdPublic className="text-gray-500 opacity-80" size={20} />
@@ -138,14 +165,21 @@ const AddLecturer = () => {
                     <option value="" disabled>
                       Select a Category
                     </option>
-                    <option value="Reading">Reading</option>
-                    <option value="Writing">Writing</option>
-                    <option value="Speaking">Speaking</option>
-                    <option value="Listening">Listening</option>
+                    <option value={QuestionCategory.READING}>Reading</option>
+                    <option value={QuestionCategory.WRITING}>Writing</option>
+                    <option value={QuestionCategory.GRAMMAR}>grammar</option>
+                    <option value={QuestionCategory.LISTENING}>Listening</option>
                   </Field>
-                  <ErrorMessage name="category" component="div" className="text-red-500 text-sm" />
+                  <ErrorMessage
+                    name="category"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
                   <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-                    <MdArrowDropDown className="text-gray-500 opacity-80" size={24} />
+                    <MdArrowDropDown
+                      className="text-gray-500 opacity-80"
+                      size={24}
+                    />
                   </span>
                 </div>
               </div>
@@ -157,7 +191,7 @@ const AddLecturer = () => {
                   disabled={isSubmitting}
                   className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3.5 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 w-full mt-auto"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Test/Exam'}
+                  {isSubmitting ? "Adding..." : "Add Test/Exam"}
                 </button>
               </div>
             </Form>

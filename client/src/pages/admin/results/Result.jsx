@@ -7,8 +7,10 @@ import ViewResultsDetails from "./ViewResultsDetails";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { FaDownload } from "react-icons/fa";
 import useExportPDF from "../../../hooks/useExportPDF";
+import { useSearch } from "../../../context/SearchContext";
 
 const Result = () => {
+  const { searchValue } = useSearch();
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,9 @@ const Result = () => {
   // Filters
   const [selectedTest, setSelectedTest] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+
   axios.defaults.withCredentials = true;
+
   useEffect(() => {
     const fetchResults = async () => {
       try {
@@ -48,23 +52,35 @@ const Result = () => {
     fetchResults();
   }, []);
 
-  // Apply filters
+  // Apply filters and search
   useEffect(() => {
     let filtered = results;
 
+    // Apply test filter
     if (selectedTest) {
       filtered = filtered.filter(
         (result) => result.testId?.title === selectedTest
       );
     }
 
+    // Apply status filter
     if (selectedStatus) {
       filtered = filtered.filter((result) => result.status === selectedStatus);
     }
 
+    // Apply search filter
+    if (searchValue) {
+      const searchLower = searchValue.toLowerCase();
+      filtered = filtered.filter(
+        (result) =>
+          result.candidateId?.name?.toLowerCase().includes(searchLower) ||
+          result.testId?.title?.toLowerCase().includes(searchLower)
+      );
+    }
+
     setFilteredResults(filtered);
-    setCurrentPage(1); // Reset to first page when filtering
-  }, [selectedTest, selectedStatus, results]);
+    setCurrentPage(1); // Reset to first page when filtering or searching
+  }, [selectedTest, selectedStatus, searchValue, results]);
 
   // Get unique test titles for dropdown
   const testTitles = [
@@ -154,7 +170,7 @@ const Result = () => {
                       {error}
                     </td>
                   </tr>
-                ) : paginatedResults.length > 0 ? (
+                ) : filteredResults.length > 0 ? (
                   paginatedResults.map((result, index) => (
                     <tr
                       key={result._id}
@@ -201,7 +217,10 @@ const Result = () => {
                 ) : (
                   <tr>
                     <td colSpan="6" className="text-center py-3">
-                      No results found.
+                      No results found{" "}
+                      {searchValue && `matching "${searchValue}"`}
+                      {selectedTest && ` for test "${selectedTest}"`}
+                      {selectedStatus && ` with status "${selectedStatus}"`}
                     </td>
                   </tr>
                 )}
@@ -209,14 +228,16 @@ const Result = () => {
             </table>
           </div>
         </div>
-        <div className="my-3">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-            setItemsPerPage={setItemsPerPage}
-          />
-        </div>
+        {filteredResults.length > 0 && (
+          <div className="my-3">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+              setItemsPerPage={setItemsPerPage}
+            />
+          </div>
+        )}
       </div>
       {isOpenModel && (
         <ViewResultsDetails

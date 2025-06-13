@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { SUPER_DOMAIN } from "../constant";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import Pagination from "../../../components/Pagination";
+import { QuestionCategory } from "../../../types/questionType";
 
 const SelectQuestionsForTest = () => {
   const { testName } = useParams();
@@ -190,10 +191,10 @@ const SelectQuestionsForTest = () => {
               onChange={(e) => setFilterType(e.target.value)}
             >
               <option value="all">All</option>
-              <option value="Reading">Reading</option>
-              <option value="Writing">Writing</option>
-              <option value="Speaking">Speaking</option>
-              <option value="Listening">Listening</option>
+              <option value={QuestionCategory.READING}>Reading</option>
+              <option value={QuestionCategory.WRITING}>Writing</option>
+              <option value={QuestionCategory.GRAMMAR}>Grammar</option>
+              <option value={QuestionCategory.LISTENING}>Listening</option>
             </select>
           </div>
         </div>
