@@ -1,78 +1,124 @@
-
 const Question = require("../../models/questions");
 
-// Add Question Controller
 const addQuestion = async (req, res) => {
   try {
     const createdBy = req.params.userId;
-    const { question, options, correctAnswer, category } = req.body;
-    let listeningFile = req.file ? req.file.filename : null; // File path if uploaded
+    const { passage, questions: questionsStr, category } = req.body;
 
-    // Convert options to an array if it's not already (in case of incorrect format)
-    const parsedOptions = typeof options === "string" ? JSON.parse(options) : options;
+    // Parse questions
+    let questions;
+    try {
+      questions = JSON.parse(questionsStr);
+    } catch (e) {
+      return res.status(400).json({ message: "Invalid questions format" });
+    }
 
     // Validate required fields
-    if (!question || !Array.isArray(parsedOptions) || !correctAnswer || !category) {
-      return res.status(400).json({ message: "All fields are required." });
+    if (category === "Reading" && !passage) {
+      return res
+        .status(400)
+        .json({ message: "Passage is required for Reading questions." });
     }
 
-    // Validate options length based on category
-    if (category === "Listening") {
-      if (parsedOptions.length !== 2 && parsedOptions.length !== 4) {
-        return res.status(400).json({ message: "Listening questions must have either 2 or 4 options." });
-      }
-      if (!listeningFile) {
-        return res.status(400).json({ message: "Listening file is required for Listening questions." });
-      }
-    } else {
-      if (parsedOptions.length !== 4) {
-        return res.status(400).json({ message: "Non-Listening questions must have exactly 4 options." });
-      }
+    if (category === "Listening" && !req.file) {
+      return res.status(400).json({
+        message: "Listening file is required for Listening questions.",
+      });
     }
 
-    // Ensure correctAnswer exists in the options array
-    if (!parsedOptions.includes(correctAnswer)) {
-      return res.status(400).json({ message: "Correct answer must be one of the provided options." });
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one question is required." });
     }
 
-    // Save the question
-    const newQuestion = new Question({
-      question,
-      options: parsedOptions,
-      correctAnswer,
-      category,
-      listeningFile,
-      createdBy
+    // Process and validate each question
+    const processedQuestions = questions.map((q) => {
+      // Filter out empty options
+      const filteredOptions = q.options.filter((opt) => opt.trim() !== "");
+
+      return {
+        questionText: q.questionText,
+        options: filteredOptions,
+        correctAnswer: q.correctAnswer,
+      };
     });
-    await newQuestion.save();
 
-    res.status(201).json({ message: "Question added successfully!", newQuestion });
+    // Validate processed questions
+    for (const q of processedQuestions) {
+      if (!q.questionText || q.options.length === 0 || !q.correctAnswer) {
+        return res.status(400).json({
+          message: "Each question must have text, options, and correct answer.",
+        });
+      }
+
+      if (category === "Listening") {
+        if (q.options.length !== 2 && q.options.length !== 4) {
+          return res.status(400).json({
+            message: "Listening questions must have either 2 or 4 options.",
+          });
+        }
+      } else {
+        if (q.options.length !== 4) {
+          return res.status(400).json({
+            message: "Non-Listening questions must have exactly 4 options.",
+          });
+        }
+      }
+
+      if (!q.options.includes(q.correctAnswer)) {
+        return res.status(400).json({
+          message: "Correct answer must be one of the provided options.",
+        });
+      }
+    }
+
+    // Save to database
+    const newQuestionSet = new Question({
+      passage: category === "Reading" ? passage : undefined,
+      listeningFile: category === "Listening" ? req.file.filename : undefined,
+      questions: processedQuestions,
+      category,
+      createdBy,
+    });
+
+    await newQuestionSet.save();
+
+    res.status(201).json({
+      message: "Question set added successfully!",
+      newQuestionSet,
+    });
   } catch (error) {
     console.error("Error saving question:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
   }
 };
 
-  // Get questions by category
+// Get questions by category
 const getQuestionsByCategory = async (req, res) => {
-    try {
-        const { userId } = req.params;
+  try {
+    const { userId } = req.params;
 
-        if (!userId) {
-            return res.status(400).json({ message: "UserId is required." });
-        }
-
-        const questions = await Question.find({ createdBy: userId });
-        
-        if (questions.length === 0) {
-            return res.status(404).json({ message: "No questions found for this user." });
-        }
-
-        res.status(200).json(questions);
-    } catch (error) {
-        console.error("Error fetching questions:", error);
-        res.status(500).json({ message: "Server Error", error });
+    if (!userId) {
+      return res.status(400).json({ message: "UserId is required." });
     }
+
+    const questions = await Question.find({ createdBy: userId });
+
+    if (questions.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No questions found for this user." });
+    }
+
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ message: "Server Error", error });
+  }
 };
 
 // Get all question
@@ -111,5 +157,10 @@ const deleteQuestion = async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 };
-  
-  module.exports = { addQuestion, getQuestionsByCategory, getAllQuestions, deleteQuestion };
+
+module.exports = {
+  addQuestion,
+  getQuestionsByCategory,
+  getAllQuestions,
+  deleteQuestion,
+};

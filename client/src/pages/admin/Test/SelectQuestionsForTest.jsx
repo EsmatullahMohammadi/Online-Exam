@@ -179,8 +179,6 @@ const SelectQuestionsForTest = () => {
       <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base lg:text-lg font-semibold text-black dark:text-white">{`Select Questions for "${testName}" that has ${numberOfQuestion} questions`}</h3>
-
-          {/* Filter Dropdown */}
           <div>
             <label className="mr-2 font-medium text-black dark:text-white">
               Filter by Type:
