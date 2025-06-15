@@ -1,39 +1,11 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { MdAdd } from "react-icons/md";
-import { SUPER_DOMAIN } from "../../admin/constant";
 import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
+import useQuestions from "../../../hooks/lecturer/useQuestions";
 
 const Questions = () => {
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  // const category = sessionStorage.getItem("category");
   const lecturerId = sessionStorage.getItem("lecturerID");
-
-  useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${SUPER_DOMAIN}/all-questions/${lecturerId}`, {
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (response.data.length > 0) {
-          setQuestions(response.data);
-        } else {
-          setError("No questions found.");
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || "Error fetching questions.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchQuestions();
-  }, [lecturerId]);
+  const { questions, loading, error } = useQuestions(lecturerId);
 
   return (
     <>
@@ -84,13 +56,20 @@ const Questions = () => {
                   <tr key={key}>
                     <td className="border-b border-[#eee] py-3 px-4 pl-9 dark:border-strokedark xl:pl-11">
                       <h5 className="font-medium text-black dark:text-white">
-                        {question.question}
+                        {question.questionText}
                       </h5>
+                      {question.passage && (
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                          {question.passage.substring(0, 50)}...
+                        </p>
+                      )}
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <ul className="list-disc pl-5">
                         {question.options.map((option, index) => (
-                          <li key={index} className="border-b">{option}</li>
+                          <li key={index} className="border-b">
+                            {option}
+                          </li>
                         ))}
                       </ul>
                     </td>

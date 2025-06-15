@@ -5,7 +5,17 @@ const addQuestion = async (req, res) => {
     const createdBy = req.params.userId;
     const { passage, questions: questionsStr, category } = req.body;
 
-    // Parse questions
+    if (!createdBy) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    if (
+      !category ||
+      !["Reading", "Listening", "Writing", "Grammar"].includes(category)
+    ) {
+      return res.status(400).json({ message: "Valid category is required" });
+    }
+
     let questions;
     try {
       questions = JSON.parse(questionsStr);
@@ -13,111 +23,117 @@ const addQuestion = async (req, res) => {
       return res.status(400).json({ message: "Invalid questions format" });
     }
 
-    // Validate required fields
     if (category === "Reading" && !passage) {
       return res
         .status(400)
-        .json({ message: "Passage is required for Reading questions." });
+        .json({ message: "Passage is required for Reading questions" });
     }
 
     if (category === "Listening" && !req.file) {
-      return res.status(400).json({
-        message: "Listening file is required for Listening questions.",
-      });
+      return res
+        .status(400)
+        .json({ message: "Audio file is required for Listening questions" });
     }
 
     if (!Array.isArray(questions) || questions.length === 0) {
       return res
         .status(400)
-        .json({ message: "At least one question is required." });
+        .json({ message: "At least one question is required" });
     }
 
-    // Process and validate each question
-    const processedQuestions = questions.map((q) => {
-      // Filter out empty options
-      const filteredOptions = q.options.filter((opt) => opt.trim() !== "");
+    const processedQuestions = [];
 
-      return {
-        questionText: q.questionText,
-        options: filteredOptions,
-        correctAnswer: q.correctAnswer,
-      };
-    });
-
-    // Validate processed questions
-    for (const q of processedQuestions) {
-      if (!q.questionText || q.options.length === 0 || !q.correctAnswer) {
+    for (const q of questions) {
+      if (!q.questionText || !q.correctAnswer) {
         return res.status(400).json({
-          message: "Each question must have text, options, and correct answer.",
+          message: "Each question must have text and correct answer",
         });
       }
+
+      const filteredOptions = q.options
+        ? q.options
+            .filter((opt) => opt && opt.trim() !== "")
+            .map((opt) => opt.trim())
+        : [];
 
       if (category === "Listening") {
-        if (q.options.length !== 2 && q.options.length !== 4) {
+        if (filteredOptions.length !== 2 && filteredOptions.length !== 4) {
           return res.status(400).json({
-            message: "Listening questions must have either 2 or 4 options.",
+            message: "Listening questions must have either 2 or 4 options",
           });
         }
-      } else {
-        if (q.options.length !== 4) {
-          return res.status(400).json({
-            message: "Non-Listening questions must have exactly 4 options.",
-          });
-        }
-      }
-
-      if (!q.options.includes(q.correctAnswer)) {
+      } else if (filteredOptions.length !== 4) {
         return res.status(400).json({
-          message: "Correct answer must be one of the provided options.",
+          message: "Non-Listening questions must have exactly 4 options",
         });
       }
+
+      if (!filteredOptions.includes(q.correctAnswer.trim())) {
+        return res.status(400).json({
+          message: "Correct answer must be one of the provided options",
+        });
+      }
+
+      processedQuestions.push({
+        questionText: q.questionText.trim(),
+        options: filteredOptions,
+        correctAnswer: q.correctAnswer.trim(),
+      });
     }
 
-    // Save to database
-    const newQuestionSet = new Question({
-      passage: category === "Reading" ? passage : undefined,
-      listeningFile: category === "Listening" ? req.file.filename : undefined,
+    const questionData = {
       questions: processedQuestions,
       category,
       createdBy,
-    });
+      ...(category === "Reading" && { passage: passage.trim() }),
+      ...(category === "Listening" && { listeningFile: req.file.filename }),
+    };
 
+    const newQuestionSet = new Question(questionData);
     await newQuestionSet.save();
 
     res.status(201).json({
-      message: "Question set added successfully!",
-      newQuestionSet,
+      message: "Question set added successfully",
+      data: newQuestionSet,
     });
   } catch (error) {
     console.error("Error saving question:", error);
     res.status(500).json({
-      message: "Server Error",
-      error: error.message,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
 
-// Get questions by category
 const getQuestionsByCategory = async (req, res) => {
   try {
     const { userId } = req.params;
 
     if (!userId) {
-      return res.status(400).json({ message: "UserId is required." });
+      return res.status(400).json({ message: "User ID is required" });
     }
 
-    const questions = await Question.find({ createdBy: userId });
+    const questions = await Question.find({ createdBy: userId })
+      .sort({ createdAt: -1 })
+      .lean();
 
-    if (questions.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No questions found for this user." });
+    if (!questions || questions.length === 0) {
+      return res.status(404).json({
+        message: "No questions found for this user",
+        data: [],
+      });
     }
 
-    res.status(200).json(questions);
+    res.status(200).json({
+      message: "Questions retrieved successfully",
+      data: questions,
+    });
   } catch (error) {
     console.error("Error fetching questions:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
 
