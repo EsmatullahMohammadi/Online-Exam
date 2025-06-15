@@ -137,23 +137,31 @@ const getQuestionsByCategory = async (req, res) => {
   }
 };
 
-// Get all question
+// Get all questions
 const getAllQuestions = async (req, res) => {
   try {
-    // Fetch all questions from the database
-    const questions = await Question.find();
+    const questions = await Question.find().sort({ createdAt: -1 }).lean();
 
-    // Check if there are any questions
-    if (!questions.length) {
-      return res.status(404).json({ message: "No questions found." });
+    if (!questions || questions.length === 0) {
+      return res.status(404).json({
+        message: "No questions found.",
+        data: [],
+      });
     }
 
-    res.status(200).json(questions);
+    res.status(200).json({
+      message: "Questions retrieved successfully",
+      data: questions,
+    });
   } catch (error) {
     console.error("Error fetching questions:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
+
 
 // Delete a question
 const deleteQuestion = async (req, res) => {
