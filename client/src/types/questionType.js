@@ -3,5 +3,4 @@ export const QuestionCategory = {
   WRITING: "Writing",
   GRAMMAR: "Grammar",
   LISTENING: "Listening",
-  ALL: "all",
 };

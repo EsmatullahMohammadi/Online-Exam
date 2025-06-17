@@ -1,154 +1,29 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { SUPER_DOMAIN } from "../constant";
+import { Link } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import Pagination from "../../../components/Pagination";
 import { QuestionCategory } from "../../../types/questionType";
+import { useQuestionSelection } from "../../../hooks/admin/tests/useQuestionSelection";
 
 const SelectQuestionsForTest = () => {
-  const { testName } = useParams();
-  const { state } = useLocation();
-  const { testId, numberOfQuestion } = state || {};
-  const [questions, setQuestions] = useState([]);
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
-  const [filterType, setFilterType] = useState("all");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-
-  axios.defaults.withCredentials = true;
-
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  const fetchQuestions = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${SUPER_DOMAIN}/questions`);
-      if (response.status === 200) {
-        setQuestions(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-      setError("Failed to load questions.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSelectQuestion = (questionId) => {
-    setSelectedQuestions((prevSelected) =>
-      prevSelected.includes(questionId)
-        ? prevSelected.filter((id) => id !== questionId)
-        : [...prevSelected, questionId]
-    );
-  };
-
-  const handleSubmit = async () => {
-    if (selectedQuestions.length === 0) {
-      alert("Please select at least one question.");
-      return;
-    }
-    try {
-      const response = await axios.post(`${SUPER_DOMAIN}/assign-questions`, {
-        testId,
-        questionIds: selectedQuestions,
-      });
-      if (response.status === 200) {
-        alert(response.data.message || "Questions assigned successfully!");
-      }
-    } catch (error) {
-      alert(error.response.data.message || "Failed to assign questions.");
-    }
-  };
-  const handleAssignRandomQuestions = async () => {
-    if (questions.length < numberOfQuestion) {
-      alert("Not enough questions available to assign.");
-      return;
-    }
-
-    // Group questions by category
-    const categoryMap = questions.reduce((acc, question) => {
-      if (!acc[question.category]) acc[question.category] = [];
-      acc[question.category].push(question);
-      return acc;
-    }, {});
-
-    // Shuffle all questions in each category
-    Object.keys(categoryMap).forEach((cat) => {
-      categoryMap[cat] = categoryMap[cat].sort(() => 0.5 - Math.random());
-    });
-
-    let selectedQuestions = [];
-    let remainingCount = numberOfQuestion;
-
-    // First attempt: allocate evenly
-    const categories = Object.keys(categoryMap);
-    const basePerCategory = Math.floor(numberOfQuestion / categories.length);
-    let extra = numberOfQuestion % categories.length;
-
-    for (const category of categories) {
-      const available = categoryMap[category];
-      let count = basePerCategory + (extra > 0 ? 1 : 0);
-      extra--;
-
-      const toTake = Math.min(count, available.length);
-      selectedQuestions.push(...available.splice(0, toTake));
-      remainingCount -= toTake;
-    }
-
-    // Second attempt: fill from any leftover questions in any category
-    if (remainingCount > 0) {
-      const leftovers = Object.values(categoryMap)
-        .flat()
-        .sort(() => 0.5 - Math.random());
-
-      selectedQuestions.push(...leftovers.slice(0, remainingCount));
-      remainingCount -= leftovers.length;
-    }
-
-    // Final check
-    if (selectedQuestions.length !== numberOfQuestion) {
-      alert("Could not assign the required number of questions.");
-      return;
-    }
-
-    const randomQuestionIds = selectedQuestions.map((q) => q._id);
-
-    try {
-      const response = await axios.post(`${SUPER_DOMAIN}/assign-questions`, {
-        testId,
-        questionIds: randomQuestionIds,
-      });
-      if (response.status === 200) {
-        alert(
-          response.data.message || "Random questions assigned successfully!"
-        );
-        setSelectedQuestions(randomQuestionIds);
-      }
-    } catch (error) {
-      alert(
-        error.response?.data?.message || "Failed to assign random questions."
-      );
-    }
-  };
-
-  const filteredQuestions =
-    filterType === "all"
-      ? questions
-      : questions.filter((q) => q.category === filterType);
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage);
-  const paginatedQuestions = filteredQuestions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const {
+    testName,
+    loading,
+    error,
+    paginatedQuestions,
+    selectedQuestions,
+    filterType,
+    currentPage,
+    itemsPerPage,
+    totalPages,
+    numberOfQuestion,
+    handleSelectQuestion,
+    handleSubmit,
+    handleAssignRandomQuestions,
+    setFilterType,
+    setCurrentPage,
+    setItemsPerPage,
+    testId
+  } = useQuestionSelection();
 
   return (
     <>
@@ -157,28 +32,34 @@ const SelectQuestionsForTest = () => {
       <div className="mb-3 flex justify-end space-x-3">
         <Link
           to={`/admin/demo-question/${testId}`}
-          className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+          className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
         >
           See Demo Questions
         </Link>
         <button
-          className="lex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+          className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onClick={handleAssignRandomQuestions}
+          disabled={loading || !paginatedQuestions.length}
         >
           Assign Random Questions
         </button>
         <button
           className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-sm shadow-md transition duration-300 hover:bg-opacity-90 hover:shadow-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onClick={handleSubmit}
+          disabled={loading || selectedQuestions.length === 0}
         >
           Assign Selected Questions
         </button>
       </div>
 
-      {/* Table Wrapper */}
       <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base lg:text-lg font-semibold text-black dark:text-white">{`Select Questions for "${testName}" that has ${numberOfQuestion} questions`}</h3>
+          <h3 className="text-base lg:text-lg font-semibold text-black dark:text-white">
+            {testName
+              ? `Select Questions for "${testName}"`
+              : "Select Questions"}
+            {numberOfQuestion && ` (Required: ${numberOfQuestion})`}
+          </h3>
           <div>
             <label className="mr-2 font-medium text-black dark:text-white">
               Filter by Type:
@@ -186,22 +67,29 @@ const SelectQuestionsForTest = () => {
             <select
               className="border p-2 rounded-md bg-white dark:bg-boxdark dark:text-white focus:outline-none"
               value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
+              onChange={(e) => {
+                setFilterType(e.target.value);
+                setCurrentPage(1);
+              }}
+              disabled={loading}
             >
               <option value="all">All</option>
-              <option value={QuestionCategory.READING}>Reading</option>
-              <option value={QuestionCategory.WRITING}>Writing</option>
-              <option value={QuestionCategory.GRAMMAR}>Grammar</option>
-              <option value={QuestionCategory.LISTENING}>Listening</option>
+              {Object.values(QuestionCategory).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        {/* Table */}
         <div className="max-w-full overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-300 dark:bg-meta-4">
+                <th className="py-3 px-4 text-left text-black dark:text-white">
+                  #
+                </th>
                 <th className="py-3 px-4 text-left text-black dark:text-white">
                   Select
                 </th>
@@ -217,50 +105,51 @@ const SelectQuestionsForTest = () => {
               {loading ? (
                 <tr>
                   <td
-                    colSpan="3"
+                    colSpan="4"
                     className="text-center py-3 text-black dark:text-white"
                   >
-                    Loading...
+                    Loading questions...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan="3" className="text-center py-3 text-red-500">
+                  <td colSpan="4" className="text-center py-3 text-red-500">
                     {error}
                   </td>
                 </tr>
               ) : paginatedQuestions.length > 0 ? (
                 paginatedQuestions.map((question, index) => (
                   <tr
-                    key={index}
+                    key={question._id || index}
                     className="border-b border-[#eee] dark:border-strokedark"
                   >
-                    <td className="py-3 px-4 flex items-center justify-between">
-                      <span className="pr-2 border-r-4 rounded-full">
-                        {(currentPage - 1) * itemsPerPage + index + 1}
-                      </span>
+                    <td className="py-3 px-4 text-black dark:text-white">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    <td className="py-3 px-4">
                       <input
                         type="checkbox"
                         className="form-checkbox text-primary rounded focus:ring-primary focus:ring-opacity-50"
                         checked={selectedQuestions.includes(question._id)}
                         onChange={() => handleSelectQuestion(question._id)}
+                        disabled={!question._id}
                       />
                     </td>
                     <td className="py-3 px-4 text-black dark:text-white">
-                      {question.question}
+                      {question.questionText || "No question text"}
                     </td>
                     <td className="py-3 px-4 capitalize text-black dark:text-white">
-                      {question.category}
+                      {question.category || "uncategorized"}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="3"
+                    colSpan="4"
                     className="text-center py-3 text-black dark:text-white"
                   >
-                    No questions found.
+                    No questions found matching your criteria.
                   </td>
                 </tr>
               )}
@@ -268,15 +157,16 @@ const SelectQuestionsForTest = () => {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="my-3">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-            setItemsPerPage={setItemsPerPage}
-          />
-        </div>
+        {!loading && !error && paginatedQuestions.length > 0 && (
+          <div className="my-3">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+              setItemsPerPage={setItemsPerPage}
+            />
+          </div>
+        )}
       </div>
     </>
   );

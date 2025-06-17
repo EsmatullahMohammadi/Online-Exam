@@ -91,7 +91,6 @@ const AddQuestion = () => {
             </div>
           )}
 
-          {/* Questions List */}
           <div className="col-span-2">
             <h3 className="mb-4 font-medium text-black dark:text-white">
               Questions
@@ -99,7 +98,7 @@ const AddQuestion = () => {
             {questions.map((q, qIndex) => {
               const errors = validateQuestion(q);
               const hasErrors = Object.keys(errors).length > 0;
-
+              console.log(Object.keys(errors));
               return (
                 <div
                   key={qIndex}
@@ -125,7 +124,6 @@ const AddQuestion = () => {
                     )}
                   </div>
 
-                  {/* Question Text */}
                   <div className="mb-4">
                     <label className="mb-2 block text-black dark:text-white">
                       Question Text
@@ -161,7 +159,6 @@ const AddQuestion = () => {
                     )}
                   </div>
 
-                  {/* Options */}
                   <div className="mb-4">
                     <label className="mb-2 block text-black dark:text-white">
                       Options
@@ -204,7 +201,6 @@ const AddQuestion = () => {
                     </div>
                   </div>
 
-                  {/* Correct Answer */}
                   <div>
                     <label className="mb-2 block text-black dark:text-white">
                       Correct Answer
@@ -259,7 +255,6 @@ const AddQuestion = () => {
             </button>
           </div>
 
-          {/* Submit Button */}
           <div className="col-span-2">
             <button
               type="submit"
