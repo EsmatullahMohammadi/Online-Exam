@@ -1,15 +1,16 @@
-const Test = require('../../models/test');
-const Question = require('../../models/questions');
-const Candidate = require('../../models/candidate');
-const CandidateResponse = require('../../models/CandidateResponse')
+const Test = require("../../models/test");
+const Question = require("../../models/questions");
+const Candidate = require("../../models/candidate");
+const CandidateResponse = require("../../models/CandidateResponse");
 const moment = require("moment-timezone");
 
 const getTestById = async (req, res) => {
   const { candidateId, testId } = req.params;
+
   try {
-    // Find the test by ID
+    // 1. Check if candidate has already submitted the test
     const submission = await CandidateResponse.findOne({ candidateId, testId });
-    
+
     if (submission && submission.status !== "Pending") {
       return res.status(200).json({
         submitted: true,
@@ -18,39 +19,77 @@ const getTestById = async (req, res) => {
         submittedAt: submission.submittedAt,
       });
     }
-    const test = await Test.findById(testId).populate("questions");
+
+    // 2. Fetch the test (questions is array of subquestion _ids)
+    const test = await Test.findById(testId);
+
     if (!test) {
       return res.status(404).json({ message: "Test not found!" });
     }
 
-    if (test.startDate && test.endDate) {
-      // Set timezone to Asia/Kabul explicitly
-      const now = moment.tz("Asia/Kabul");
-      const start = moment.tz(test.startDate, "Asia/Kabul");
-      const end = moment.tz(test.endDate, "Asia/Kabul");
-      if (now.isBefore(start)) {
-        return res.status(403).json({ 
-          message: "The exam has not started yet. Please check the scheduled time." 
-        });
-      }  
-      if (now.isAfter(end)) {
-        return res.status(403).json({ 
-          message: "The exam has ended. You can no longer access this test." 
-        });
-      }
+    const now = moment.tz("Asia/Kabul");
+    const start = test.startDate
+      ? moment.tz(test.startDate, "Asia/Kabul")
+      : null;
+    const end = test.endDate ? moment.tz(test.endDate, "Asia/Kabul") : null;
+
+    if (start && now.isBefore(start)) {
+      return res.status(403).json({
+        message:
+          "The exam has not started yet. Please check the scheduled time.",
+      });
     }
+
+    if (end && now.isAfter(end)) {
+      return res.status(403).json({
+        message: "The exam has ended. You can no longer access this test.",
+      });
+    }
+
+    // 3. Find all Question documents where any sub-question _id is in test.questions array
+    const questionGroups = await Question.find({
+      "questions._id": { $in: test.questions },
+    });
+
+    // 4. For each question group, filter sub-questions that match the test.questions array
+    const groupedQuestions = questionGroups.map((group) => {
+      const includedQuestions = group.questions.filter((q) =>
+        test.questions.some((id) => id.toString() === q._id.toString())
+      );
+
+      return {
+        _id: group._id,
+        category: group.category,
+        passage: group.passage || null,
+        listeningFile: group.listeningFile || null,
+        questions: includedQuestions.map((q) => ({
+          _id: q._id,
+          questionText: q.questionText,
+          options: q.options,
+          // correctAnswer: q.correctAnswer, // optionally exclude
+        })),
+      };
+    });
 
     res.status(200).json({
       message: "Test retrieved successfully!",
       submitted: false,
-      test,
-      questions: test.questions
+      test: {
+        _id: test._id,
+        title: test.title,
+        examDuration: test.examDuration,
+        totalMarks: test.totalMarks,
+        numberOfQuestions: test.numberOfQuestions,
+        description: test.description,
+        questionGroups: groupedQuestions,
+      },
     });
   } catch (error) {
-    console.error("Error retrieving test:", error.message);
+    console.error("Error retrieving test:", error);
     res.status(500).json({ error: "Failed to retrieve test" });
   }
 };
+
 // submit the questions
 const submitQuestion = async (req, res) => {
   try {
@@ -137,14 +176,16 @@ const getCandidateTest = async (req, res) => {
     // Find candidate
     const candidate = await Candidate.findById(candidateId).populate("testId");
     if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
+      return res.status(404).json({ message: "Candidate not found" });
     }
     if (!candidate.testId) {
-      return res.status(404).json({ message: "No test assigned to this candidate" });
+      return res
+        .status(404)
+        .json({ message: "No test assigned to this candidate" });
     }
     res.status(200).json({ test: candidate.testId });
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving test', error });
+    res.status(500).json({ message: "Error retrieving test", error });
   }
 };
 // Get the result
@@ -164,9 +205,11 @@ const getResult = async (req, res) => {
       return res.json({ submitted: false });
     }
   } catch (error) {
-    res.status(500).json({ message: "Error fetching submission status", error });
+    res
+      .status(500)
+      .json({ message: "Error fetching submission status", error });
   }
-}
+};
 
 const saveProgress = async (req, res) => {
   try {
@@ -175,29 +218,29 @@ const saveProgress = async (req, res) => {
     // Find or create the candidate response
     let response = await CandidateResponse.findOneAndUpdate(
       { testId, candidateId },
-      { 
-        $set: { 
+      {
+        $set: {
           answers,
           currentPage,
-          lastSaved: new Date() 
-        }
+          lastSaved: new Date(),
+        },
       },
-      { 
-        upsert: true, 
+      {
+        upsert: true,
         new: true,
-        setDefaultsOnInsert: true 
+        setDefaultsOnInsert: true,
       }
     );
 
     res.status(200).json({
       success: true,
       message: "Progress saved successfully",
-      currentPage: response.currentPage
+      currentPage: response.currentPage,
     });
   } catch (error) {
-    res.status(500).json({ 
-      message: "Error saving progress", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error saving progress",
+      error: error.message,
     });
   }
 };
@@ -207,36 +250,36 @@ const getProgress = async (req, res) => {
   try {
     const { testId, candidateId } = req.params;
 
-    const response = await CandidateResponse.findOne({ 
-      testId, 
-      candidateId 
+    const response = await CandidateResponse.findOne({
+      testId,
+      candidateId,
     });
     if (!response) {
       return res.status(200).json({
         answers: {},
         currentPage: 1,
-        submitted: false
+        submitted: false,
       });
     }
 
     res.status(200).json({
       answers: response.answers || {},
       currentPage: response.currentPage || 1,
-      submitted: response.status !== "Pending"
+      submitted: response.status !== "Pending",
     });
   } catch (error) {
-    res.status(500).json({ 
-      message: "Error fetching progress", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error fetching progress",
+      error: error.message,
     });
   }
 };
 
-module.exports = { 
-  getTestById, 
-  submitQuestion, 
-  getCandidateTest, 
+module.exports = {
+  getTestById,
+  submitQuestion,
+  getCandidateTest,
   getResult,
   saveProgress,
-  getProgress
-}
+  getProgress,
+};

@@ -8,28 +8,25 @@ const CandidateExamPaginate = () => {
   const { testId } = useParams();
   const navigate = useNavigate();
   const [test, setTest] = useState(null);
-  const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(() => {
     const savedTime = sessionStorage.getItem(`exam_${testId}_timeLeft`);
-    return savedTime ? parseInt(savedTime) : 0;
+    return savedTime ? parseInt(savedTime, 10) : 0;
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [saving, setSaving] = useState(false);
-  const questionsPerPage = 3;
   const candidateId = sessionStorage.getItem("_id");
 
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
-    fetchTestAndQuestions();
+    fetchTestAndGroups();
     loadSavedProgress();
 
     return () => {
-      // Clean up timer if component unmounts
       sessionStorage.setItem(`exam_${testId}_timeLeft`, timeLeft.toString());
     };
   }, []);
@@ -47,29 +44,32 @@ const CandidateExamPaginate = () => {
     } else if (timeLeft === 0 && test && !submitted) {
       handleSubmit();
     }
-
     return () => clearInterval(timer);
   }, [timeLeft, test, submitted]);
 
-  const fetchTestAndQuestions = async () => {
+  const fetchTestAndGroups = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${SUPER_DOMAIN}/test-byid/${testId}/${candidateId}`);
-      
+      const response = await axios.get(
+        `${SUPER_DOMAIN}/test-byid/${testId}/${candidateId}`
+      );
+
       if (response.status === 200) {
-        console.log(response.data.submitted);
-        
         if (response.data.submitted === true) {
           navigate("/candidate/candidate-result");
-        } else {
-          setTest(response.data.test);
-          setQuestions(response.data.questions);
-          
-          if (timeLeft === 0) {
-            const initialTime = response.data.test.examDuration * 60;
-            setTimeLeft(initialTime);
-            sessionStorage.setItem(`exam_${testId}_timeLeft`, initialTime.toString());
-          }
+          return;
+        }
+
+        const testData = response.data.test;
+        setTest(testData);
+
+        if (timeLeft === 0) {
+          const initialTime = testData.examDuration * 60;
+          setTimeLeft(initialTime);
+          sessionStorage.setItem(
+            `exam_${testId}_timeLeft`,
+            initialTime.toString()
+          );
         }
       }
     } catch (err) {
@@ -81,17 +81,21 @@ const CandidateExamPaginate = () => {
 
   const loadSavedProgress = async () => {
     try {
-      const response = await axios.get(`${SUPER_DOMAIN}/tests/progress/${testId}/${candidateId}`);
+      const response = await axios.get(
+        `${SUPER_DOMAIN}/tests/progress/${testId}/${candidateId}`
+      );
       if (response.data.answers) {
         setAnswers(response.data.answers);
-        sessionStorage.setItem(`exam_${testId}_answers`, JSON.stringify(response.data.answers));
+        sessionStorage.setItem(
+          `exam_${testId}_answers`,
+          JSON.stringify(response.data.answers)
+        );
       }
       if (response.data.currentPage) {
         setCurrentPage(response.data.currentPage);
       }
     } catch (err) {
       console.error("Error loading saved progress:", err);
-      // Fallback to sessionStorage if API fails
       const savedAnswers = sessionStorage.getItem(`exam_${testId}_answers`);
       if (savedAnswers) {
         setAnswers(JSON.parse(savedAnswers));
@@ -102,7 +106,10 @@ const CandidateExamPaginate = () => {
   const handleOptionChange = (questionId, option) => {
     const newAnswers = { ...answers, [questionId]: option };
     setAnswers(newAnswers);
-    sessionStorage.setItem(`exam_${testId}_answers`, JSON.stringify(newAnswers));
+    sessionStorage.setItem(
+      `exam_${testId}_answers`,
+      JSON.stringify(newAnswers)
+    );
     saveProgress(newAnswers, currentPage);
   };
 
@@ -112,7 +119,7 @@ const CandidateExamPaginate = () => {
         testId,
         candidateId,
         answers: answersToSave,
-        currentPage: page
+        currentPage: page,
       });
     } catch (err) {
       console.error("Error auto-saving answer:", err);
@@ -120,13 +127,14 @@ const CandidateExamPaginate = () => {
   };
 
   const saveAndGoToPage = async (page) => {
+    if (page < 1 || page > 4) return; // We have 4 fixed pages now
     try {
       setSaving(true);
       await axios.post(`${SUPER_DOMAIN}/tests/save-progress`, {
         testId,
         candidateId,
         answers,
-        currentPage: page
+        currentPage: page,
       });
       setCurrentPage(page);
     } catch (err) {
@@ -139,19 +147,16 @@ const CandidateExamPaginate = () => {
 
   const handleSubmit = async () => {
     if (submitted) return;
-    
-    if (!window.confirm("Are you sure you want to submit your exam?")) {
-      return;
-    }
+    if (!window.confirm("Are you sure you want to submit your exam?")) return;
 
     try {
       setSubmitted(true);
       const response = await axios.post(`${SUPER_DOMAIN}/tests/submit-exam`, {
         testId,
         candidateId,
-        answers
+        answers,
       });
-      
+
       if (response.status === 200) {
         sessionStorage.removeItem(`exam_${testId}_timeLeft`);
         sessionStorage.removeItem(`exam_${testId}_answers`);
@@ -160,7 +165,10 @@ const CandidateExamPaginate = () => {
       }
     } catch (err) {
       setSubmitted(false);
-      alert(err.response?.data?.message || "Failed to submit exam. Please try again.");
+      alert(
+        err.response?.data?.message ||
+          "Failed to submit exam. Please try again."
+      );
     }
   };
 
@@ -170,37 +178,71 @@ const CandidateExamPaginate = () => {
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
-  // Calculate pagination
-  const indexOfLastQuestion = currentPage * questionsPerPage;
-  const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
-  const currentQuestions = questions.slice(indexOfFirstQuestion, indexOfLastQuestion);
-  const totalPages = Math.ceil(questions.length / questionsPerPage);
+  // Group questions by category
+  const groupedQuestions = {
+    Reading: [],
+    Listening: [],
+    Grammar: [],
+    Writing: [],
+  };
 
-  if (loading) return <div className="flex justify-center items-center h-screen">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-      <p className="text-gray-500 mt-4">Loading exam...</p>
-    </div>
-  </div>;
+  if (test?.questionGroups) {
+    test.questionGroups.forEach((group) => {
+      if (groupedQuestions[group.category]) {
+        groupedQuestions[group.category].push(group);
+      }
+    });
+  }
 
-  if (error) return <div className="flex justify-center items-center h-screen">
-    <div className="text-center">
-      <p className="text-red-500 font-bold text-lg">{error}</p>
-      <button 
-        onClick={() => window.location.reload()}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Try Again
-      </button>
-    </div>
-  </div>;
+  // Fixed pages for each category
+  const totalPages = 4; // Reading, Listening, Grammar, Writing
+  const pageTitles = [
+    "Reading Section",
+    "Listening Section",
+    "Grammar Section",
+    "Writing Section",
+  ];
+  const currentCategory = ["Reading", "Listening", "Grammar", "Writing"][
+    currentPage - 1
+  ];
+  const currentGroups = groupedQuestions[currentCategory] || [];
 
-  if (submitted) return <div className="flex justify-center items-center h-screen">
-    <div className="text-center">
-      <p className="text-green-500 font-bold text-lg">Exam submitted. Thank you!</p>
-      <p className="text-gray-600 mt-2">Redirecting to results...</p>
-    </div>
-  </div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="text-gray-500 mt-4">Loading exam...</p>
+        </div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <p className="text-red-500 font-bold text-lg">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+
+  if (submitted)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <p className="text-green-500 font-bold text-lg">
+            Exam submitted. Thank you!
+          </p>
+          <p className="text-gray-600 mt-2">Redirecting to results...</p>
+        </div>
+      </div>
+    );
 
   return (
     <>
@@ -209,9 +251,12 @@ const CandidateExamPaginate = () => {
         <div className="rounded-lg border border-gray-300 bg-white p-4 md:p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b pb-4 gap-2">
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{test?.title}</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                {test?.title}
+              </h2>
               <p className="text-gray-600 text-sm md:text-base">
-                Question {indexOfFirstQuestion + 1}-{Math.min(indexOfLastQuestion, questions.length)} of {questions.length}
+                {pageTitles[currentPage - 1]} (Page {currentPage} of{" "}
+                {totalPages})
               </p>
             </div>
             <div className="px-3 py-1 md:px-4 md:py-2 text-white bg-red-600 rounded-md font-semibold text-sm md:text-base">
@@ -220,50 +265,250 @@ const CandidateExamPaginate = () => {
           </div>
 
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-4 gap-2">
-            <p className="text-gray-600 text-sm md:text-base">Duration: {test?.examDuration} mins</p>
-            <p className="text-gray-600 text-sm md:text-base">Total Marks: {test?.totalMarks}</p>
+            <p className="text-gray-600 text-sm md:text-base">
+              Duration: {test?.examDuration} mins
+            </p>
+            <p className="text-gray-600 text-sm md:text-base">
+              Total Marks: {test?.totalMarks}
+            </p>
           </div>
 
-          <div className="space-y-4 mt-6">
-            {currentQuestions.map((question, index) => (
-              <div key={question._id} className="p-3 md:p-4 border rounded-md bg-gray-100 dark:bg-gray-700">
-                <h3 className="font-semibold text-base md:text-lg text-gray-800 dark:text-white">
-                  {indexOfFirstQuestion + index + 1}. {question.question}
-                </h3>
-
-                {question.category === "Listening" && question.listeningFile && (
-                  <div className="mt-2 md:mt-3">
-                    <audio controls className="w-full">
-                      <source src={`${SUPER_DOMAIN}/listening/${question.listeningFile}`} type="audio/mpeg" />
-                      Your browser does not support the audio element.
-                    </audio>
+          <div className="space-y-6 mt-6">
+            {/* Reading Section */}
+            {currentCategory === "Reading" && (
+              <section>
+                <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
+                  Reading Section
+                </h2>
+                <p className="mb-5 text-gray-700 dark:text-gray-300">
+                  Please read each question carefully and select the correct
+                  answer from the four options provided. There is only one
+                  correct answer for each question. Good luck!
+                </p>
+                {currentGroups.map((group) => (
+                  <div key={group._id} className="mb-8">
+                    {group.passage && (
+                      <div className="p-4 bg-gray-200 dark:bg-gray-600 rounded rounded-b-none mb-4">
+                        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                          {group.passage}
+                        </p>
+                      </div>
+                    )}
+                    {group.questions.map((question, idx) => (
+                      <div
+                        key={question._id}
+                        className="mb-4 p-4 border rounded-md bg-gray-100 dark:bg-gray-700"
+                      >
+                        <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-2">
+                          {idx + 1}. {question.questionText}
+                        </h3>
+                        <div className="space-y-2">
+                          {question.options.map((option, i) => (
+                            <label
+                              key={i}
+                              className={`block p-2 border rounded-md cursor-pointer ${
+                                answers[question._id] === option
+                                  ? "bg-blue-100 dark:bg-blue-900"
+                                  : "bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600"
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`question-${question._id}`}
+                                value={option}
+                                checked={answers[question._id] === option}
+                                onChange={() =>
+                                  handleOptionChange(question._id, option)
+                                }
+                                className="mr-2"
+                              />
+                              {option}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
+                ))}
+              </section>
+            )}
 
-                <div className="mt-2 space-y-2">
-                  {question.options.map((option, idx) => (
-                    <label
-                      key={idx}
-                      className={`block p-2 md:p-3 border rounded-md ${
-                        answers[question._id] === option 
-                          ? 'bg-blue-100 dark:bg-blue-900' 
-                          : 'bg-white dark:bg-gray-800'
-                      } cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600`}
-                    >
-                      <input
-                        type="radio"
-                        name={`question-${question._id}`}
-                        value={option}
-                        checked={answers[question._id] === option}
-                        onChange={() => handleOptionChange(question._id, option)}
-                        className="mr-2"
-                      />
-                      {option}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            ))}
+            {/* Listening Section */}
+            {currentCategory === "Listening" && (
+              <section>
+                <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
+                  Listening Section
+                </h2>
+                <p className="mb-5 text-gray-700 dark:text-gray-300">
+                  Please read each question carefully and select the correct
+                  answer from the four or two options provided. There is only one
+                  correct answer for each question. Good luck!
+                </p>
+                {currentGroups.map((group) => (
+                  <div key={group._id} className="mb-8">
+                    {group.listeningFile && (
+                      <div className="mb-4">
+                        <audio controls className="w-full">
+                          <source
+                            src={`${SUPER_DOMAIN}/listening/${group.listeningFile}`}
+                            type="audio/mpeg"
+                          />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </div>
+                    )}
+                    {group.questions.map((question, idx) => (
+                      <div
+                        key={question._id}
+                        className="mb-4 p-4 border rounded-md bg-gray-100 dark:bg-gray-700"
+                      >
+                        <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-2">
+                          {idx + 1}. {question.questionText}
+                        </h3>
+                        <div className="space-y-2">
+                          {question.options.map((option, i) => (
+                            <label
+                              key={i}
+                              className={`block p-2 border rounded-md cursor-pointer ${
+                                answers[question._id] === option
+                                  ? "bg-blue-100 dark:bg-blue-900"
+                                  : "bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600"
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`question-${question._id}`}
+                                value={option}
+                                checked={answers[question._id] === option}
+                                onChange={() =>
+                                  handleOptionChange(question._id, option)
+                                }
+                                className="mr-2"
+                              />
+                              {option}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </section>
+            )}
+
+            {/* Grammar Section */}
+            {currentCategory === "Grammar" && (
+              <section>
+                <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
+                  Grammar Section
+                </h2>
+
+                <p className="mb-5 text-gray-700 dark:text-gray-300">
+                  Please read each question carefully and select the correct
+                  answer from the four options provided. There is only one
+                  correct answer for each question. Good luck!
+                </p>
+
+                {(() => {
+                  let questionNumber = 1;
+                  return currentGroups.map((group) => (
+                    <div key={group._id} className="mb-8">
+                      {group.questions.map((question) => (
+                        <div
+                          key={question._id}
+                          className="mb-4 p-4 border rounded-md bg-gray-100 dark:bg-gray-700"
+                        >
+                          <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-2">
+                            {questionNumber++}. {question.questionText}
+                          </h3>
+                          <div className="space-y-2">
+                            {question.options.map((option, i) => (
+                              <label
+                                key={i}
+                                className={`block p-2 border rounded-md cursor-pointer ${
+                                  answers[question._id] === option
+                                    ? "bg-blue-100 dark:bg-blue-900"
+                                    : "bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`question-${question._id}`}
+                                  value={option}
+                                  checked={answers[question._id] === option}
+                                  onChange={() =>
+                                    handleOptionChange(question._id, option)
+                                  }
+                                  className="mr-2"
+                                />
+                                {option}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ));
+                })()}
+              </section>
+            )}
+
+            {/* Writing Section */}
+            {currentCategory === "Writing" && (
+              <section>
+                <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
+                  Writing Section
+                </h2>
+
+                <p className="mb-5 text-gray-700 dark:text-gray-300">
+                  Please read each question carefully and select the correct
+                  answer from the four options provided. There is only one
+                  correct answer for each question. Good luck!
+                </p>
+
+                {(() => {
+                  let questionNumber = 1;
+                  return currentGroups.map((group) => (
+                    <div key={group._id} className="mb-8">
+                      {group.questions.map((question) => (
+                        <div
+                          key={question._id}
+                          className="mb-4 p-4 border rounded-md bg-gray-100 dark:bg-gray-700"
+                        >
+                          <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-2">
+                            {questionNumber++}. {question.questionText}
+                          </h3>
+                          <div className="space-y-2">
+                            {question.options.map((option, i) => (
+                              <label
+                                key={i}
+                                className={`block p-2 border rounded-md cursor-pointer ${
+                                  answers[question._id] === option
+                                    ? "bg-blue-100 dark:bg-blue-900"
+                                    : "bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`question-${question._id}`}
+                                  value={option}
+                                  checked={answers[question._id] === option}
+                                  onChange={() =>
+                                    handleOptionChange(question._id, option)
+                                  }
+                                  className="mr-2"
+                                />
+                                {option}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ));
+                })()}
+              </section>
+            )}
           </div>
 
           <div className="flex flex-col-reverse md:flex-row justify-between items-center mt-6 gap-4">
@@ -271,40 +516,44 @@ const CandidateExamPaginate = () => {
               onClick={() => saveAndGoToPage(currentPage - 1)}
               disabled={currentPage === 1 || saving}
               className={`w-full md:w-auto px-4 py-2 rounded-md ${
-                currentPage === 1 || saving 
-                  ? 'bg-gray-300 cursor-not-allowed' 
-                  : 'bg-blue-600 hover:bg-blue-700'
+                currentPage === 1 || saving
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
               } text-white`}
             >
-              {saving ? 'Saving...' : 'Previous'}
+              {saving ? "Saving..." : "Previous"}
             </button>
 
             <div className="flex space-x-2 overflow-x-auto py-2 w-full justify-center">
-              {Array.from({ length: totalPages }, (_, i) => (
+              {[1, 2, 3, 4].map((page) => (
                 <button
-                  key={i + 1}
-                  onClick={() => saveAndGoToPage(i + 1)}
+                  key={page}
+                  onClick={() => saveAndGoToPage(page)}
                   className={`min-w-8 h-8 md:w-10 md:h-10 rounded-full ${
-                    currentPage === i + 1 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-200 hover:bg-gray-300'
+                    currentPage === page
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 hover:bg-gray-300"
                   }`}
                 >
-                  {i + 1}
+                  {page}
                 </button>
               ))}
             </div>
 
             <button
-              onClick={() => currentPage === totalPages ? handleSubmit() : saveAndGoToPage(currentPage + 1)}
+              onClick={() =>
+                currentPage === totalPages
+                  ? handleSubmit()
+                  : saveAndGoToPage(currentPage + 1)
+              }
               disabled={saving}
               className={`w-full md:w-auto px-4 py-2 rounded-md ${
-                currentPage === totalPages 
-                  ? 'bg-green-600 hover:bg-green-700' 
-                  : 'bg-blue-600 hover:bg-blue-700'
+                saving
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
               } text-white`}
             >
-              {saving ? 'Saving...' : currentPage === totalPages ? 'Submit Exam' : 'Next'}
+              {currentPage === totalPages ? "Submit" : "Next"}
             </button>
           </div>
         </div>
