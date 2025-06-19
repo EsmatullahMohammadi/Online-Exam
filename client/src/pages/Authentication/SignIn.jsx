@@ -62,12 +62,12 @@ const SignIn = () => {
 
                   <div className="mb-4">
                     <label className="mb-2.5 block font-medium text-black dark:text-white">
-                      Email
+                      Email/Username
                     </label>
                     <div className="relative">
                       <input
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="Enter your email/username"
                         name="emailAddress"
                         value={ formik.values.emailAddress }
                         onChange={ formik.handleChange }
