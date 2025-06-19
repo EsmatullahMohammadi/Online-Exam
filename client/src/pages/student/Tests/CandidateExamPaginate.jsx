@@ -78,17 +78,20 @@ const CandidateExamPaginate = () => {
       setLoading(false);
     }
   };
-
   const loadSavedProgress = async () => {
     try {
       const response = await axios.get(
         `${SUPER_DOMAIN}/tests/progress/${testId}/${candidateId}`
       );
       if (response.data.answers) {
-        setAnswers(response.data.answers);
+        const loadedAnswers = {};
+        for (const [key, value] of Object.entries(response.data.answers)) {
+          loadedAnswers[key] = value.answer;
+        }
+        setAnswers(loadedAnswers);
         sessionStorage.setItem(
           `exam_${testId}_answers`,
-          JSON.stringify(response.data.answers)
+          JSON.stringify(loadedAnswers)
         );
       }
       if (response.data.currentPage) {
@@ -110,11 +113,16 @@ const CandidateExamPaginate = () => {
       `exam_${testId}_answers`,
       JSON.stringify(newAnswers)
     );
+
+    const saveData = {};
+    saveData[questionId] = option;
+
     saveProgress(newAnswers, currentPage);
   };
 
   const saveProgress = async (answersToSave, page) => {
     try {
+      setSaving(true);
       await axios.post(`${SUPER_DOMAIN}/tests/save-progress`, {
         testId,
         candidateId,
@@ -123,11 +131,13 @@ const CandidateExamPaginate = () => {
       });
     } catch (err) {
       console.error("Error auto-saving answer:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
   const saveAndGoToPage = async (page) => {
-    if (page < 1 || page > 4) return; // We have 4 fixed pages now
+    if (page < 1 || page > 4) return;
     try {
       setSaving(true);
       await axios.post(`${SUPER_DOMAIN}/tests/save-progress`, {
@@ -144,7 +154,6 @@ const CandidateExamPaginate = () => {
       setSaving(false);
     }
   };
-
   const handleSubmit = async () => {
     if (submitted) return;
     if (!window.confirm("Are you sure you want to submit your exam?")) return;
@@ -160,7 +169,12 @@ const CandidateExamPaginate = () => {
       if (response.status === 200) {
         sessionStorage.removeItem(`exam_${testId}_timeLeft`);
         sessionStorage.removeItem(`exam_${testId}_answers`);
-        alert("Exam submitted successfully!");
+        alert(
+          `Exam submitted successfully!\n` +
+            `Score: ${response.data.score}/${response.data.totalQuestions}\n` +
+            `Marks: ${response.data.obtainedMarks}/${response.data.totalMarks}\n` +
+            `Status: ${response.data.status}`
+        );
         navigate("/candidate/candidate-result");
       }
     } catch (err) {

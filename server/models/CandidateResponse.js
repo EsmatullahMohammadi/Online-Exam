@@ -5,11 +5,10 @@ const candidateResponseSchema = new mongoose.Schema({
   testId: { type: mongoose.Schema.Types.ObjectId, ref: "Test", required: true },
   answers: { 
     type: Map, 
-    of: new mongoose.Schema({
-      questionId: mongoose.Schema.Types.ObjectId,
-      answer: String,
-      isCorrect: Boolean
-    }), 
+    of: {
+      questionId: { type: mongoose.Schema.Types.ObjectId },
+      answer: { type: String },
+    }, 
     default: new Map() 
   },
   currentPage: { type: Number, default: 1 },
@@ -17,6 +16,16 @@ const candidateResponseSchema = new mongoose.Schema({
   obtainedMarks: { type: Number, default: 0 },
   status: { type: String, enum: ["Passed", "Failed", "Pending"], default: "Pending" },
   lastSaved: { type: Date },
+  categoryBreakdown: {
+    type: Map,
+    of: new mongoose.Schema({
+      correct: Number,
+      total: Number,
+      percentage: Number,
+      weightedScore: Number
+    }),
+    default: new Map()
+  },
   submittedAt: { type: Date }
 }, { timestamps: true });
 
