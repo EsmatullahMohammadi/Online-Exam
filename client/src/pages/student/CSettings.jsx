@@ -11,22 +11,24 @@ const CSettings = () => {
   const [candidateId, setCandidateId] = useState("");
 
   axios.defaults.withCredentials = true;
-  
+
   useEffect(() => {
-    const storedId = sessionStorage.getItem("_id"); 
+    const storedId = sessionStorage.getItem("_id");
     if (storedId) {
       setCandidateId(storedId);
     }
   }, []);
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email address").required("Email is required"),
+    username: Yup.string().required("username is required"),
     currentPassword: Yup.string().required("Current Password is required"),
-    newPassword: Yup.string().required("New Password is required").min(8, "New Password must be at least 8 characters"),
+    newPassword: Yup.string()
+      .required("New Password is required")
+      .min(8, "New Password must be at least 8 characters"),
   });
 
   const formik = useFormik({
     initialValues: {
-      email: "",
+      username: "",
       currentPassword: "",
       newPassword: "",
     },
@@ -38,7 +40,10 @@ const CSettings = () => {
       }
 
       try {
-        const response = await axios.put(`${SUPER_DOMAIN}/candidate-settings/${candidateId}`, values);
+        const response = await axios.put(
+          `${SUPER_DOMAIN}/candidate-settings/${candidateId}`,
+          values
+        );
 
         if (response.status === 200) {
           alert(response.data.message || "Setting Updated Successfully!");
@@ -68,10 +73,12 @@ const CSettings = () => {
               </div>
               <div className="p-7">
                 <form onSubmit={formik.handleSubmit}>
-                  {/* Email Field */}
                   <div className="mb-5.5">
-                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="email">
-                      Email Address
+                    <label
+                      className="mb-3 block text-sm font-medium text-black dark:text-white"
+                      htmlFor="username"
+                    >
+                      Username
                     </label>
                     <div className="relative">
                       <span className="absolute left-4.5 top-4">
@@ -79,24 +86,32 @@ const CSettings = () => {
                       </span>
                       <input
                         className={`w-full rounded border ${
-                          formik.touched.email && formik.errors.email ? "border-red-500" : "border-stroke"
+                          formik.touched.username && formik.errors.username
+                            ? "border-red-500"
+                            : "border-stroke"
                         } bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white`}
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={formik.values.email}
+                        type="text"
+                        name="username"
+                        id="username"
+                        value={formik.values.username}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Email Address"
+                        placeholder="Username"
                       />
-                      {formik.touched.email && formik.errors.email && <p className="text-red-500 text-sm mt-1">{formik.errors.email}</p>}
+                      {formik.touched.username && formik.errors.username && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {formik.errors.username}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  {/* Password Fields */}
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="currentPassword">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="currentPassword"
+                      >
                         Current Password
                       </label>
                       <input
@@ -109,11 +124,19 @@ const CSettings = () => {
                         onBlur={formik.handleBlur}
                         placeholder="Current Password"
                       />
-                      {formik.touched.currentPassword && formik.errors.currentPassword && <p className="text-red-500 text-sm mt-1">{formik.errors.currentPassword}</p>}
+                      {formik.touched.currentPassword &&
+                        formik.errors.currentPassword && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formik.errors.currentPassword}
+                          </p>
+                        )}
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="newPassword">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="newPassword"
+                      >
                         New Password
                       </label>
                       <input
@@ -126,18 +149,26 @@ const CSettings = () => {
                         onBlur={formik.handleBlur}
                         placeholder="New Password"
                       />
-                      {formik.touched.newPassword && formik.errors.newPassword && <p className="text-red-500 text-sm mt-1">{formik.errors.newPassword}</p>}
+                      {formik.touched.newPassword &&
+                        formik.errors.newPassword && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formik.errors.newPassword}
+                          </p>
+                        )}
                     </div>
                   </div>
 
-                  <button className="mt-5 bg-primary text-white px-6 py-2 rounded" type="submit">
+                  <button
+                    className="mt-5 bg-primary text-white px-6 py-2 rounded"
+                    type="submit"
+                  >
                     Save
                   </button>
                 </form>
               </div>
             </div>
           </div>
-          <UploadPhoto id={sessionStorage.getItem("_id")} role={"Candidate"}/>
+          <UploadPhoto id={sessionStorage.getItem("_id")} role={"Candidate"} />
         </div>
       </div>
     </>

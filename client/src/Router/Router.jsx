@@ -22,7 +22,6 @@ import ProtectedRoute from '../pages/Authentication/ProtectedRoute';
 import LSettings from '../pages/lecturer/LSettings';
 import QuestionBank from '../pages/admin/QuestionBank/QuestionBank';
 import SelectQuestionsForTest from '../pages/admin/Test/SelectQuestionsForTest';
-// import CandidateExam from '../pages/student/Tests/CandidateExam';
 import GetRelatedTest from '../pages/student/Tests/GetReleatedTest';
 import CondidateResult from '../pages/student/Result/CondidateResult';
 import CSettings from '../pages/student/CSettings';

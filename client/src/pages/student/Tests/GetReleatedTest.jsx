@@ -46,7 +46,6 @@ const GetRelatedTest = () => {
         <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           { test ? (
             <>
-              {/* 📄 Welcome Message */ }
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-200 mb-6 text-center leading-relaxed">
                 <FaRegFileAlt className="inline-block text-blue-600 mr-2" />
                 Welcome, { sessionStorage.getItem("name") }!
@@ -58,7 +57,6 @@ const GetRelatedTest = () => {
                 <span className="text-blue-600 font-semibold mt-2 block">Good luck! 🍀</span>
               </h2>
 
-              {/* 📋 Test Details */ }
               <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg shadow-md space-y-3">
                 <p className="text-lg font-bold text-gray-700 dark:text-gray-400 flex items-center">
                   <FaRegFileAlt className="mr-2 text-gray-600 dark:text-gray-300" />
@@ -103,7 +101,6 @@ const GetRelatedTest = () => {
                   }): "No End Date Set" }
                 </p>
 
-                {/* ▶ Start Test Button */ }
                 <button
                   onClick={ () => navigate(`/candidate/candidate-question/${test._id}`) }
                   className="w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md flex items-center justify-center"
@@ -114,7 +111,6 @@ const GetRelatedTest = () => {
               </div>
             </>
           ) : (
-            // ❌ No Test Assigned Message
             <div className="p-6 rounded-lg bg-gray-100 dark:bg-gray-700 shadow-md text-center">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex justify-center items-center">
                 <FaRegFileAlt className="mr-2 text-gray-600 dark:text-gray-400" /> No Test Assigned

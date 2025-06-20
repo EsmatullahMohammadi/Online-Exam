@@ -123,7 +123,16 @@ function Test() {
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <p className="text-black dark:text-white">
-                        {new Date(test.startDate).toLocaleDateString()}
+                        {test.startDate
+                          ? new Date(test.startDate).toLocaleString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                          : "No Start Date Set"}
                       </p>
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">

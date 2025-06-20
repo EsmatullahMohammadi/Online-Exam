@@ -42,7 +42,7 @@ const CandidateExamPaginate = () => {
         });
       }, 1000);
     } else if (timeLeft === 0 && test && !submitted) {
-      handleSubmit();
+      handleSubmit(timeLeft);
     }
     return () => clearInterval(timer);
   }, [timeLeft, test, submitted]);
@@ -154,9 +154,11 @@ const CandidateExamPaginate = () => {
       setSaving(false);
     }
   };
-  const handleSubmit = async () => {
+  const handleSubmit = async (timeLeft) => {
     if (submitted) return;
-    if (!window.confirm("Are you sure you want to submit your exam?")) return;
+    if (!timeLeft) {
+      if (!window.confirm("Are you sure you want to submit your exam?")) return;
+    }
 
     try {
       setSubmitted(true);
@@ -169,12 +171,7 @@ const CandidateExamPaginate = () => {
       if (response.status === 200) {
         sessionStorage.removeItem(`exam_${testId}_timeLeft`);
         sessionStorage.removeItem(`exam_${testId}_answers`);
-        alert(
-          `Exam submitted successfully!\n` +
-            `Score: ${response.data.score}/${response.data.totalQuestions}\n` +
-            `Marks: ${response.data.obtainedMarks}/${response.data.totalMarks}\n` +
-            `Status: ${response.data.status}`
-        );
+        alert(`Exam submitted successfully!`);
         navigate("/candidate/candidate-result");
       }
     } catch (err) {
@@ -192,7 +189,6 @@ const CandidateExamPaginate = () => {
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
-  // Group questions by category
   const groupedQuestions = {
     Reading: [],
     Listening: [],
@@ -208,8 +204,7 @@ const CandidateExamPaginate = () => {
     });
   }
 
-  // Fixed pages for each category
-  const totalPages = 4; // Reading, Listening, Grammar, Writing
+  const totalPages = 4;
   const pageTitles = [
     "Reading Section",
     "Listening Section",
@@ -288,16 +283,13 @@ const CandidateExamPaginate = () => {
           </div>
 
           <div className="space-y-6 mt-6">
-            {/* Reading Section */}
             {currentCategory === "Reading" && (
               <section>
                 <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                  Reading Section
+                  Reading: ( 30 Points)
                 </h2>
                 <p className="mb-5 text-gray-700 dark:text-gray-300">
-                  Please read each question carefully and select the correct
-                  answer from the four options provided. There is only one
-                  correct answer for each question. Good luck!
+                  Read the passage and answer the questions below.
                 </p>
                 {currentGroups.map((group) => (
                   <div key={group._id} className="mb-8">
@@ -347,16 +339,15 @@ const CandidateExamPaginate = () => {
               </section>
             )}
 
-            {/* Listening Section */}
             {currentCategory === "Listening" && (
               <section>
                 <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                  Listening Section
+                  Listening (30 Points)
                 </h2>
                 <p className="mb-5 text-gray-700 dark:text-gray-300">
                   Please read each question carefully and select the correct
-                  answer from the four or two options provided. There is only one
-                  correct answer for each question. Good luck!
+                  answer from the four or two options provided. There is only
+                  one correct answer for each question. Good luck!
                 </p>
                 {currentGroups.map((group) => (
                   <div key={group._id} className="mb-8">
@@ -410,11 +401,10 @@ const CandidateExamPaginate = () => {
               </section>
             )}
 
-            {/* Grammar Section */}
             {currentCategory === "Grammar" && (
               <section>
                 <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                  Grammar Section
+                  Grammar (30 Points)
                 </h2>
 
                 <p className="mb-5 text-gray-700 dark:text-gray-300">
@@ -467,11 +457,10 @@ const CandidateExamPaginate = () => {
               </section>
             )}
 
-            {/* Writing Section */}
             {currentCategory === "Writing" && (
               <section>
                 <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                  Writing Section
+                  Writing ( 10 Points)
                 </h2>
 
                 <p className="mb-5 text-gray-700 dark:text-gray-300">
