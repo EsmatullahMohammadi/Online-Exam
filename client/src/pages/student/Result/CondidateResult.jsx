@@ -41,7 +41,7 @@ const CandidateResult = () => {
             <>
               <div className="p-6 rounded-lg bg-green-100 dark:bg-green-900 shadow-md">
                 <h3 className="text-2xl font-bold text-green-800 dark:text-green-300 flex items-center">
-                  <FaTrophy className="mr-2 text-green-500" /> Test Results
+                  <FaTrophy className="mr-2" /> Test Results
                 </h3>
 
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -127,7 +127,7 @@ const CandidateResult = () => {
 
                 {submittedTest?.categoryBreakdown && (
                   <div className="mt-6">
-                    <h3 className="text-xl font-bold text-blue-800 dark:text-blue-200 flex items-center">
+                    <h3 className="text-xl font-bold text-green-800 dark:text-green-300 flex items-center">
                       <FaClipboardCheck className="mr-2" /> Section-wise
                       Performance
                     </h3>

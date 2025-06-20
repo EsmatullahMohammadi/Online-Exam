@@ -42,7 +42,7 @@ const CandidateExamPaginate = () => {
         });
       }, 1000);
     } else if (timeLeft === 0 && test && !submitted) {
-      handleSubmit(timeLeft);
+      handleSubmit(true);
     }
     return () => clearInterval(timer);
   }, [timeLeft, test, submitted]);
