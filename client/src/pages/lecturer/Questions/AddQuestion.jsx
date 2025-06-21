@@ -7,11 +7,13 @@ const AddQuestion = () => {
     questions,
     category,
     formik,
+    optionCount,
     handleQuestionChange,
     handleOptionChange,
     addQuestion,
     removeQuestion,
     validateQuestion,
+    handleOptionCountChange,
   } = useQuestionForm();
 
   return (
@@ -32,7 +34,6 @@ const AddQuestion = () => {
           onSubmit={formik.handleSubmit}
           className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5"
         >
-          {/* Passage for Reading */}
           {category === "Reading" && (
             <div className="col-span-2">
               <label className="mb-3 block text-black dark:text-white">
@@ -70,7 +71,7 @@ const AddQuestion = () => {
                 onChange={(event) => {
                   const file = event.currentTarget.files[0];
                   formik.setFieldValue("listeningFile", file || null);
-                  formik.setFieldTouched("listeningFile", true);
+                  formik.setFieldTouched("listeningFile", true, false); 
                 }}
                 className={`w-full rounded-lg border-[1.5px] ${
                   formik.touched.listeningFile && formik.errors.listeningFile
@@ -84,7 +85,7 @@ const AddQuestion = () => {
                 </span>
               )}
               {formik.values.listeningFile && (
-                <div className="mt-2 text-sm text-green-500">
+                <div className="mt-2 text-sm text-green-700">
                   Selected: {formik.values.listeningFile.name}
                 </div>
               )}
@@ -98,7 +99,6 @@ const AddQuestion = () => {
             {questions.map((q, qIndex) => {
               const errors = validateQuestion(q);
               const hasErrors = Object.keys(errors).length > 0;
-              console.log(Object.keys(errors));
               return (
                 <div
                   key={qIndex}
@@ -158,7 +158,23 @@ const AddQuestion = () => {
                       </span>
                     )}
                   </div>
-
+                  {category === "Listening" && (
+                    <div className="col-span-2">
+                      <label className="mb-3 block text-black dark:text-white">
+                        Number of Options
+                      </label>
+                      <select
+                        value={optionCount}
+                        onChange={(e) =>
+                          handleOptionCountChange(Number(e.target.value))
+                        }
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      >
+                        <option value={2}>2 Options</option>
+                        <option value={4}>4 Options</option>
+                      </select>
+                    </div>
+                  )}
                   <div className="mb-4">
                     <label className="mb-2 block text-black dark:text-white">
                       Options
@@ -169,35 +185,37 @@ const AddQuestion = () => {
                       </span>
                     )}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      {q.options.map((option, optIndex) => (
-                        <div key={optIndex}>
-                          <input
-                            type="text"
-                            value={option}
-                            onChange={(e) =>
-                              handleOptionChange(
-                                qIndex,
-                                optIndex,
-                                e.target.value
-                              )
-                            }
-                            onBlur={() =>
-                              handleOptionChange(qIndex, optIndex, option)
-                            }
-                            placeholder={`Option ${optIndex + 1}`}
-                            className={`w-full rounded-lg border-[1.5px] ${
-                              q.touched.options[optIndex] && !option.trim()
-                                ? "border-red-500"
-                                : "border-stroke"
-                            } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
-                          />
-                          {q.touched.options[optIndex] && !option.trim() && (
-                            <span className="text-red-500 text-sm">
-                              Option cannot be empty
-                            </span>
-                          )}
-                        </div>
-                      ))}
+                      {q.options
+                        .slice(0, category === "Listening" ? optionCount : 4)
+                        .map((option, optIndex) => (
+                          <div key={optIndex}>
+                            <input
+                              type="text"
+                              value={option}
+                              onChange={(e) =>
+                                handleOptionChange(
+                                  qIndex,
+                                  optIndex,
+                                  e.target.value
+                                )
+                              }
+                              onBlur={() =>
+                                handleOptionChange(qIndex, optIndex, option)
+                              }
+                              placeholder={`Option ${optIndex + 1}`}
+                              className={`w-full rounded-lg border-[1.5px] ${
+                                q.touched.options[optIndex] && !option.trim()
+                                  ? "border-red-500"
+                                  : "border-stroke"
+                              } bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                            />
+                            {q.touched.options[optIndex] && !option.trim() && (
+                              <span className="text-red-500 text-sm">
+                                Option cannot be empty
+                              </span>
+                            )}
+                          </div>
+                        ))}
                     </div>
                   </div>
 

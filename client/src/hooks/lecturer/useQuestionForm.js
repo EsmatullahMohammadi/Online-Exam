@@ -5,25 +5,25 @@ import axios from "axios";
 import { SUPER_DOMAIN } from "../../pages/admin/constant";
 
 export const useQuestionForm = () => {
+  const [optionCount, setOptionCount] = useState(2); 
   const [loading, setLoading] = useState(false);
+  const category = sessionStorage.getItem("category");
+  const lecturerId = sessionStorage.getItem("lecturerID");
   const [questions, setQuestions] = useState([
     {
       questionText: "",
-      options: ["", "", "", ""],
+      options: category === "Listening" ? Array(optionCount).fill("") : ["", "", "", ""],
       correctAnswer: "",
       touched: {
         questionText: false,
-        options: [false, false, false, false],
+        options: category === "Listening" ? Array(optionCount).fill(false) : [false, false, false, false],
         correctAnswer: false,
       },
     },
   ]);
 
-  const category = sessionStorage.getItem("category");
-  const lecturerId = sessionStorage.getItem("lecturerID");
   axios.defaults.withCredentials = true;
 
-  // Validation schema for individual questions
   const questionSchema = Yup.object().shape({
     questionText: Yup.string().required("Question text is required"),
     options: Yup.array()
@@ -31,14 +31,13 @@ export const useQuestionForm = () => {
       .test(
         "options-length",
         category === "Listening"
-          ? "Listening questions must have 2 or 4 options"
+          ? `Listening questions must have ${optionCount} options`
           : "Questions must have exactly 4 options",
         (options) => {
-          const filledOptions = options.filter((opt) => opt.trim() !== "");
-          if (category === "Listening") {
-            return filledOptions.length === 2 || filledOptions.length === 4;
-          }
-          return filledOptions.length === 4;
+          const relevantOptions = category === "Listening"
+            ? options.slice(0, optionCount)
+            : options.slice(0, 4);
+          return relevantOptions.every(opt => opt.trim() !== "");
         }
       ),
     correctAnswer: Yup.string()
@@ -47,10 +46,31 @@ export const useQuestionForm = () => {
         "correct-answer-in-options",
         "Correct answer must be one of the options",
         function (value) {
-          return this.parent.options.includes(value);
+          const validOptions =
+            category === "Listening"
+              ? this.parent.options.slice(0, optionCount)
+              : this.parent.options.slice(0, 4);
+          return validOptions.includes(value);
         }
       ),
   });
+
+  const handleOptionCountChange = (count) => {
+    setOptionCount(count);
+    const updatedQuestions = questions.map((q) => ({
+      ...q,
+      options: Array(count)
+        .fill("")
+        .map((_, i) => q.options[i] || ""),
+      touched: {
+        ...q.touched,
+        options: Array(count)
+          .fill(false)
+          .map((_, i) => q.touched.options[i] || false),
+      },
+    }));
+    setQuestions(updatedQuestions);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -66,18 +86,16 @@ export const useQuestionForm = () => {
         category === "Listening"
           ? Yup.mixed()
               .required("Audio file is required")
-              .test(
-                "fileType",
-                "Only audio files are accepted",
-                (value) => value && value instanceof File
-              )
+              .test("fileType", "Only audio files are accepted", (value) => {
+                if (!value) return false;
+                return value instanceof File && value.type.startsWith("audio/");
+              })
           : Yup.mixed().notRequired(),
     }),
     onSubmit: async (values, { resetForm }) => {
       setLoading(true);
 
       try {
-        // Validate all questions first
         let hasErrors = false;
         const validatedQuestions = questions.map((q) => {
           try {
@@ -100,7 +118,6 @@ export const useQuestionForm = () => {
           return;
         }
 
-        // Validate main form fields
         try {
           await formik.validateForm();
         } catch (err) {
@@ -110,7 +127,6 @@ export const useQuestionForm = () => {
           return;
         }
 
-        // Create FormData payload
         const payload = new FormData();
         payload.append("category", category);
 
@@ -121,10 +137,8 @@ export const useQuestionForm = () => {
           payload.append("listeningFile", values.listeningFile);
         }
 
-        // Stringify questions and append
         payload.append("questions", JSON.stringify(validatedQuestions));
 
-        // Send to backend
         const response = await axios.post(
           `${SUPER_DOMAIN}/add-question/${lecturerId}`,
           payload,
@@ -218,7 +232,16 @@ export const useQuestionForm = () => {
 
   const validateQuestion = (question) => {
     try {
-      questionSchema.validateSync(question, { abortEarly: false });
+      const questionToValidate =
+        category === "Listening"
+          ? {
+              ...question,
+              options: question.options.slice(0, optionCount),
+              correctAnswer: question.correctAnswer,
+            }
+          : question;
+
+      questionSchema.validateSync(questionToValidate, { abortEarly: false });
       return {};
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
@@ -235,10 +258,12 @@ export const useQuestionForm = () => {
     questions,
     category,
     formik,
+    optionCount,
     handleQuestionChange,
     handleOptionChange,
     addQuestion,
     removeQuestion,
     validateQuestion,
+    handleOptionCountChange,
   };
 };

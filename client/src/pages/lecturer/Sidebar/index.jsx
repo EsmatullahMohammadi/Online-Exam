@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useRef, useState } from 'react';
+
+import  { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { FaTachometerAlt, FaBook, FaUser, FaCog, FaArrowLeft } from "react-icons/fa";
+import { FaTachometerAlt, FaBook,  FaCog, FaArrowLeft } from "react-icons/fa";
 import axios from 'axios';
 import { SUPER_DOMAIN } from '../../admin/constant';
 import { FiLogOut } from 'react-icons/fi';
@@ -106,7 +107,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           <div>
             <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">MENU</h3>
             <ul className="mb-6 flex flex-col gap-1.5">
-              {/* <!-- Menu Item Dashboard --> */ }
               <li>
                 <NavLink
                   to="/lecturer"
@@ -121,7 +121,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 </NavLink>
               </li>
 
-              {/* <!-- Menu Item Test --> */ }
               <li>
                 <NavLink
                   to="/lecturer/questions"
@@ -134,7 +133,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   Questions
                 </NavLink>
               </li>
-              {/* <!-- Menu Item Settings --> */ }
               <li>
                 <NavLink
                   to="/lecturer/settings"
@@ -147,7 +145,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   Settings
                 </NavLink>
               </li>
-              {/* <!-- Menu Item Settings --> */ }
               <li>
                 <button
                   onClick={ handleLogout }
