@@ -89,7 +89,8 @@ const CandidateResult = () => {
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold text-gray-800 dark:text-gray-200">
                       <FaFileAlt className="inline mr-2" />
-                      Your Total Score: {submittedTest?.obtainedMarks}/
+                      Your Total Score:{" "}
+                      {submittedTest?.obtainedMarks.toFixed(2)}/
                       {test?.totalMarks}
                     </span>
                     <span className="font-bold text-gray-800 dark:text-gray-200">
@@ -151,7 +152,7 @@ const CandidateResult = () => {
                               </p>
                               <p className="text-gray-700 dark:text-gray-300">
                                 <span className="font-medium">Percentage:</span>{" "}
-                                {data.percentage}%
+                                {data.percentage.toFixed(1)}%
                               </p>
                               <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
                                 <div
@@ -169,7 +170,7 @@ const CandidateResult = () => {
                                 <span className="font-medium">
                                   Weighted Score:
                                 </span>{" "}
-                                {data.weightedScore.toFixed(1)}
+                                {data.weightedScore.toFixed(2)}
                               </p>
                             </div>
                           </div>

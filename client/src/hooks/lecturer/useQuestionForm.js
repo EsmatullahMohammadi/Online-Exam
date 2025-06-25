@@ -5,18 +5,24 @@ import axios from "axios";
 import { SUPER_DOMAIN } from "../../pages/admin/constant";
 
 export const useQuestionForm = () => {
-  const [optionCount, setOptionCount] = useState(2); 
+  const [optionCount, setOptionCount] = useState(2);
   const [loading, setLoading] = useState(false);
   const category = sessionStorage.getItem("category");
   const lecturerId = sessionStorage.getItem("lecturerID");
   const [questions, setQuestions] = useState([
     {
       questionText: "",
-      options: category === "Listening" ? Array(optionCount).fill("") : ["", "", "", ""],
+      options:
+        category === "Listening"
+          ? Array(optionCount).fill("")
+          : ["", "", "", ""],
       correctAnswer: "",
       touched: {
         questionText: false,
-        options: category === "Listening" ? Array(optionCount).fill(false) : [false, false, false, false],
+        options:
+          category === "Listening"
+            ? Array(optionCount).fill(false)
+            : [false, false, false, false],
         correctAnswer: false,
       },
     },
@@ -34,10 +40,11 @@ export const useQuestionForm = () => {
           ? `Listening questions must have ${optionCount} options`
           : "Questions must have exactly 4 options",
         (options) => {
-          const relevantOptions = category === "Listening"
-            ? options.slice(0, optionCount)
-            : options.slice(0, 4);
-          return relevantOptions.every(opt => opt.trim() !== "");
+          const relevantOptions =
+            category === "Listening"
+              ? options.slice(0, optionCount)
+              : options.slice(0, 4);
+          return relevantOptions.every((opt) => opt.trim() !== "");
         }
       ),
     correctAnswer: Yup.string()
@@ -149,18 +156,23 @@ export const useQuestionForm = () => {
             withCredentials: true,
           }
         );
-
         if (response.status === 201) {
           alert(response.data.message);
           resetForm();
           setQuestions([
             {
               questionText: "",
-              options: ["", "", "", ""],
+              options:
+                category === "Listening"
+                  ? Array(optionCount).fill("")
+                  : ["", "", "", ""],
               correctAnswer: "",
               touched: {
                 questionText: false,
-                options: [false, false, false, false],
+                options:
+                  category === "Listening"
+                    ? Array(optionCount).fill(false)
+                    : [false, false, false, false],
                 correctAnswer: false,
               },
             },
@@ -211,11 +223,17 @@ export const useQuestionForm = () => {
       ...questions,
       {
         questionText: "",
-        options: ["", "", "", ""],
+        options:
+          category === "Listening"
+            ? Array(optionCount).fill("")
+            : ["", "", "", ""],
         correctAnswer: "",
         touched: {
           questionText: false,
-          options: [false, false, false, false],
+          options:
+            category === "Listening"
+              ? Array(optionCount).fill(false)
+              : [false, false, false, false],
           correctAnswer: false,
         },
       },

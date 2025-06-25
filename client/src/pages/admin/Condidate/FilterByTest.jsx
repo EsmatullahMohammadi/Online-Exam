@@ -13,7 +13,7 @@ const FilterByTest = () => {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get("testId");
   const { elementRef, exportToPDF } = useExportPDF({
-    filename: "results.pdf",
+    filename: "candidates.pdf",
     orientation: "landscape",
   });
 

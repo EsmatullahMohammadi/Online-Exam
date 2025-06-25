@@ -41,7 +41,7 @@ const Result = () => {
           },
         });
         setResults(response.data);
-        setFilteredResults(response.data); // Initialize filtered results
+        setFilteredResults(response.data);
       } catch (err) {
         console.log(err);
         setError("Failed to fetch results.");
@@ -141,13 +141,31 @@ const Result = () => {
                     #
                   </th>
                   <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Candidate Name
+                    Name
+                  </th>
+                  <th className="py-4 px-4 font-medium text-black dark:text-white">
+                    Father name
+                  </th>
+                  <th className="py-4 px-4 font-medium text-black dark:text-white">
+                    Education degree
+                  </th>
+                  <th className="py-4 px-4 font-medium text-black dark:text-white">
+                    Department
+                  </th>
+                  <th className="py-4 px-4 font-medium text-black dark:text-white">
+                    Faculty
+                  </th>
+                  <th className="py-4 px-4 font-medium text-black dark:text-white">
+                    Unevirsity
+                  </th>
+                  <th className="py-4 px-4 font-medium text-black dark:text-white">
+                    Number
                   </th>
                   <th className="py-4 px-4 font-medium text-black dark:text-white">
                     Test Title
                   </th>
                   <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Status
+                    Result
                   </th>
                   <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white">
                     Submitted At
@@ -181,6 +199,24 @@ const Result = () => {
                       </td>
                       <td className="py-3 px-4 text-black dark:text-white">
                         {result.candidateId?.name}
+                      </td>
+                      <td className="py-3 px-4 text-black dark:text-white">
+                        {result.candidateId?.fatherName}
+                      </td>
+                      <td className="py-3 px-4 text-black dark:text-white">
+                        {result.candidateId?.educationDegree}
+                      </td>
+                      <td className="py-3 px-4 text-black dark:text-white">
+                        {result.candidateId?.department}
+                      </td>
+                      <td className="py-3 px-4 text-black dark:text-white">
+                        {result.candidateId?.faculty}
+                      </td>
+                      <td className="py-3 px-4 text-black dark:text-white">
+                        {result.candidateId?.university}
+                      </td>
+                      <td className="py-3 px-4 text-black dark:text-white">
+                        {result.obtainedMarks.toFixed(2)}
                       </td>
                       <td className="py-3 px-4 text-black dark:text-white">
                         {result.testId?.title}
