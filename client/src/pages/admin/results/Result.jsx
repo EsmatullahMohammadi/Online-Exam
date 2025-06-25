@@ -8,6 +8,7 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { FaDownload } from "react-icons/fa";
 import useExportPDF from "../../../hooks/useExportPDF";
 import { useSearch } from "../../../context/SearchContext";
+import exportToExcel from "../../../hooks/useExportXl";
 
 const Result = () => {
   const { searchValue } = useSearch();
@@ -18,7 +19,7 @@ const Result = () => {
   const [isOpenModel, setIsOpenModel] = useState(false);
   const handleCloseModal = () => setIsOpenModel(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(2);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [selectedResult, setSelectedResult] = useState(null);
 
   const { elementRef, exportToPDF } = useExportPDF({
@@ -26,7 +27,6 @@ const Result = () => {
     orientation: "landscape",
   });
 
-  // Filters
   const [selectedTest, setSelectedTest] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
@@ -52,23 +52,19 @@ const Result = () => {
     fetchResults();
   }, []);
 
-  // Apply filters and search
   useEffect(() => {
     let filtered = results;
 
-    // Apply test filter
     if (selectedTest) {
       filtered = filtered.filter(
         (result) => result.testId?.title === selectedTest
       );
     }
 
-    // Apply status filter
     if (selectedStatus) {
       filtered = filtered.filter((result) => result.status === selectedStatus);
     }
 
-    // Apply search filter
     if (searchValue) {
       const searchLower = searchValue.toLowerCase();
       filtered = filtered.filter(
@@ -79,15 +75,13 @@ const Result = () => {
     }
 
     setFilteredResults(filtered);
-    setCurrentPage(1); // Reset to first page when filtering or searching
+    setCurrentPage(1);
   }, [selectedTest, selectedStatus, searchValue, results]);
 
-  // Get unique test titles for dropdown
   const testTitles = [
     ...new Set(results.map((result) => result.testId?.title).filter(Boolean)),
   ];
 
-  // Pagination Logic
   const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
   const paginatedResults = filteredResults.slice(
     (currentPage - 1) * itemsPerPage,
@@ -106,6 +100,13 @@ const Result = () => {
           >
             <FaDownload /> Download PDF
           </button>
+          <button
+            onClick={() => exportToExcel(filteredResults)}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm shadow"
+          >
+            <FaDownload /> Download XLSX
+          </button>
+
           <select
             className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
             value={selectedTest}
