@@ -1,13 +1,9 @@
 /* eslint-disable react/prop-types */
-import { HiArrowDown, HiArrowUp } from "react-icons/hi";
 import { Link } from 'react-router-dom';
 
 const CardDataStats = ({
   title,
   total,
-  rate,
-  levelUp,
-  levelDown,
   routCard,
   children,
 }) => {
@@ -25,19 +21,6 @@ const CardDataStats = ({
             </h4>
             <span className="text-md font-medium">{ total }</span>
           </div>
-          <span
-            className={ `flex items-center gap-1 text-sm font-medium ${levelUp ? 'text-meta-3' : ''
-              } ${levelDown ? 'text-meta-5' : ''}` }
-          >
-            { rate }
-
-            { levelUp && (
-              <HiArrowUp className="text-meta-3" size={ 20 } />
-            ) }
-            { levelDown && (
-              <HiArrowDown className="text-meta-5" size={ 20 } />
-            ) }
-          </span>
         </div>
       </div>
     </Link>

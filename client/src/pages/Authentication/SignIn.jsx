@@ -66,7 +66,7 @@ const SignIn = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type="email"
+                        type="text"
                         placeholder="Enter your email/username"
                         name="emailAddress"
                         value={ formik.values.emailAddress }

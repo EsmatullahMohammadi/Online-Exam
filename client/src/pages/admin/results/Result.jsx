@@ -1,92 +1,39 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { MdVisibility } from "react-icons/md";
-import { SUPER_DOMAIN } from "../constant";
-import Pagination from "../../../components/Pagination";
-import ViewResultsDetails from "./ViewResultsDetails";
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { FaDownload } from "react-icons/fa";
 import useExportPDF from "../../../hooks/useExportPDF";
-import { useSearch } from "../../../context/SearchContext";
 import exportToExcel from "../../../hooks/useExportXl";
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
+import Pagination from "../../../components/Pagination";
+import ViewResultsDetails from "./ViewResultsDetails";
+import useResults from "../../../hooks/admin/results/useResults";
 
 const Result = () => {
-  const { searchValue } = useSearch();
-  const [results, setResults] = useState([]);
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isOpenModel, setIsOpenModel] = useState(false);
-  const handleCloseModal = () => setIsOpenModel(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [selectedResult, setSelectedResult] = useState(null);
+  const {
+    loading,
+    error,
+    selectedTest,
+    setSelectedTest,
+    selectedStatus,
+    setSelectedStatus,
+    filteredResults,
+    paginatedResults,
+    testTitles,
+    currentPage,
+    setCurrentPage,
+    setItemsPerPage,
+  } = useResults();
 
   const { elementRef, exportToPDF } = useExportPDF({
     filename: "results.pdf",
     orientation: "landscape",
   });
 
-  const [selectedTest, setSelectedTest] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [isOpenModel, setIsOpenModel] = useState(false);
+  const [selectedResult, setSelectedResult] = useState(null);
+  const handleCloseModal = () => setIsOpenModel(false);
 
-  axios.defaults.withCredentials = true;
-
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const response = await axios.get(`${SUPER_DOMAIN}/results`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        setResults(response.data);
-        setFilteredResults(response.data);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch results.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchResults();
-  }, []);
-
-  useEffect(() => {
-    let filtered = results;
-
-    if (selectedTest) {
-      filtered = filtered.filter(
-        (result) => result.testId?.title === selectedTest
-      );
-    }
-
-    if (selectedStatus) {
-      filtered = filtered.filter((result) => result.status === selectedStatus);
-    }
-
-    if (searchValue) {
-      const searchLower = searchValue.toLowerCase();
-      filtered = filtered.filter(
-        (result) =>
-          result.candidateId?.name?.toLowerCase().includes(searchLower) ||
-          result.testId?.title?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    setFilteredResults(filtered);
-    setCurrentPage(1);
-  }, [selectedTest, selectedStatus, searchValue, results]);
-
-  const testTitles = [
-    ...new Set(results.map((result) => result.testId?.title).filter(Boolean)),
-  ];
-
-  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
-  const paginatedResults = filteredResults.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredResults.length / 5); // static itemsPerPage = 5
 
   return (
     <>
@@ -108,9 +55,9 @@ const Result = () => {
           </button>
 
           <select
-            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
             value={selectedTest}
             onChange={(e) => setSelectedTest(e.target.value)}
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2"
           >
             <option value="">All Tests</option>
             {testTitles.map((title) => (
@@ -121,15 +68,16 @@ const Result = () => {
           </select>
 
           <select
-            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-boxdark text-black dark:text-white rounded-md px-3 py-2"
           >
             <option value="">All Status</option>
             <option value="Passed">Passed</option>
             <option value="Failed">Failed</option>
           </select>
         </div>
+
         <div
           ref={elementRef}
           className="print:bg-white print:text-black print:p-4 print:shadow-none"
@@ -138,93 +86,65 @@ const Result = () => {
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-300 text-left dark:bg-meta-4">
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    #
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Name
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Father name
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Education degree
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Department
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Faculty
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Unevirsity
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Number
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Test Title
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Result
-                  </th>
-                  <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white">
-                    Submitted At
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white">
-                    Actions
-                  </th>
+                  <th className="py-4 px-4 font-medium">#</th>
+                  <th className="py-4 px-4 font-medium">Name</th>
+                  <th className="py-4 px-4 font-medium">Father name</th>
+                  <th className="py-4 px-4 font-medium">Education</th>
+                  <th className="py-4 px-4 font-medium">Department</th>
+                  <th className="py-4 px-4 font-medium">Faculty</th>
+                  <th className="py-4 px-4 font-medium">University</th>
+                  <th className="py-4 px-4 font-medium">Number</th>
+                  <th className="py-4 px-4 font-medium">Test</th>
+                  <th className="py-4 px-4 font-medium">Status</th>
+                  <th className="py-4 px-4 font-medium">Submitted At</th>
+                  <th className="py-4 px-4 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="text-center py-3">
+                    <td colSpan="12" className="text-center py-3">
                       Loading...
                     </td>
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td colSpan="6" className="text-center py-3 text-red-500">
+                    <td colSpan="12" className="text-center text-red-500 py-3">
                       {error}
                     </td>
                   </tr>
-                ) : filteredResults.length > 0 ? (
+                ) : paginatedResults.length > 0 ? (
                   paginatedResults.map((result, index) => (
                     <tr
                       key={result._id}
-                      className="border-b border-gray-200 dark:border-strokedark"
+                      className="border-b dark:border-strokedark"
                     >
                       <td className="py-3 px-4">
-                        {(currentPage - 1) * itemsPerPage + index + 1}
+                        {(currentPage - 1) * 5 + index + 1}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
-                        {result.candidateId?.name}
-                      </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">{result.candidateId?.name}</td>
+                      <td className="py-3 px-4">
                         {result.candidateId?.fatherName}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">
                         {result.candidateId?.educationDegree}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">
                         {result.candidateId?.department}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">
                         {result.candidateId?.faculty}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">
                         {result.candidateId?.university}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">
                         {result.obtainedMarks.toFixed(2)}
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
-                        {result.testId?.title}
-                      </td>
+                      <td className="py-3 px-4">{result.testId?.title}</td>
                       <td className="py-3 px-4">
                         <span
-                          className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                          className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                             result.status === "Passed"
                               ? "bg-green-100 text-green-700"
                               : result.status === "Failed"
@@ -235,16 +155,16 @@ const Result = () => {
                           {result.status}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-black dark:text-white">
+                      <td className="py-3 px-4">
                         {new Date(result.submittedAt).toLocaleString()}
                       </td>
                       <td className="py-3 px-4">
                         <button
-                          className="text-blue-500 hover:text-blue-600"
                           onClick={() => {
-                            setIsOpenModel(true);
                             setSelectedResult(result);
+                            setIsOpenModel(true);
                           }}
+                          className="text-blue-500 hover:text-blue-600"
                         >
                           <MdVisibility className="text-2xl" />
                         </button>
@@ -253,11 +173,8 @@ const Result = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center py-3">
-                      No results found{" "}
-                      {searchValue && `matching "${searchValue}"`}
-                      {selectedTest && ` for test "${selectedTest}"`}
-                      {selectedStatus && ` with status "${selectedStatus}"`}
+                    <td colSpan="12" className="text-center py-3">
+                      No results found
                     </td>
                   </tr>
                 )}
@@ -265,18 +182,18 @@ const Result = () => {
             </table>
           </div>
         </div>
+
         {filteredResults.length > 0 && (
-          <div className="my-3">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
-              setItemsPerPage={setItemsPerPage}
-            />
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            setItemsPerPage={setItemsPerPage}
+          />
         )}
       </div>
-      {isOpenModel && (
+
+      {isOpenModel && selectedResult && (
         <ViewResultsDetails
           result={selectedResult}
           onClose={handleCloseModal}
