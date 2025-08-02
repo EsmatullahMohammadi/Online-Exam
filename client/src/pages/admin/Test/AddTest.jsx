@@ -4,9 +4,11 @@ import * as Yup from "yup";
 import axios from "axios";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { SUPER_DOMAIN } from "../constant";
+import { useNavigate } from "react-router-dom";
 
 function AddTest() {
   axios.defaults.withCredentials = true;
+  const navigate= useNavigate();
   const [fixedTime, setFixedTime] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -34,7 +36,7 @@ function AddTest() {
         .required("Total Marks is required")
         .positive(),
       startDate: Yup.string().when([], {
-        is: () => fixedTime, // Accessing fixedTime from component state
+        is: () => fixedTime,
         then: (schema) =>
           schema
             .required("Start Date is required")
@@ -108,6 +110,7 @@ function AddTest() {
           { withCredentials: true }
         );
         alert(response.data.message || "Test/Exam added successfully!");
+        navigate("/admin/tests");
         resetForm();
       } catch (error) {
         console.error(
@@ -135,7 +138,6 @@ function AddTest() {
           onSubmit={ formik.handleSubmit }
           className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5"
         >
-          {/* Title/Name */ }
           <div>
             <label className="mb-3 block text-black dark:text-white">Title/Name</label>
             <input
@@ -155,7 +157,6 @@ function AddTest() {
             ) : null }
           </div>
 
-          {/* Exam Duration */ }
           <div>
             <label className="mb-3 block text-black dark:text-white">Exam Duration (Minutes)</label>
             <input
@@ -175,7 +176,6 @@ function AddTest() {
             ) : null }
           </div>
 
-          {/* Number of Questions */ }
           <div>
             <label className="mb-3 block text-black dark:text-white">Number of Questions</label>
             <input
@@ -195,7 +195,6 @@ function AddTest() {
             ) : null }
           </div>
 
-          {/* Total Marks */ }
           <div>
             <label className="mb-3 block text-black dark:text-white">Total Marks</label>
             <input
@@ -249,7 +248,6 @@ function AddTest() {
           {
             fixedTime && (
               <>
-                {/* Start Date */ }
                 <div>
                   <label className="mb-3 block text-black dark:text-white">Start Date</label>
                   <input
@@ -267,7 +265,6 @@ function AddTest() {
                     <span className="text-red-500 text-sm">{ formik.errors.startDate }</span>
                   ) : null }
                 </div>
-                {/* Start Time */ }
                 <div>
                   <label className="mb-3 block text-black dark:text-white">Start Time</label>
                   <input
@@ -291,7 +288,6 @@ function AddTest() {
                     <span className="text-red-500 text-sm">{ formik.errors.startTime }</span>
                   ) : null }
                 </div>
-                {/* End Date */ }
                 <div>
                   <label className="mb-3 block text-black dark:text-white">End Date</label>
                   <input
@@ -309,7 +305,6 @@ function AddTest() {
                     <span className="text-red-500 text-sm">{ formik.errors.endDate }</span>
                   ) : null }
                 </div>
-                {/* End Time */ }
                 <div>
                   <label className="mb-3 block text-black dark:text-white">End Time</label>
                   <input
@@ -337,8 +332,6 @@ function AddTest() {
             )
           }
 
-
-          {/* Description */ }
           <div>
             <label className="mb-3 block text-black dark:text-white">Description</label>
             <textarea

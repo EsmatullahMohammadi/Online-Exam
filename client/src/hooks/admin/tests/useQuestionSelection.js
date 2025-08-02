@@ -113,13 +113,11 @@ export const useQuestionSelection = () => {
         Grammar: [],
       };
 
-      // Step 1: Group questions by category and keep track of which question set they came from
       for (const q of questions) {
         if (!q || !q.category) continue;
         groupedSets[q.category].push(q);
       }
 
-      // Step 2: Calculate equal division
       const categories = ["Reading", "Listening", "Writing", "Grammar"];
       const basePerCategory = Math.floor(numberOfQuestion / 4);
       let extra = numberOfQuestion % 4;
@@ -134,7 +132,6 @@ export const useQuestionSelection = () => {
         if (!candidates || candidates.length === 0) continue;
 
         if (category === "Reading" || category === "Listening") {
-          // Group by passage or listeningFile
           const groupKey = category === "Reading" ? "passage" : "listeningFile";
           const groupedMap = {};
 
@@ -158,13 +155,11 @@ export const useQuestionSelection = () => {
             }
           }
         } else {
-          // Writing and Grammar: choose individual questions
           const shuffled = [...candidates].sort(() => Math.random() - 0.5);
           selectedQuestions.push(...shuffled.slice(0, targetCount));
         }
       }
 
-      // Final adjustment if selected count doesn't meet exact requirement
       let remaining = numberOfQuestion - selectedQuestions.length;
       if (remaining > 0) {
         const unused = questions

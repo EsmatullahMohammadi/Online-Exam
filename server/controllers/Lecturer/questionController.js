@@ -137,7 +137,6 @@ const getQuestionsByCategory = async (req, res) => {
   }
 };
 
-// Get all questions
 const getAllQuestions = async (req, res) => {
   try {
     const questions = await Question.find().sort({ createdAt: -1 }).lean();

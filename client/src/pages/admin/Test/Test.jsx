@@ -56,7 +56,7 @@ function Test() {
       setTestData((prev) => prev.filter((test) => test._id !== testID));
       alert("Test deleted successfully!");
     } catch (err) {
-      alert("Failed to delete test.", err.message);
+      alert(err.response.data.message || "Failed to delete test.");
     }
   };
 

@@ -12,7 +12,6 @@ import { QuestionCategory } from '../../../types/questionType';
 const AddLecturer = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  // Validation Schema with Yup
   const validationSchema = Yup.object({
     name: Yup.string()
       .required('Name is required')
@@ -44,7 +43,7 @@ const AddLecturer = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred. Please try again.');
     } finally {
-      setSubmitting(false); // Stop the Formik submitting state
+      setSubmitting(false);
     }
   };
 
@@ -52,7 +51,6 @@ const AddLecturer = () => {
     <>
       <Breadcrumb pageName="Add Lecturer" />
 
-      {/* Error Alert */}
       {error && (
         <div className="flex w-full border-l-6 border-red-500 bg-red-100 px-7 py-2 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-2 mb-2">
           <div className="w-full">
@@ -76,7 +74,6 @@ const AddLecturer = () => {
         >
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5">
-              {/* Name */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Name
@@ -94,7 +91,6 @@ const AddLecturer = () => {
                 />
               </div>
 
-              {/* Last Name */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Last Name
@@ -112,7 +108,6 @@ const AddLecturer = () => {
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Email
@@ -130,7 +125,6 @@ const AddLecturer = () => {
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Password
@@ -148,7 +142,6 @@ const AddLecturer = () => {
                 />
               </div>
 
-              {/* Category */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Select a Category
@@ -184,7 +177,6 @@ const AddLecturer = () => {
                 </div>
               </div>
 
-              {/* Submit Button */}
               <div className="flex flex-col h-full">
                 <button
                   type="submit"

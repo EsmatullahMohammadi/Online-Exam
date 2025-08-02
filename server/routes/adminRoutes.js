@@ -10,7 +10,7 @@ const varifyUser = require('../middleware/varifyUser');
 
 // Add a Tests
 router.post('/add-test', varifyUser.verifyUser, testController.addTests);
-// All Tests
+// get All Tests
 router.get('/all-tests', varifyUser.verifyUser, testController.getTests);
 // get single test
 router.get('/tests/:id', varifyUser.verifyUser, testController.getTestById);

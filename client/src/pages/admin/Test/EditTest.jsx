@@ -7,8 +7,6 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { SUPER_DOMAIN } from "../constant";
 import { FiArrowLeft } from "react-icons/fi";
 
-
-// Validation Schema
 const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
     examDuration: Yup.number().required("Exam Duration is required").positive().integer(),
@@ -102,11 +100,10 @@ const EditTest = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleFormSubmit}
-          enableReinitialize // Important for updating initial values after data fetch
+          enableReinitialize
         >
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5">
-              {/* Title */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">Title/Name</label>
                 <Field
@@ -122,7 +119,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* Exam Duration */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">Exam Duration (Minutes)</label>
                 <Field
@@ -138,7 +134,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* Number of Questions */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">Number of Questions</label>
                 <Field
@@ -154,7 +149,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* Total Marks */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">Total Marks</label>
                 <Field
@@ -170,7 +164,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* Start Date */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">Start Date</label>
                 <Field
@@ -185,7 +178,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* End Date */}
               <div>
                 <label className="mb-3 block text-black dark:text-white">End Date</label>
                 <Field
@@ -200,7 +192,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* Description */}
               <div className="">
                 <label className="mb-3 block text-black dark:text-white">Description</label>
                 <Field
@@ -217,7 +208,6 @@ const EditTest = () => {
                 />
               </div>
 
-              {/* Submit Button */}
               <div className="flex flex-col h-full">
                 <button
                   type="submit"
