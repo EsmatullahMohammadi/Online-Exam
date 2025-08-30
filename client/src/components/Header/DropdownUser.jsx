@@ -18,7 +18,6 @@ const DropdownUser = () => {
   const lecturerId= sessionStorage.getItem("lecturerID");
   const candidateId= sessionStorage.getItem("candidateID");
 
-  // Fetch existing admin image on mount
   axios.defaults.withCredentials = true;
   useEffect(() => {
     const fetchAdminImage = async () => {
@@ -39,7 +38,7 @@ const DropdownUser = () => {
     try {
       if (adminRole === "Admin") {
         const response = await axios.get(`${SUPER_DOMAIN}/logout-admin`, {
-          withCredentials: true, // Ensure cookies are included in the request
+          withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           },
@@ -51,7 +50,7 @@ const DropdownUser = () => {
       }
       if (lecturerRole === "Lecturer") {
         const response = await axios.get(`${SUPER_DOMAIN}/logout-lecturer`, {
-          withCredentials: true, // Ensure cookies are included in the request
+          withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           },
@@ -63,7 +62,7 @@ const DropdownUser = () => {
       }
       if (candidateRole === "Candidate") {
         const response = await axios.get(`${SUPER_DOMAIN}/logout-candidate`, {
-          withCredentials: true, // Ensure cookies are included in the request
+          withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           },
@@ -74,7 +73,7 @@ const DropdownUser = () => {
         }
       }
     } catch (err) {
-      console.log(err) // Redirect to sign-in if authentication fails
+      console.log(err)
     }
   };
 
@@ -98,7 +97,6 @@ const DropdownUser = () => {
         <FaChevronDown className="hidden sm:block text-current" size={ 15 } />
       </Link>
 
-      {/* <!-- Dropdown Start --> */ }
       { dropdownOpen && (
         <div
           className={ `absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark` }
@@ -129,7 +127,6 @@ const DropdownUser = () => {
           </button>
         </div>
       ) }
-      {/* <!-- Dropdown End --> */ }
     </ClickOutside>
   );
 };

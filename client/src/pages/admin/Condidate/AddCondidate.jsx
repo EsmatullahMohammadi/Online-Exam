@@ -5,8 +5,10 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { SUPER_DOMAIN } from '../constant';
+import { useNavigate } from 'react-router-dom';
 
 const AddCandidate = () => {
+  const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [tests, setTests] = useState([]);
@@ -49,6 +51,7 @@ const AddCandidate = () => {
       if (response.status === 201) {
         setSuccess(true);
         resetForm();
+        navigate("/admin/condidate");
       } else {
         setError(response.data.message || 'Failed to add candidate. Please try again.');
       }
