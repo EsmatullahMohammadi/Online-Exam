@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdAdd } from "react-icons/md";
-import { AiOutlineEye } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineEdit } from "react-icons/ai";
 import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 import useQuestions from "../../../hooks/lecturer/useQuestions";
 
 const Questions = () => {
   const lecturerId = sessionStorage.getItem("lecturerID");
   const { questions, loading, error } = useQuestions(lecturerId);
+  const navigate = useNavigate();
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,6 +23,10 @@ const Questions = () => {
     setIsModalOpen(false);
   };
 
+  const handleEdit = (questionId) => {
+    navigate(`/lecturer/edit-question/${questionId}`);
+  };
+
   return (
     <>
       <LBreadcrumb pageName="Questions" />
@@ -34,6 +39,7 @@ const Questions = () => {
           Add Question
         </Link>
       </div>
+
       <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         <div className="max-w-full overflow-x-auto">
           <table className="w-full table-auto">
@@ -98,12 +104,20 @@ const Questions = () => {
                       {question.category}
                     </td>
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark text-center">
-                      <button
-                        onClick={() => openModal(question)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <AiOutlineEye size={22} />
-                      </button>
+                      <div className=" flex justify-center gap-2">
+                        <button
+                          onClick={() => openModal(question)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <AiOutlineEye size={22} />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(question._id)}
+                          className="text-green-600 hover:text-green-800"
+                        >
+                          <AiOutlineEdit size={22} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
