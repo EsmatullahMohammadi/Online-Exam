@@ -8,15 +8,39 @@ import { SUPER_DOMAIN } from "../constant";
 import { FiArrowLeft } from "react-icons/fi";
 
 const validationSchema = Yup.object().shape({
-    title: Yup.string().required("Title is required"),
-    examDuration: Yup.number().required("Exam Duration is required").positive().integer(),
-    numberOfQuestions: Yup.number().required("Number of Questions is required").positive().integer(),
-    totalMarks: Yup.number().required("Total Marks is required").positive(),
-    startDate: Yup.date().required("Start Date is required").min(new Date().toLocaleDateString(), "Start Date cannot be in the past"),
-    endDate: Yup.date()
-    .required("End Date is required.")
-    .min(Yup.ref("startDate"), "End Date cannot be before Start Date."),
-    description: Yup.string().required("Description is required"),
+  title: Yup.string().required("Title is required"),
+  examDuration: Yup.number()
+    .required("Exam Duration is required")
+    .positive()
+    .integer(),
+  numberOfQuestions: Yup.number()
+    .required("Number of Questions is required")
+    .positive()
+    .integer(),
+  totalMarks: Yup.number().required("Total Marks is required").positive(),
+  startDate: Yup.date()
+    .nullable()
+    .test(
+      "validStartDate",
+      "Start Date cannot be in the past",
+      function (value) {
+        if (!value) return true;
+        return new Date(value) >= new Date(new Date().toDateString());
+      }
+    ),
+  endDate: Yup.date()
+    .nullable()
+    .test(
+      "validEndDate",
+      "End Date cannot be before Start Date",
+      function (value) {
+        if (!value) return true; // skip if null/empty
+        const { startDate } = this.parent;
+        if (!startDate) return true;
+        return new Date(value) >= new Date(startDate);
+      }
+    ),
+  description: Yup.string().required("Description is required"),
 });
 
 const EditTest = () => {
@@ -27,8 +51,8 @@ const EditTest = () => {
     examDuration: "",
     numberOfQuestions: "",
     totalMarks: "",
-    startDate: "",
-    endDate: "",
+    startDate: null,
+    endDate: null,
     description: "",
   });
   const [loading, setLoading] = useState(true);
@@ -39,19 +63,33 @@ const EditTest = () => {
     async function fetchTest() {
       try {
         const response = await axios.get(`${SUPER_DOMAIN}/tests/${id}`);
-        const { title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description } =
-          response.data.test;
+        const {
+          title,
+          examDuration,
+          numberOfQuestions,
+          totalMarks,
+          startDate,
+          endDate,
+          description,
+        } = response.data.test;
+
         setInitialValues({
           title,
           examDuration,
           numberOfQuestions,
           totalMarks,
-          startDate: new Date(startDate).toISOString().split("T")[0],
-          endDate: new Date(endDate).toISOString().split("T")[0],
+          startDate: startDate
+            ? new Date(startDate).toISOString().split("T")[0]
+            : null,
+          endDate: endDate
+            ? new Date(endDate).toISOString().split("T")[0]
+            : null,
           description,
         });
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch test details.");
+        setError(
+          err.response?.data?.message || "Failed to fetch test details."
+        );
       } finally {
         setLoading(false);
       }
@@ -62,7 +100,11 @@ const EditTest = () => {
 
   const handleFormSubmit = async (values, { setSubmitting }) => {
     try {
-      await axios.put(`${SUPER_DOMAIN}/tests/${id}`, values, {
+      const payload = { ...values };
+      if (!payload.startDate) delete payload.startDate;
+      if (!payload.endDate) delete payload.endDate;
+
+      await axios.put(`${SUPER_DOMAIN}/tests/${id}`, payload, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -76,18 +118,16 @@ const EditTest = () => {
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <>
       <Breadcrumb pageName="Edit Test" />
-      <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-gray-900 mb-4">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+      >
         <FiArrowLeft size={24} className="mr-2" /> Back
       </button>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -105,7 +145,9 @@ const EditTest = () => {
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-1 sm:grid-cols-2 gap-6.5 p-6.5">
               <div>
-                <label className="mb-3 block text-black dark:text-white">Title/Name</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Title/Name
+                </label>
                 <Field
                   type="text"
                   name="title"
@@ -120,7 +162,9 @@ const EditTest = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">Exam Duration (Minutes)</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Exam Duration (Minutes)
+                </label>
                 <Field
                   type="number"
                   name="examDuration"
@@ -135,7 +179,9 @@ const EditTest = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">Number of Questions</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Number of Questions
+                </label>
                 <Field
                   type="number"
                   name="numberOfQuestions"
@@ -150,7 +196,9 @@ const EditTest = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">Total Marks</label>
+                <label className="mb-3 block text-black dark:text-white">
+                  Total Marks
+                </label>
                 <Field
                   type="number"
                   name="totalMarks"
@@ -164,36 +212,46 @@ const EditTest = () => {
                 />
               </div>
 
-              <div>
-                <label className="mb-3 block text-black dark:text-white">Start Date</label>
-                <Field
-                  type="date"
-                  name="startDate"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:cursor-pointer"
-                />
-                <ErrorMessage
-                  name="startDate"
-                  component="p"
-                  className="mt-1 text-red-500 text-sm"
-                />
-              </div>
+              {initialValues.startDate && (
+                <div>
+                  <label className="mb-3 block text-black dark:text-white">
+                    Start Date
+                  </label>
+                  <Field
+                    type="date"
+                    name="startDate"
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:cursor-pointer"
+                  />
+                  <ErrorMessage
+                    name="startDate"
+                    component="p"
+                    className="mt-1 text-red-500 text-sm"
+                  />
+                </div>
+              )}
 
-              <div>
-                <label className="mb-3 block text-black dark:text-white">End Date</label>
-                <Field
-                  type="date"
-                  name="endDate"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:cursor-pointer"
-                />
-                <ErrorMessage
-                  name="endDate"
-                  component="p"
-                  className="mt-1 text-red-500 text-sm"
-                />
-              </div>
+              {initialValues.endDate && (
+                <div>
+                  <label className="mb-3 block text-black dark:text-white">
+                    End Date
+                  </label>
+                  <Field
+                    type="date"
+                    name="endDate"
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:cursor-pointer"
+                  />
+                  <ErrorMessage
+                    name="endDate"
+                    component="p"
+                    className="mt-1 text-red-500 text-sm"
+                  />
+                </div>
+              )}
 
-              <div className="">
-                <label className="mb-3 block text-black dark:text-white">Description</label>
+              <div className="sm:col-span-2">
+                <label className="mb-3 block text-black dark:text-white">
+                  Description
+                </label>
                 <Field
                   as="textarea"
                   name="description"
@@ -208,7 +266,7 @@ const EditTest = () => {
                 />
               </div>
 
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full sm:col-span-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}

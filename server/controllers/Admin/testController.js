@@ -1,22 +1,41 @@
-const Test = require('../../models/test');
-const Question = require('../../models/questions');
+const Test = require("../../models/test");
+const Question = require("../../models/questions");
 const moment = require("moment-timezone");
 
 const addTests = async (req, res) => {
-  const { title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description,
-    startTime, endTime, } = req.body;
+  const {
+    title,
+    examDuration,
+    numberOfQuestions,
+    totalMarks,
+    startDate,
+    endDate,
+    description,
+    startTime,
+    endTime,
+  } = req.body;
 
-    let startDateTime = null;
-    let endDateTime = null;
-    if (startDate && startTime) {
-      startDateTime = moment.tz(`${startDate} ${startTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul").toDate();
-    } 
-    if (endDate && endTime) {
-      endDateTime = moment.tz(`${endDate} ${endTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul").toDate();
-    }
+  let startDateTime = null;
+  let endDateTime = null;
+  if (startDate && startTime) {
+    startDateTime = moment
+      .tz(`${startDate} ${startTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul")
+      .toDate();
+  }
+  if (endDate && endTime) {
+    endDateTime = moment
+      .tz(`${endDate} ${endTime}`, "YYYY-MM-DD HH:mm", "Asia/Kabul")
+      .toDate();
+  }
   try {
     const newTest = new Test({
-      title, examDuration, numberOfQuestions, totalMarks, startDate: startDateTime, endDate: endDateTime, description,
+      title,
+      examDuration,
+      numberOfQuestions,
+      totalMarks,
+      startDate: startDateTime,
+      endDate: endDateTime,
+      description,
     });
 
     await newTest.save();
@@ -29,7 +48,7 @@ const addTests = async (req, res) => {
     console.error("Error adding test:", error.message);
     res.status(500).json({ message: "Failed to add test" });
   }
-}
+};
 
 const getTests = async (req, res) => {
   try {
@@ -66,12 +85,31 @@ const getTestById = async (req, res) => {
 
 const updateTest = async (req, res) => {
   const { id } = req.params;
-  const { title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description } = req.body;
+  const {
+    title,
+    examDuration,
+    numberOfQuestions,
+    totalMarks,
+    startDate,
+    endDate,
+    description,
+  } = req.body;
 
   try {
+    const updateData = {
+      title,
+      examDuration,
+      numberOfQuestions,
+      totalMarks,
+      description,
+    };
+
+    if (startDate) updateData.startDate = startDate;
+    if (endDate) updateData.endDate = endDate;
+
     const updatedTest = await Test.findByIdAndUpdate(
       id,
-      { title, examDuration, numberOfQuestions, totalMarks, startDate, endDate, description },
+      { $set: updateData },
       { new: true, runValidators: true }
     );
 
@@ -88,6 +126,7 @@ const updateTest = async (req, res) => {
     res.status(500).json({ error: "Failed to update test" });
   }
 };
+
 const deleteTest = async (req, res) => {
   const { id } = req.params;
 
@@ -172,8 +211,6 @@ const assignedQuestion = async (req, res) => {
   }
 };
 
-
-
 const getDemoTestById = async (req, res) => {
   const { testId } = req.params;
 
@@ -216,5 +253,12 @@ const getDemoTestById = async (req, res) => {
   }
 };
 
-module.exports = { addTests, getTests, updateTest, getTestById, deleteTest, assignedQuestion, getDemoTestById }
-
+module.exports = {
+  addTests,
+  getTests,
+  updateTest,
+  getTestById,
+  deleteTest,
+  assignedQuestion,
+  getDemoTestById,
+};
