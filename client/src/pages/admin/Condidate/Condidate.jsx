@@ -117,7 +117,7 @@ const Condidate = () => {
               <th className="py-4 px-4">#</th>
               <th className="py-4 px-4">Candidate Name</th>
               <th className="py-4 px-4">Father Name</th>
-              <th className="py-4 px-4">Result</th>
+              <th className="py-4 px-4">Phone Number</th>
               <th className="py-4 px-4">Actions</th>
             </tr>
           </thead>
@@ -142,19 +142,7 @@ const Condidate = () => {
                   </td>
                   <td className="py-3 px-4">{cand.name}</td>
                   <td className="py-3 px-4">{cand.fatherName}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex rounded-full py-1 px-3 text-sm font-medium text-white ${
-                        cand.status === "Pending"
-                          ? "bg-warning"
-                          : cand.status === "Passed"
-                            ? "bg-success"
-                            : "bg-danger"
-                      }`}
-                    >
-                      {cand.status}
-                    </span>
-                  </td>
+                  <td className="py-3 px-4">{cand.phoneNumber}</td>
                   <td className="py-3 px-4">
                     <div className="flex space-x-3">
                       <MdVisibility

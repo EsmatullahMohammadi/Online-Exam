@@ -4,7 +4,6 @@ const ViewCandidateDetails = ({ candidate, onClose }) => {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
-          {/* Modal Header */}
           <div className="flex justify-between items-center border-b pb-2 mb-4">
             <h2 className="text-lg font-semibold">Candidate Details</h2>
             <button
@@ -14,8 +13,7 @@ const ViewCandidateDetails = ({ candidate, onClose }) => {
               &times;
             </button>
           </div>
-  
-          {/* Modal Body */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <h3 className="text-base font-medium text-gray-700">
               Name: <span className="font-normal">{candidate?.name || "N/A"}</span>
@@ -41,23 +39,8 @@ const ViewCandidateDetails = ({ candidate, onClose }) => {
             <h3 className="text-base font-medium text-gray-700">
               UserName: <span className="font-normal">{candidate?.userName || "N/A"}</span>
             </h3>
-            <h3 className="text-base font-medium text-gray-700">
-              Status:
-              <span
-                className={`ml-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  candidate?.status === "Pending"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : candidate?.status === "Passed"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {candidate?.status || "N/A"}
-              </span>
-            </h3>
           </div>
-  
-          {/* Modal Footer */}
+
           <div className="flex justify-end">
             <button
               onClick={onClose}

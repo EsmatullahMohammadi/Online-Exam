@@ -124,7 +124,6 @@ const getCandidatesByTest = async (req, res) => {
   }
 };
 
-// Editing a candidadte
 const updateCandidate = async (req, res) => {
   const { id } = req.params;
   const {
@@ -135,12 +134,11 @@ const updateCandidate = async (req, res) => {
     department,
     educationDegree,
     phoneNumber,
-    email,
+    userName,
     password,
   } = req.body;
 
   try {
-    // Create an update object without the password initially
     const updateFields = {
       name,
       fatherName,
@@ -149,22 +147,17 @@ const updateCandidate = async (req, res) => {
       department,
       educationDegree,
       phoneNumber,
-      email,
+      userName,
     };
 
-    // If password is not empty, add it to updateFields
     if (password && password.trim() !== "") {
-      // Hash the password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      updateFields.password = hashedPassword;
+      updateFields.password = encryptAES(password);
     }
 
-    // Find candidate by ID and update its fields
     const updatedCandidate = await Candidate.findByIdAndUpdate(
       id,
       updateFields,
-      { new: true, runValidators: true } // Return updated document & validate fields
+      { new: true, runValidators: true }
     );
 
     if (!updatedCandidate) {
@@ -180,12 +173,10 @@ const updateCandidate = async (req, res) => {
     res.status(500).json({ error: "Failed to update candidate" });
   }
 };
-// Deleting a candidate by ID
 const deleteTest = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Find the test by ID and delete it
     const deletedCandidate = await Candidate.findByIdAndDelete(id);
 
     if (!deletedCandidate) {
@@ -194,7 +185,7 @@ const deleteTest = async (req, res) => {
 
     res.status(200).json({
       message: "Candidate deleted successfully!",
-      candidate: deletedCandidate, // Optionally return the deleted test details
+      candidate: deletedCandidate,
     });
   } catch (error) {
     console.error("Error deleting candidate:", error.message);
