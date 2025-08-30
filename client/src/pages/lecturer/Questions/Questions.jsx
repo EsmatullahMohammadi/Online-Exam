@@ -1,11 +1,26 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MdAdd } from "react-icons/md";
+import { AiOutlineEye } from "react-icons/ai";
 import LBreadcrumb from "../../../components/Breadcrumbs/LBreadcrumb";
 import useQuestions from "../../../hooks/lecturer/useQuestions";
 
 const Questions = () => {
   const lecturerId = sessionStorage.getItem("lecturerID");
   const { questions, loading, error } = useQuestions(lecturerId);
+
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (question) => {
+    setSelectedQuestion(question);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedQuestion(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -36,18 +51,21 @@ const Questions = () => {
                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                   Category
                 </th>
+                <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-3">
+                  <td colSpan="5" className="text-center py-3">
                     Loading...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-3 text-red-500">
+                  <td colSpan="5" className="text-center py-3 text-red-500">
                     {error}
                   </td>
                 </tr>
@@ -79,11 +97,19 @@ const Questions = () => {
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark font-medium text-blue-600 dark:text-blue-400">
                       {question.category}
                     </td>
+                    <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark text-center">
+                      <button
+                        onClick={() => openModal(question)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <AiOutlineEye size={22} />
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center py-3">
+                  <td colSpan="5" className="text-center py-3">
                     No questions found.
                   </td>
                 </tr>
@@ -92,6 +118,47 @@ const Questions = () => {
           </table>
         </div>
       </div>
+
+      {isModalOpen && selectedQuestion && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white dark:bg-boxdark rounded-lg p-6 w-full max-w-lg shadow-lg relative">
+            <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
+              Question Details
+            </h2>
+            <p className="mb-2 text-black dark:text-white">
+              <strong>Question:</strong> {selectedQuestion.questionText}
+            </p>
+            {selectedQuestion.passage && (
+              <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
+                <strong>Passage:</strong> {selectedQuestion.passage}
+              </p>
+            )}
+            <p className="mb-2 text-black dark:text-white">
+              <strong>Options:</strong>
+            </p>
+            <ul className="list-disc pl-6 mb-2">
+              {selectedQuestion.options.map((opt, i) => (
+                <li key={i} className="text-black dark:text-white">
+                  {opt}
+                </li>
+              ))}
+            </ul>
+            <p className="mb-2 text-green-600 font-semibold">
+              <strong>Correct Answer:</strong> {selectedQuestion.correctAnswer}
+            </p>
+            <p className="mb-4 text-blue-600">
+              <strong>Category:</strong> {selectedQuestion.category}
+            </p>
+
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-600 hover:text-black dark:hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
