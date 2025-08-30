@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const Candidate = require("../../models/candidate");
 const Test = require("../../models/test");
+const CandidateResponse = require("../../models/CandidateResponse");
 const crypto = require("crypto");
 const { encryptAES, decryptAES } = require("../../utils/cryptoUtils");
 
@@ -173,7 +174,7 @@ const updateCandidate = async (req, res) => {
     res.status(500).json({ error: "Failed to update candidate" });
   }
 };
-const deleteTest = async (req, res) => {
+const deleteCondidate = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -182,9 +183,10 @@ const deleteTest = async (req, res) => {
     if (!deletedCandidate) {
       return res.status(404).json({ message: "Candidate not found!" });
     }
+    await CandidateResponse.deleteMany({ candidateId: id });
 
     res.status(200).json({
-      message: "Candidate deleted successfully!",
+      message: "Candidate and their result deleted successfully!",
       candidate: deletedCandidate,
     });
   } catch (error) {
@@ -197,6 +199,6 @@ module.exports = {
   addCandidate,
   getCandidates,
   updateCandidate,
-  deleteTest,
+  deleteCondidate,
   getCandidatesByTest,
 };

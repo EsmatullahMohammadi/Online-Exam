@@ -1,4 +1,3 @@
-import { MdEdit } from "react-icons/md";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import Pagination from "../../../components/Pagination";
 import { useSearch } from "../../../context/SearchContext";
@@ -63,9 +62,6 @@ const QuestionBank = () => {
                     <th className="py-4 px-4 font-medium text-black dark:text-white">
                       Category
                     </th>
-                    <th className="py-4 px-4 font-medium text-black dark:text-white">
-                      Actions
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -81,16 +77,6 @@ const QuestionBank = () => {
                         <td className="py-3 px-4">{question.questionText}</td>
                         <td className="py-3 px-4 capitalize">
                           {question.category}
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-3.5">
-                            <button
-                              className="hover:text-primary"
-                              onClick={() => alert("Edit feature coming soon!")}
-                            >
-                              <MdEdit className="text-2xl text-indigo-500 hover:text-indigo-600" />
-                            </button>
-                          </div>
                         </td>
                       </tr>
                     ))
