@@ -10,7 +10,6 @@ const AddCandidate = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [tests, setTests] = useState([]);
-    // Fetch available tests
     axios.defaults.withCredentials = true;
     useEffect(() => {
       const fetchTests = async () => {
@@ -27,7 +26,6 @@ const AddCandidate = () => {
       fetchTests();
     }, []);
 
-  // Validation schema using Yup
   const validationSchema = Yup.object({
     name: Yup.string().required('Name is required'),
     fatherName: Yup.string().required('Father Name is required'),
@@ -41,7 +39,6 @@ const AddCandidate = () => {
     testId: Yup.string().required('Test is required'),
   });
 
-  // Handle form submission
   const handleSubmit = async (values, { resetForm }) => {
     setError('');
     setSuccess(false);
@@ -51,7 +48,7 @@ const AddCandidate = () => {
 
       if (response.status === 201) {
         setSuccess(true);
-        resetForm(); // Reset form fields after successful submission
+        resetForm();
       } else {
         setError(response.data.message || 'Failed to add candidate. Please try again.');
       }
@@ -65,7 +62,6 @@ const AddCandidate = () => {
   return (
     <>
       <Breadcrumb pageName="Add Candidate" />
-      {/* Success Alert */}
       {success && (
         <div className="flex w-full border-l-6 border-[#34D399] bg-[#34D399] bg-opacity-[15%] px-7 py-2 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-2 mb-2">
           <div className="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#34D399]">

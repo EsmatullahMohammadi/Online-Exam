@@ -1,32 +1,16 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
-const Candidate = require("../../models/candidate"); // Adjust the path based on your folder structure
+const Candidate = require("../../models/candidate");
 const Test = require("../../models/test");
 const crypto = require("crypto");
+const { encryptAES, decryptAES } = require("../../utils/cryptoUtils");
 
 const addCandidate = async (req, res) => {
-  const AES_SECRET = crypto
-    .createHash("sha256")
-    .update(process.env.AESSECRET)
-    .digest();
-
-  // AES encryption function
-  const encryptAES = (text) => {
-    const cipher = crypto.createCipheriv(
-      "aes-256-cbc",
-      AES_SECRET,
-      Buffer.alloc(16, 0)
-    );
-    let encrypted = cipher.update(text, "utf8", "hex");
-    encrypted += cipher.final("hex");
-    return encrypted;
-  };
-
-  // Validate incoming fields (except email/password)
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
+
   const {
     name,
     fatherName,
@@ -39,13 +23,11 @@ const addCandidate = async (req, res) => {
   } = req.body;
 
   try {
-    // Ensure phone number is unique
     const existingByPhone = await Candidate.findOne({ phoneNumber });
     if (existingByPhone) {
       return res.status(400).json({ message: "Phone number already exists" });
     }
 
-    // Generate random credentials
     const generateRandomNumberString = (length) => {
       return Math.random()
         .toString()
@@ -61,12 +43,10 @@ const addCandidate = async (req, res) => {
       });
     } while (existingByUserName);
 
-    const randomPassword = generateRandomNumberString(8); // 8-digit number
+    const randomPassword = generateRandomNumberString(8);
 
-    // Encrypt password using AES 256
     const encryptedPassword = encryptAES(randomPassword);
 
-    // Create a new candidate object with generated credentials
     const candidate = new Candidate({
       name,
       fatherName,
@@ -80,10 +60,8 @@ const addCandidate = async (req, res) => {
       testId,
     });
 
-    // Save the candidate to the database (store encrypted password)
     await candidate.save();
 
-    // Optionally add Candidate ID to the Test model
     if (testId) {
       await Test.findByIdAndUpdate(
         testId,
@@ -92,12 +70,11 @@ const addCandidate = async (req, res) => {
       );
     }
 
-    // Return generated credentials to the admin
     res.status(201).json({
       message: "Candidate added successfully",
       candidateId: candidate._id,
       userName: randomUserName,
-      password: randomPassword, // plaintext password returned only to admin
+      password: randomPassword,
     });
   } catch (err) {
     console.error("Error adding candidate:", err.message);
@@ -105,10 +82,8 @@ const addCandidate = async (req, res) => {
   }
 };
 
-// get all candidate
 const getCandidates = async (req, res) => {
   try {
-    // Retrieve all tests from the database
     const candidate = await Candidate.find().sort({ createdAt: -1 });
     const tests = await Test.find().sort({ createdAt: -1 });
     res.status(200).json({
@@ -126,30 +101,11 @@ const getCandidatesByTest = async (req, res) => {
   try {
     const { testId } = req.query;
     if (!testId) {
-      return res.status(400).json({ error: "testId is requiered" });
+      return res.status(400).json({ error: "testId is required" });
     }
 
-    const AES_SECRET = crypto
-      .createHash("sha256")
-      .update(process.env.AESSECRET)
-      .digest();
-
-    // AES decryption function
-    const decryptAES = (encryptedText) => {
-      const decipher = crypto.createDecipheriv(
-        "aes-256-cbc",
-        AES_SECRET,
-        Buffer.alloc(16, 0)
-      );
-      let decrypted = decipher.update(encryptedText, "hex", "utf8");
-      decrypted += decipher.final("utf8");
-      return decrypted;
-    };
-
-    // Fetch candidates by testId
     const candidates = await Candidate.find({ testId }).sort({ createdAt: -1 });
 
-    // Decrypt password for each candidate
     const candidatesWithDecryptedPassword = candidates.map((candidate) => {
       const decryptedPassword = decryptAES(candidate.password);
       return {
@@ -159,12 +115,12 @@ const getCandidatesByTest = async (req, res) => {
     });
 
     res.status(200).json({
-      message: "Condiate retrived successfully",
+      message: "Candidate retrieved successfully",
       candidates: candidatesWithDecryptedPassword,
     });
   } catch (error) {
     console.error("Error retrieving candidates by test:", error.message);
-    res.status(500).json({ error: "Error retriving condidates" });
+    res.status(500).json({ error: "Error retrieving candidates" });
   }
 };
 

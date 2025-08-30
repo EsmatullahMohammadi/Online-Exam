@@ -8,7 +8,7 @@ const addLecturar = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, lastName, email, password, category } = req.body; // Extract category
+  const { name, lastName, email, password, category } = req.body;
   try {
     const validCategories = ['Reading', 'Writing', 'Grammar', 'Listening'];
     if (!validCategories.includes(category)) {

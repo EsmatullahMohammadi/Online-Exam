@@ -7,7 +7,6 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { FiArrowLeft } from "react-icons/fi";
 import { SUPER_DOMAIN } from "../constant";
 
-// Validation Schema
 const validationSchema = Yup.object().shape({
 	name: Yup.string().required("Name is required"),
 	fatherName: Yup.string().required("Father's Name is required"),
