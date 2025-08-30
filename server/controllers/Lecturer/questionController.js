@@ -161,97 +161,78 @@ const getAllQuestions = async (req, res) => {
   }
 };
 
-// Update a question set
-const updateQuestion = async (req, res) => {
+const updateSingleQuestion = async (req, res) => {
   try {
-    const { id } = req.params; // Question set ID
-    const { passage, questions: questionsStr, category } = req.body;
+    const { id } = req.params;
+    const { questionIndex, questionText, options, correctAnswer } = req.body;
+    const userId = req.user.id;
+    console.log(id)
+    // Validate index
+    if (!Number.isInteger(questionIndex)) {
+      return res
+        .status(400)
+        .json({ message: "Valid question index is required" });
+    }
 
-    // Find existing set
-    const existingSet = await Question.findById(id);
-    if (!existingSet) {
+    // Find the question set
+    const questionSet = await Question.findById(id);
+    if (!questionSet)
       return res.status(404).json({ message: "Question set not found" });
+
+    // Ownership check
+    if (questionSet.createdBy.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to edit this question" });
     }
 
-    // Validate category
+    // Index range check
+    if (questionIndex < 0 || questionIndex >= questionSet.questions.length) {
+      return res.status(400).json({ message: "Question index out of range" });
+    }
+
+    // Validate fields
     if (
-      category &&
-      !["Reading", "Listening", "Writing", "Grammar"].includes(category)
+      !questionText ||
+      !correctAnswer ||
+      !Array.isArray(options) ||
+      options.length === 0
     ) {
-      return res.status(400).json({ message: "Valid category is required" });
-    }
-
-    let questions;
-    if (questionsStr) {
-      try {
-        questions = JSON.parse(questionsStr);
-      } catch (e) {
-        return res.status(400).json({ message: "Invalid questions format" });
-      }
-    }
-
-    const processedQuestions = [];
-
-    if (questions && Array.isArray(questions)) {
-      for (const q of questions) {
-        if (!q.questionText || !q.correctAnswer) {
-          return res.status(400).json({
-            message: "Each question must have text and correct answer",
-          });
-        }
-
-        const filteredOptions = q.options
-          ? q.options
-              .filter((opt) => opt && opt.trim() !== "")
-              .map((opt) => opt.trim())
-          : [];
-
-        if ((category || existingSet.category) === "Listening") {
-          if (filteredOptions.length !== 2 && filteredOptions.length !== 4) {
-            return res.status(400).json({
-              message: "Listening questions must have either 2 or 4 options",
-            });
-          }
-        } else if (filteredOptions.length !== 4) {
-          return res.status(400).json({
-            message: "Non-Listening questions must have exactly 4 options",
-          });
-        }
-
-        if (!filteredOptions.includes(q.correctAnswer.trim())) {
-          return res.status(400).json({
-            message: "Correct answer must be one of the provided options",
-          });
-        }
-
-        processedQuestions.push({
-          questionText: q.questionText.trim(),
-          options: filteredOptions,
-          correctAnswer: q.correctAnswer.trim(),
+      return res
+        .status(400)
+        .json({
+          message: "Question text, options, and correct answer are required",
         });
-      }
     }
 
-    // Update fields
-    if (category) existingSet.category = category;
-    if (passage) existingSet.passage = passage.trim();
-    if (questions) existingSet.questions = processedQuestions;
-    if (req.file && (category || existingSet.category) === "Listening") {
-      existingSet.listeningFile = req.file.filename;
+    const cleanedOptions = options
+      .map((opt) => opt.trim())
+      .filter((opt) => opt !== "");
+
+    if (!cleanedOptions.includes(correctAnswer.trim())) {
+      return res
+        .status(400)
+        .json({ message: "Correct answer must be one of the options" });
     }
 
-    await existingSet.save();
+    // Update the question
+    questionSet.questions[questionIndex] = {
+      questionText: questionText.trim(),
+      options: cleanedOptions,
+      correctAnswer: correctAnswer.trim(),
+    };
+
+    await questionSet.save();
 
     res.status(200).json({
-      message: "Question set updated successfully",
-      data: existingSet,
+      message: "Question updated successfully",
+      data: questionSet.questions[questionIndex],
     });
   } catch (error) {
-    console.error("Error updating question:", error);
-    res.status(500).json({ message: "Server Error", error });
+    console.error("Error updating single question:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
 
 
 // Delete a question
@@ -278,5 +259,5 @@ module.exports = {
   getQuestionsByCategory,
   getAllQuestions,
   deleteQuestion,
-  updateQuestion,
+  updateSingleQuestion,
 };

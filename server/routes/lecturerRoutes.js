@@ -30,10 +30,9 @@ router.post(
   questionController.addQuestion
 );
 router.put(
-  "/edit-question/:id",
+  "/edit-single-question/:id",
   verifyLecturer,
-  upload.single("listeningFile"),
-  questionController.updateQuestion
+  questionController.updateSingleQuestion
 );
 // get questions by the category
 router.get(

@@ -34,6 +34,7 @@ import AboutHome from '../pages/landing/AboutHome';
 import NavBar from '../components/Landing/NavBar';
 import Footer from '../pages/landing/Footer';
 import FilterByTest from '../pages/admin/Condidate/FilterByTest';
+import EditQuestion from '../pages/lecturer/Questions/EditQuestion';
 
 
 const RouterComponent = () => {
@@ -53,7 +54,7 @@ const RouterComponent = () => {
           <AboutHome />
           <Footer />
         </>
-      ), 
+      ),
     },
     {
       path: "/admin",
@@ -241,6 +242,15 @@ const RouterComponent = () => {
             <>
               <PageTitle title="Add Questions | Lecturer - KPU Online Exam" />
               <AddQuestion />
+            </>
+          ),
+        },
+        {
+          path: "edit-question/:id",
+          element: (
+            <>
+              <PageTitle title="Edit Questions | Lecturer - KPU Online Exam" />
+              <EditQuestion />
             </>
           ),
         },

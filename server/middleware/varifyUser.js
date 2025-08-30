@@ -23,9 +23,9 @@ const verifyUser = async (req, res, next) => {
 };
 
 const verifyLecturer = async (req, res, next) => {
-  
+
   try {
-    const { lecturerToken } = req.cookies;  
+    const { lecturerToken } = req.cookies;
     if (!lecturerToken) {
       return res.status(401).json({
         status: false,
@@ -33,6 +33,9 @@ const verifyLecturer = async (req, res, next) => {
       });
     }
     const decoded = await JWT.verify(lecturerToken, process.env.TOKEN_KEY);
+    req.user = {
+      id: decoded._id,
+    };
 
     next();
   } catch (error) {

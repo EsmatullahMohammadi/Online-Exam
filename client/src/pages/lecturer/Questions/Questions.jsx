@@ -23,8 +23,14 @@ const Questions = () => {
     setIsModalOpen(false);
   };
 
-  const handleEdit = (questionId) => {
-    navigate(`/lecturer/edit-question/${questionId}`);
+  const handleEdit = (question) => {
+    navigate(`/lecturer/edit-question/${question.questionSetId}`, {
+      state: {
+        questionSetId: question.questionSetId,
+        question,
+        questionIndex: question.questionIndex,
+      },
+    });
   };
 
   return (
@@ -112,7 +118,7 @@ const Questions = () => {
                           <AiOutlineEye size={22} />
                         </button>
                         <button
-                          onClick={() => handleEdit(question._id)}
+                          onClick={() => handleEdit(question)}
                           className="text-green-600 hover:text-green-800"
                         >
                           <AiOutlineEdit size={22} />

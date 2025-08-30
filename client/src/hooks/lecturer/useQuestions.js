@@ -19,8 +19,10 @@ const useQuestions = (lecturerId) => {
         );
 
         const formattedQuestions = response.data.data.flatMap((questionSet) =>
-          questionSet.questions.map((question) => ({
+          questionSet.questions.map((question, index) => ({
             ...question,
+            questionSetId: questionSet._id,
+            questionIndex: index,
             category: questionSet.category,
             passage: questionSet.passage,
             listeningFile: questionSet.listeningFile,
