@@ -33,7 +33,7 @@ const Result = () => {
   const [selectedResult, setSelectedResult] = useState(null);
   const handleCloseModal = () => setIsOpenModel(false);
 
-  const totalPages = Math.ceil(filteredResults.length / 5); // static itemsPerPage = 5
+  const totalPages = Math.ceil(filteredResults.length / 5);
 
   return (
     <>

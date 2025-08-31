@@ -3,8 +3,10 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { SUPER_DOMAIN } from "../../pages/admin/constant";
+import { useNavigate } from "react-router-dom";
 
 export const useQuestionForm = () => {
+  const navigate= useNavigate();
   const [optionCount, setOptionCount] = useState(2);
   const [loading, setLoading] = useState(false);
   const category = sessionStorage.getItem("category");
@@ -177,6 +179,7 @@ export const useQuestionForm = () => {
               },
             },
           ]);
+          navigate("/lecturer/questions");
         } else {
           alert("Something went wrong!");
         }
