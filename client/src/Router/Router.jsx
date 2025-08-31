@@ -35,6 +35,8 @@ import NavBar from '../components/Landing/NavBar';
 import Footer from '../pages/landing/Footer';
 import FilterByTest from '../pages/admin/Condidate/FilterByTest';
 import EditQuestion from '../pages/lecturer/Questions/EditQuestion';
+import LecturerDashboard from '../pages/lecturer/Dashboard';
+import CandidateDashboard from '../pages/student/Dashboard';
 
 
 const RouterComponent = () => {
@@ -223,7 +225,7 @@ const RouterComponent = () => {
           element: (
             <>
               <PageTitle title="Dashbord | Lecturer - KPU Online Exam" />
-              <Dashbord />
+              <LecturerDashboard />
             </>
           ),
         },
@@ -278,7 +280,7 @@ const RouterComponent = () => {
           element: (
             <>
               <PageTitle title="Dashbord | Candidate - KPU Online Exam" />
-              <Dashbord />
+              <CandidateDashboard />
             </>
           ),
         },
