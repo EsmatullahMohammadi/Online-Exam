@@ -30,20 +30,6 @@ const Footer = () => {
           </span>
         </div>
 
-        {/* About Links */}
-        <div className="flex flex-col gap-5">
-          <span className="text-white font-bold text-xl font-sans">About</span>
-          <a href="#" className="text-white hover:text-orange-300 font-arial">
-            Terms & Conditions
-          </a>
-          <a href="#" className="text-white hover:text-orange-300 font-arial">
-            Privacy Policy
-          </a>
-          <a href="#" className="text-white hover:text-orange-300 font-arial">
-            Help
-          </a>
-        </div>
-
         {/* Navigation Links */}
         <div className="flex flex-col gap-5">
           <span className="text-white font-bold text-xl font-sans">
@@ -53,22 +39,10 @@ const Footer = () => {
             Home
           </Link>
           <Link
-            to="service"
-            className="text-white hover:text-orange-300 font-arial"
-          >
-            Services
-          </Link>
-          <Link
             to="about-us"
             className="text-white hover:text-orange-300 font-arial"
           >
             About Us
-          </Link>
-          <Link
-            to="join-our-team"
-            className="text-white hover:text-orange-300 font-arial"
-          >
-            Join Our Team
           </Link>
           <Link
             to="contact"

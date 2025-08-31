@@ -6,12 +6,7 @@ import {
   FaXmark,
   FaPhone,
   FaEnvelope,
-//   FaFacebookF,
-//   FaInstagram,
-//   FaLinkedinIn,
-//   FaTwitter,
-//   FaYoutube,
-} from "react-icons/fa6"; // Fa6 includes FaBarsStaggered and FaXmark
+} from "react-icons/fa6";
 import {
   FaFacebookF as FaFacebook,
   FaInstagram as FaInsta,

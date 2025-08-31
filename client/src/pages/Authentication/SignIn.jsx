@@ -25,14 +25,14 @@ const SignIn = () => {
                   <img className="dark:hidden h-30" src={ LogoP } alt="Logo" />
                 </Link>
                 <p className="2xl:px-0">
-                  Please login here in Kabul Polytechnic University Online Exam
+                 Login here in Kabul Polytechnic University Online Exam
                 </p>
               </div>
             </div>
             <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
               <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                  Sign In to KPU Online Exam
+                  Sign In to KPU Language Exam System
                 </h2>
 
                 { serverError && (
@@ -130,13 +130,13 @@ const SignIn = () => {
                     </button>
                   </div>
 
-                  <div className="mt-6">
+                  {/* <div className="mt-6">
                     <p>
                       <Link to="/auth/forgot-password" className="text-primary">
                         Forgot Your Password?
                       </Link>
                     </p>
-                  </div>
+                  </div> */}
 
                 </form>
               </div>

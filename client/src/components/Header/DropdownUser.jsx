@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { SUPER_DOMAIN } from '../../pages/admin/constant';
 import { FiLogOut } from 'react-icons/fi';
-import { FaChevronDown, FaCog, FaUser } from 'react-icons/fa';
+import { FaChevronDown} from 'react-icons/fa';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -101,26 +101,6 @@ const DropdownUser = () => {
         <div
           className={ `absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark` }
         >
-          <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
-            <li>
-              <Link
-                to="/profile"
-                className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
-              >
-                <FaUser size={ 22 } className="text-gray-500" />
-                My Profile
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/settings"
-                className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
-              >
-                <FaCog size={ 22 } className='text-gray-500' />
-                Account Settings
-              </Link>
-            </li>
-          </ul>
           <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={ handleLogout }>
             <FiLogOut size={ 22 } className="text-gray-500" />
             Log Out
