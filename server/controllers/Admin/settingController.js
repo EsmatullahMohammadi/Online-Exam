@@ -1,15 +1,16 @@
-const bcrypt = require('bcryptjs');
-const Setting = require('../../models/setting');
-const Candidate = require('../../models/candidate');
-const Lecturer = require('../../models/lecturer');
+const bcrypt = require("bcryptjs");
+const Setting = require("../../models/setting");
+const Candidate = require("../../models/candidate");
+const Lecturer = require("../../models/lecturer");
+const Question = require("../../models/questions");
+const Test = require("../../models/test");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 
-// Multer storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "userImage/"); // Save images in userImage folder
+    cb(null, "userImage/");
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -18,134 +19,144 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Controller the edit images
 const editAdminImage = async (req, res) => {
   try {
     const { id, role } = req.params;
-    if(role==="Admin"){
+    if (role === "Admin") {
       const admin = await Setting.findById(id);
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
-      // Check if there was a previous image
       if (admin.profileImage) {
-        const oldImagePath = path.join(__dirname, "../../userImage/", admin.profileImage);
-        // Ensure the old image exists before trying to delete it
+        const oldImagePath = path.join(
+          __dirname,
+          "../../userImage/",
+          admin.profileImage
+        );
         if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath); // Delete the old image
+          fs.unlinkSync(oldImagePath);
         }
       }
-      // Ensure a new file was uploaded
       if (!req.file) {
         return res.status(400).json({ message: "No image uploaded" });
       }
-      // Update profile image in DB
       admin.profileImage = req.file.filename;
       await admin.save();
-      res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
+      res.status(200).json({
+        message: "Profile image updated successfully",
+        imageUrl: req.file.filename,
+      });
     }
-    if(role==="Lecturer"){
+    if (role === "Lecturer") {
       const lecturer = await Lecturer.findById(id);
       if (!lecturer) {
         return res.status(404).json({ message: "lecturer not found" });
       }
-      // Check if there was a previous image
       if (lecturer.profileImage) {
-        const oldImagePath = path.join(__dirname, "../../userImage/", lecturer.profileImage);
-        // Ensure the old image exists before trying to delete it
+        const oldImagePath = path.join(
+          __dirname,
+          "../../userImage/",
+          lecturer.profileImage
+        );
         if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath); // Delete the old image
+          fs.unlinkSync(oldImagePath);
         }
       }
-      // Ensure a new file was uploaded
       if (!req.file) {
         return res.status(400).json({ message: "No image uploaded" });
       }
-      // Update profile image in DB
       lecturer.profileImage = req.file.filename;
       await lecturer.save();
-      res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
+      res.status(200).json({
+        message: "Profile image updated successfully",
+        imageUrl: req.file.filename,
+      });
     }
-    if(role==="Candidate"){
+    if (role === "Candidate") {
       const candidate = await Candidate.findById(id);
       if (!candidate) {
         return res.status(404).json({ message: "candidate not found" });
       }
-      // Check if there was a previous image
       if (candidate.profileImage) {
-        const oldImagePath = path.join(__dirname, "../../userImage/", candidate.profileImage);
-        // Ensure the old image exists before trying to delete it
+        const oldImagePath = path.join(
+          __dirname,
+          "../../userImage/",
+          candidate.profileImage
+        );
         if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath); // Delete the old image
+          fs.unlinkSync(oldImagePath);
         }
       }
-      // Ensure a new file was uploaded
       if (!req.file) {
         return res.status(400).json({ message: "No image uploaded" });
       }
-      // Update profile image in DB
       candidate.profileImage = req.file.filename;
       await candidate.save();
-      res.status(200).json({ message: "Profile image updated successfully", imageUrl: req.file.filename });
+      res.status(200).json({
+        message: "Profile image updated successfully",
+        imageUrl: req.file.filename,
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: "Error updating profile image", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating profile image", error: error.message });
   }
 };
-// Fetch admin image 
-const getImage= async (req, res) =>{
+const getImage = async (req, res) => {
   try {
     const { id, role } = req.params;
-    if(role === "Admin"){
+    if (role === "Admin") {
       const admin = await Setting.findById(id);
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
-      res.json({ profileImage: admin.profileImage }); // Send back the image filename
+      res.json({ profileImage: admin.profileImage });
     }
-    if(role === "Lecturer"){
+    if (role === "Lecturer") {
       const lecturar = await Lecturer.findById(id);
       if (!lecturar) {
         return res.status(404).json({ message: "lecturar not found" });
       }
-      res.json({ profileImage: lecturar.profileImage }); // Send back the image filename
+      res.json({ profileImage: lecturar.profileImage });
     }
-    if(role === "Candidate"){
+    if (role === "Candidate") {
       const candidate = await Candidate.findById(id);
       if (!candidate) {
         return res.status(404).json({ message: "candidate not found" });
       }
-      res.json({ profileImage: candidate.profileImage }); // Send back the image filename
+      res.json({ profileImage: candidate.profileImage });
     }
-
   } catch (error) {
     console.error("Error fetching user:", error);
     res.status(500).json({ message: "Server error" });
   }
-}
-
+};
 
 const editSetting = async (req, res) => {
-  const { emailAddress, fullName, phoneNumber, currentPassword, newPassword } = req.body;
+  const { emailAddress, fullName, phoneNumber, currentPassword, newPassword } =
+    req.body;
 
   try {
-    // Fetch the single user setting (assuming there is only one record)
     const setting = await Setting.findOne();
     if (!setting) {
-      return res.status(404).json({ message: 'Settings not found' });
+      return res.status(404).json({ message: "Settings not found" });
     }
 
-    // Check if current password matches the stored password
-    const isPasswordValid = await bcrypt.compare(currentPassword, setting.currentPassword);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      setting.currentPassword
+    );
     if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Current password is incorrect' });
+      return res.status(400).json({ message: "Current password is incorrect" });
     }
 
-    // Update fields if provided
     if (emailAddress && emailAddress !== setting.emailAddress) {
       const emailExists = await Setting.findOne({ emailAddress });
       if (emailExists) {
-        return res.status(400).json({ message: 'Email address is already in use' });
+        return res
+          .status(400)
+          .json({ message: "Email address is already in use" });
       }
       setting.emailAddress = emailAddress;
     }
@@ -159,10 +170,12 @@ const editSetting = async (req, res) => {
 
     // Save the updated setting
     await setting.save();
-    res.status(200).json({ message: 'Settings updated successfully', setting });
+    res.status(200).json({ message: "Settings updated successfully", setting });
   } catch (error) {
     console.error(`Error updating settings: ${error.message}`);
-    res.status(501).json({ message: 'Error updating settings', error: error.message });
+    res
+      .status(501)
+      .json({ message: "Error updating settings", error: error.message });
   }
 };
 
@@ -172,28 +185,70 @@ const getSetting = async (req, res) => {
     // Fetch the user setting (assuming there is only one record)
     const setting = await Setting.findOne();
     if (!setting) {
-      return res.status(404).json({ message: 'Settings not found' });
+      return res.status(404).json({ message: "Settings not found" });
     }
 
     // If an email address is provided, validate it
     if (emailAddress && emailAddress !== setting.emailAddress) {
-      return res.status(400).json({ message: 'Email address is incorrect' });
+      return res.status(400).json({ message: "Email address is incorrect" });
     }
 
     // If a password is provided, validate it
     if (password) {
-      const isPasswordValid = await bcrypt.compare(password, setting.currentPassword);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        setting.currentPassword
+      );
       if (!isPasswordValid) {
-        return res.status(400).json({ message: 'Password is incorrect' });
+        return res.status(400).json({ message: "Password is incorrect" });
       }
     }
 
     // Return the setting data
-    res.status(200).json({ message: 'Settings retrieved successfully', setting });
+    res
+      .status(200)
+      .json({ message: "Settings retrieved successfully", setting });
   } catch (error) {
     console.error(`Error retrieving settings: ${error.message}`);
-    res.status(500).json({ message: 'Error retrieving settings', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error retrieving settings", error: error.message });
   }
 };
 
-module.exports = { editSetting, getSetting, upload, editAdminImage, getImage };
+const countAll = async (req, res) => {
+  try {
+    const candidateCount = await Candidate.countDocuments();
+    const lecturerCount = await Lecturer.countDocuments();
+    const testCount = await Test.countDocuments();
+
+    // Count total number of sub-questions across all documents
+    const questionAgg = await Question.aggregate([
+      { $project: { numQuestions: { $size: "$questions" } } },
+      { $group: { _id: null, totalQuestions: { $sum: "$numQuestions" } } },
+    ]);
+
+    const questionCount = questionAgg[0]?.totalQuestions || 0;
+
+    res.status(200).json({
+      candidates: candidateCount,
+      questions: questionCount, // 👈 total number of sub-questions
+      lecturers: lecturerCount,
+      tests: testCount,
+    });
+  } catch (error) {
+    console.error("Error fetching counts:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching counts", error: error.message });
+  }
+};
+
+module.exports = {
+  editSetting,
+  getSetting,
+  upload,
+  editAdminImage,
+  getImage,
+  countAll,
+};

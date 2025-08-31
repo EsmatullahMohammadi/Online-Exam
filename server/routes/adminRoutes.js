@@ -55,5 +55,7 @@ router.put("/update-image/:role/:id", settingController.upload.single("profileIm
 // get the image of a user by the id and role 
 router.get('/get-image/:role/:id',  settingController.getImage);
 
+router.get("/counts", varifyUser.verifyUser, settingController.countAll);
+
 
 module.exports = router;

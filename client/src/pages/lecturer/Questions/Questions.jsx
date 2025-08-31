@@ -141,34 +141,37 @@ const Questions = () => {
 
       {isModalOpen && selectedQuestion && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white dark:bg-boxdark rounded-lg p-6 w-full max-w-lg shadow-lg relative">
-            <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
-              Question Details
-            </h2>
-            <p className="mb-2 text-black dark:text-white">
-              <strong>Question:</strong> {selectedQuestion.questionText}
-            </p>
-            {selectedQuestion.passage && (
-              <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
-                <strong>Passage:</strong> {selectedQuestion.passage}
+          <div className="bg-white dark:bg-boxdark rounded-lg w-full max-w-lg shadow-lg relative max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
+                Question Details
+              </h2>
+              <p className="mb-2 text-black dark:text-white">
+                <strong>Question:</strong> {selectedQuestion.questionText}
               </p>
-            )}
-            <p className="mb-2 text-black dark:text-white">
-              <strong>Options:</strong>
-            </p>
-            <ul className="list-disc pl-6 mb-2">
-              {selectedQuestion.options.map((opt, i) => (
-                <li key={i} className="text-black dark:text-white">
-                  {opt}
-                </li>
-              ))}
-            </ul>
-            <p className="mb-2 text-green-600 font-semibold">
-              <strong>Correct Answer:</strong> {selectedQuestion.correctAnswer}
-            </p>
-            <p className="mb-4 text-blue-600">
-              <strong>Category:</strong> {selectedQuestion.category}
-            </p>
+              {selectedQuestion.passage && (
+                <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Passage:</strong> {selectedQuestion.passage}
+                </p>
+              )}
+              <p className="mb-2 text-black dark:text-white">
+                <strong>Options:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-2">
+                {selectedQuestion.options.map((opt, i) => (
+                  <li key={i} className="text-black dark:text-white">
+                    {opt}
+                  </li>
+                ))}
+              </ul>
+              <p className="mb-2 text-green-600 font-semibold">
+                <strong>Correct Answer:</strong>{" "}
+                {selectedQuestion.correctAnswer}
+              </p>
+              <p className="mb-4 text-blue-600">
+                <strong>Category:</strong> {selectedQuestion.category}
+              </p>
+            </div>
 
             <button
               onClick={closeModal}
