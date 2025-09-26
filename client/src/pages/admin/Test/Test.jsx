@@ -86,9 +86,9 @@ function Test() {
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
                   Exam Date
                 </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                {/* <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                   Status
-                </th>
+                </th> */}
                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                   Test Question
                 </th>
@@ -135,7 +135,7 @@ function Test() {
                           : "No Start Date Set"}
                       </p>
                     </td>
-                    <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
+                    {/* <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <p
                         className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
                           test.questions.length > 0
@@ -145,7 +145,7 @@ function Test() {
                       >
                         {test.questions.length > 0 ? "Pending" : "No Question"}
                       </p>
-                    </td>
+                    </td> */}
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
                       <Link
                         to={`/admin/select-question/${test.title}`}
